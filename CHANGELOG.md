@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented here.
 
+## [1.1.1] - 2026-06-05
+
+### Fixed
+
+- Added a windowed tray entrypoint and reproducible `build_exe.bat` for the desktop shortcut EXE.
+
 ## [1.1.0] - 2026-06-04
 
 ### Added

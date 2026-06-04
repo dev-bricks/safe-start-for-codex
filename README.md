@@ -149,6 +149,12 @@ python -m pip install -e ".[dev]"
 pytest
 ```
 
+Build the windowed tray EXE:
+
+```powershell
+.\build_exe.bat
+```
+
 ## License
 
 MIT License. See [LICENSE](LICENSE).

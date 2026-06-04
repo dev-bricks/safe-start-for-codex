@@ -22,6 +22,7 @@ from safe_start_for_codex.cli import (
     set_status,
     split_release_queue,
 )
+from safe_start_for_codex import tray_app
 
 
 def write_automation(root: Path, name: str, status: str, rrule: str) -> Path:
@@ -241,3 +242,16 @@ def test_build_catchup_report_observed_run_satisfies_latest_due() -> None:
 
     assert report.eligible_ids == []
     assert report.candidates[0].missed is False
+
+
+def test_tray_app_runs_tray_command(monkeypatch) -> None:
+    calls: list[list[str]] = []
+
+    def fake_main(argv: list[str]) -> int:
+        calls.append(argv)
+        return 0
+
+    monkeypatch.setattr(tray_app, "main", fake_main)
+
+    assert tray_app.run() == 0
+    assert calls == [["tray"]]
