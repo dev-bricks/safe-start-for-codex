@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Build artifacts
+build/
+dist/
+*.spec
+*.exe
+*.msi
+*.msix
+*.lnk
+
+# Local app state
+automation-safe-start/
+*.log
+events.jsonl
+latest.json
+
+# Local configuration and secrets
+.env
+.env.*
+credentials.json
+token.json
+*.pem
+*.key
+*.db
+*.sqlite
+*.sqlite3
+
+# Editor and OS files
+.vscode/
+.idea/
+.claude/
+desktop.ini
+Thumbs.db
+.DS_Store
