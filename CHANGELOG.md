@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented here.
 
+## [1.1.2] - 2026-06-05
+
+### Fixed
+
+- Isolated the Windows EXE build from inherited `PYTHONPATH` entries and bundled the Safe Start icon.
+
 ## [1.1.1] - 2026-06-05
 
 ### Fixed
