@@ -44,6 +44,7 @@ Suggested expectations:
 
 This repository contains a local workaround:
 
+- Repository: https://github.com/dev-bricks/safe-start-for-codex
 - It pauses currently `ACTIVE` automations by editing local automation TOML files.
 - It launches Codex Desktop.
 - It releases a small first batch and then one automation per interval.
