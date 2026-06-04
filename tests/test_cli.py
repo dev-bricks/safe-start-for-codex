@@ -1,11 +1,23 @@
 from __future__ import annotations
 
+import argparse
+import json
 from datetime import datetime, timedelta
 from pathlib import Path
 
+import pytest
+
 from safe_start_for_codex.cli import (
     Automation,
+    GateSettings,
+    ObservedRun,
+    build_catchup_report,
+    command_config_init,
+    default_config_path,
     load_automations,
+    read_gate_config,
+    resolve_gate_settings,
+    rrule_effective_period_hours,
     rrule_next_after,
     set_status,
     split_release_queue,
@@ -79,3 +91,153 @@ def test_split_release_queue_keeps_immediate_jobs_for_fallback() -> None:
 
     assert [item.id for item in safe] == ["future"]
     assert [item.id for item in fallback] == ["now"]
+
+
+def test_read_gate_config_uses_json_values(tmp_path: Path) -> None:
+    config = tmp_path / "config.json"
+    config.write_text(
+        json.dumps(
+            {
+                "initial_release": 5,
+                "interval_minutes": 12,
+                "startup_delay_seconds": 30,
+                "min_future_lead_minutes": 8,
+                "launch": False,
+                "cleanup": False,
+                "catchup_enabled": True,
+                "catchup_lookback_days": 14,
+                "catchup_max_per_start": 2,
+                "catchup_min_period_hours": 24,
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    settings, path, exists = read_gate_config(config)
+
+    assert exists is True
+    assert path == config
+    assert settings == GateSettings(
+        initial_release=5,
+        interval_minutes=12,
+        startup_delay_seconds=30,
+        min_future_lead_minutes=8,
+        launch=False,
+        cleanup=False,
+        catchup_enabled=True,
+        catchup_lookback_days=14,
+        catchup_max_per_start=2,
+        catchup_min_period_hours=24,
+    )
+
+
+def test_resolve_gate_settings_cli_overrides_config(tmp_path: Path) -> None:
+    config = tmp_path / "config.json"
+    config.write_text(json.dumps({"initial_release": 5, "interval_minutes": 12}), encoding="utf-8")
+    args = argparse.Namespace(
+        config=config,
+        initial_release=2,
+        interval_minutes=None,
+        startup_delay_seconds=None,
+        min_future_lead_minutes=None,
+        launch=True,
+        cleanup=None,
+        catchup_enabled=None,
+        catchup_lookback_days=None,
+        catchup_max_per_start=None,
+        catchup_min_period_hours=None,
+    )
+
+    settings, _, _ = resolve_gate_settings(args)
+
+    assert settings.initial_release == 2
+    assert settings.interval_minutes == 12
+    assert settings.launch is True
+
+
+def test_read_gate_config_rejects_unknown_keys(tmp_path: Path) -> None:
+    config = tmp_path / "config.json"
+    config.write_text(json.dumps({"initial_releases": 5}), encoding="utf-8")
+
+    with pytest.raises(SystemExit):
+        read_gate_config(config)
+
+
+def test_config_init_writes_default_config(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.setenv("CODEX_HOME", str(tmp_path / ".codex"))
+    args = argparse.Namespace(config=None, force=False)
+
+    assert command_config_init(args) == 0
+
+    config = default_config_path()
+    assert config.exists()
+    settings, _, exists = read_gate_config(config)
+    assert exists is True
+    assert settings == GateSettings()
+
+
+def test_rrule_effective_period_detects_rare_schedules() -> None:
+    assert rrule_effective_period_hours("RRULE:FREQ=WEEKLY;BYDAY=FR;BYHOUR=9;BYMINUTE=0") == 168
+    assert rrule_effective_period_hours("RRULE:FREQ=DAILY;BYHOUR=9;BYMINUTE=0") == 24
+    assert rrule_effective_period_hours("RRULE:FREQ=HOURLY;INTERVAL=25;BYMINUTE=0") == 25
+
+
+def test_build_catchup_report_flags_missing_rare_automation() -> None:
+    now = datetime(2026, 6, 4, 12, 0)
+    item = Automation(
+        "weekly-review",
+        "Weekly Review",
+        "weekly.toml",
+        "ACTIVE",
+        "ACTIVE",
+        "cron",
+        "RRULE:FREQ=WEEKLY;BYDAY=TH;BYHOUR=9;BYMINUTE=0",
+        None,
+        None,
+    )
+
+    report = build_catchup_report(
+        [item],
+        now=now,
+        lookback_days=10,
+        min_period_hours=24,
+        max_per_start=1,
+        observed_runs={"weekly-review": []},
+    )
+
+    assert report.eligible_ids == ["weekly-review"]
+    assert report.candidates[0].missed is True
+    assert report.candidates[0].eligible is True
+
+
+def test_build_catchup_report_observed_run_satisfies_latest_due() -> None:
+    now = datetime(2026, 6, 4, 12, 0)
+    item = Automation(
+        "weekly-review",
+        "Weekly Review",
+        "weekly.toml",
+        "ACTIVE",
+        "ACTIVE",
+        "cron",
+        "RRULE:FREQ=WEEKLY;BYDAY=TH;BYHOUR=9;BYMINUTE=0",
+        None,
+        None,
+    )
+    observed = ObservedRun(
+        automation_id="weekly-review",
+        thread_id="thread-1",
+        created_at=datetime(2026, 6, 4, 9, 30).isoformat(timespec="seconds"),
+        title="Weekly Review",
+    )
+
+    report = build_catchup_report(
+        [item],
+        now=now,
+        lookback_days=10,
+        min_period_hours=24,
+        max_per_start=1,
+        observed_runs={"weekly-review": [observed]},
+    )
+
+    assert report.eligible_ids == []
+    assert report.candidates[0].missed is False

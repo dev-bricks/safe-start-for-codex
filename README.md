@@ -15,8 +15,10 @@ This project is not affiliated with, endorsed by, or maintained by OpenAI.
 - Releases the remaining automations gradually.
 - Restores only automations that this tool paused.
 - Optionally removes stale Codex startup leftovers on Windows, such as old main processes without a renderer and stale lockfiles.
+- Can generate a read-only catch-up plan for rare automations that appear to have missed a scheduled run.
 
 It does not activate automations that were already paused before the run.
+It does not call Codex Desktop's manual "Run now" action.
 
 ## Safety Notice
 
@@ -74,11 +76,58 @@ Show current status:
 safe-start-for-codex status
 ```
 
+Create a default config:
+
+```powershell
+safe-start-for-codex config-init
+```
+
+Show the resolved config:
+
+```powershell
+safe-start-for-codex config-show
+```
+
+Show a read-only catch-up plan for rare missed automations:
+
+```powershell
+safe-start-for-codex catchup-plan
+```
+
 Restore the latest tool-paused automations:
 
 ```powershell
 safe-start-for-codex restore-latest
 ```
+
+## Configuration
+
+By default, Safe Start reads:
+
+```text
+~/.codex/automation-safe-start/config.json
+```
+
+Example:
+
+```json
+{
+  "initial_release": 3,
+  "interval_minutes": 5,
+  "startup_delay_seconds": 45,
+  "min_future_lead_minutes": 2,
+  "launch": true,
+  "cleanup": true,
+  "catchup_enabled": false,
+  "catchup_lookback_days": 30,
+  "catchup_max_per_start": 1,
+  "catchup_min_period_hours": 24
+}
+```
+
+`initial_release`, `interval_minutes`, and `startup_delay_seconds` control how many automations are re-enabled at startup, how long Safe Start waits between later releases, and how long it waits after launching Codex. Command-line flags override the JSON config for that run.
+
+When `catchup_enabled` is true, Safe Start creates a best-effort catch-up report and prioritizes up to `catchup_max_per_start` rare missed automations for early release. The threshold is controlled by `catchup_min_period_hours`; the default only considers schedules rarer than daily. The feature is intentionally conservative: it reads schedule metadata and thread titles/timestamps, but it does not trigger Codex's manual run action.
 
 ## Upstream Proposal
 
@@ -87,7 +136,7 @@ The workaround exists because the underlying behavior is better solved inside Co
 - [Upstream issue draft](docs/UPSTREAM_ISSUE_PROPOSAL.md)
 - [Solution concept](docs/SOLUTION_CONCEPT.md)
 
-In short: Codex Desktop could include a native startup catch-up policy, a rate-limited automation release gate, and safer startup cleanup for stale app processes.
+In short: Codex Desktop could include a native startup catch-up policy, a rate-limited automation release gate, clearer run-state semantics, and safer startup cleanup for stale app processes.
 
 ## Deutsche Kurzfassung
 

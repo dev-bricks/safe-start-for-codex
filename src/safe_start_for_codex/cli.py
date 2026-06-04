@@ -7,12 +7,13 @@ import json
 import os
 import re
 import shutil
+import sqlite3
 import subprocess
 import sys
 import threading
 import time
 from dataclasses import asdict, dataclass, field
-from datetime import datetime, timedelta
+from datetime import datetime, time as day_time, timedelta
 from pathlib import Path
 from typing import Callable, Iterable
 
@@ -24,6 +25,7 @@ DEFAULT_INITIAL_RELEASE = 3
 DEFAULT_INTERVAL_MINUTES = 5
 DEFAULT_STARTUP_DELAY_SECONDS = 45
 DEFAULT_MIN_FUTURE_LEAD_MINUTES = 2
+CONFIG_FILE_NAME = "config.json"
 
 DAY_MAP = {
     "MO": 0,
@@ -60,8 +62,16 @@ def state_dir() -> Path:
     return path
 
 
+def default_config_path() -> Path:
+    return codex_home() / "automation-safe-start" / CONFIG_FILE_NAME
+
+
 def automations_dir() -> Path:
     return codex_home() / "automations"
+
+
+def codex_state_db_path() -> Path:
+    return codex_home() / "state_5.sqlite"
 
 
 def codex_user_data_dir() -> Path:
@@ -122,6 +132,144 @@ class CleanupResult:
 
     def to_dict(self) -> dict[str, object]:
         return asdict(self)
+
+
+@dataclass(frozen=True, slots=True)
+class GateSettings:
+    initial_release: int = DEFAULT_INITIAL_RELEASE
+    interval_minutes: int = DEFAULT_INTERVAL_MINUTES
+    startup_delay_seconds: int = DEFAULT_STARTUP_DELAY_SECONDS
+    min_future_lead_minutes: int = DEFAULT_MIN_FUTURE_LEAD_MINUTES
+    launch: bool = True
+    cleanup: bool = True
+    catchup_enabled: bool = False
+    catchup_lookback_days: int = 30
+    catchup_max_per_start: int = 1
+    catchup_min_period_hours: int = 24
+
+    def to_dict(self) -> dict[str, object]:
+        return asdict(self)
+
+
+GATE_CONFIG_FIELDS = frozenset(GateSettings.__dataclass_fields__)
+
+
+def _require_int_config(value: object, key: str) -> int:
+    if isinstance(value, bool) or not isinstance(value, int):
+        raise SystemExit(f"Config value '{key}' must be an integer.")
+    if value < 0:
+        raise SystemExit(f"Config value '{key}' must be greater than or equal to 0.")
+    return value
+
+
+def _require_bool_config(value: object, key: str) -> bool:
+    if not isinstance(value, bool):
+        raise SystemExit(f"Config value '{key}' must be true or false.")
+    return value
+
+
+def read_gate_config(path: Path | None = None) -> tuple[GateSettings, Path, bool]:
+    config_path = path or default_config_path()
+    settings = GateSettings()
+    if not config_path.exists():
+        return settings, config_path, False
+
+    try:
+        raw = json.loads(config_path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        raise SystemExit(f"Could not parse config JSON at {config_path}: {exc}") from exc
+
+    if not isinstance(raw, dict):
+        raise SystemExit(f"Config file must contain a JSON object: {config_path}")
+
+    unknown = sorted(set(raw) - GATE_CONFIG_FIELDS)
+    if unknown:
+        valid = ", ".join(sorted(GATE_CONFIG_FIELDS))
+        raise SystemExit(f"Unknown config key(s): {', '.join(unknown)}. Valid keys: {valid}")
+
+    values = settings.to_dict()
+    for key, value in raw.items():
+        if key in {"launch", "cleanup", "catchup_enabled"}:
+            values[key] = _require_bool_config(value, key)
+        else:
+            values[key] = _require_int_config(value, key)
+    return GateSettings(**values), config_path, True
+
+
+def resolve_gate_settings(args: argparse.Namespace) -> tuple[GateSettings, Path, bool]:
+    settings, config_path, exists = read_gate_config(getattr(args, "config", None))
+    values = settings.to_dict()
+    for key in sorted(GATE_CONFIG_FIELDS):
+        override = getattr(args, key, None)
+        if override is not None:
+            if key in {"launch", "cleanup", "catchup_enabled"}:
+                values[key] = _require_bool_config(override, key)
+            else:
+                values[key] = _require_int_config(override, key)
+    return GateSettings(**values), config_path, exists
+
+
+def write_default_config(path: Path, *, force: bool = False) -> None:
+    if path.exists() and not force:
+        raise SystemExit(f"Config already exists: {path}. Use --force to overwrite it.")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    payload = json.dumps(GateSettings().to_dict(), ensure_ascii=False, indent=2)
+    path.write_text(payload + "\n", encoding="utf-8")
+
+
+@dataclass(frozen=True, slots=True)
+class ObservedRun:
+    automation_id: str
+    thread_id: str
+    created_at: str
+    title: str
+    confidence: str = "thread-title"
+
+    def to_dict(self) -> dict[str, object]:
+        return asdict(self)
+
+
+@dataclass(slots=True)
+class CatchupCandidate:
+    automation_id: str
+    name: str
+    status: str
+    rrule: str
+    period_hours: float | None
+    last_due_at: str | None
+    next_due_at: str | None
+    last_observed_at: str | None
+    missed: bool
+    eligible: bool
+    reason: str
+    confidence: str
+
+    def to_dict(self) -> dict[str, object]:
+        return asdict(self)
+
+
+@dataclass(slots=True)
+class CatchupReport:
+    created_at: str
+    lookback_days: int
+    min_period_hours: int
+    max_per_start: int
+    history_source: str
+    candidates: list[CatchupCandidate]
+    eligible_ids: list[str]
+    notes: list[str]
+
+    def to_dict(self) -> dict[str, object]:
+        return {
+            "created_at": self.created_at,
+            "lookback_days": self.lookback_days,
+            "min_period_hours": self.min_period_hours,
+            "max_per_start": self.max_per_start,
+            "history_source": self.history_source,
+            "eligible_ids": self.eligible_ids,
+            "notes": self.notes,
+            "candidates": [candidate.to_dict() for candidate in self.candidates],
+        }
 
 
 def load_automations() -> list[Automation]:
@@ -535,7 +683,7 @@ def allowed_days(parts: dict[str, list[str] | str | int]) -> set[int]:
     if raw is None:
         return set(range(7))
     values = raw if isinstance(raw, list) else [raw]
-    days = {DAY_MAP[item] for item in values if str(item) in DAY_MAP}
+    days = {DAY_MAP[token] for token in (_normalise_day_token(item) for item in values) if token in DAY_MAP}
     return days or set(range(7))
 
 
@@ -563,6 +711,376 @@ def rrule_next_after(rrule: str, after: datetime) -> datetime | None:
             return cursor
         cursor += timedelta(minutes=1)
     return None
+
+
+def _normalise_day_token(value: object) -> str:
+    match = re.search(r"([A-Z]{2})$", str(value).strip().upper())
+    return match.group(1) if match else ""
+
+
+def _raw_values(parts: dict[str, list[str] | str | int], key: str) -> list[object]:
+    raw = parts.get(key)
+    if raw is None:
+        return []
+    return raw if isinstance(raw, list) else [raw]
+
+
+def _byday_count(parts: dict[str, list[str] | str | int]) -> int:
+    days = {
+        token
+        for token in (_normalise_day_token(item) for item in _raw_values(parts, "BYDAY"))
+        if token in DAY_MAP
+    }
+    return len(days) or 1
+
+
+def rrule_effective_period_hours(rrule: str) -> float | None:
+    """Estimate the effective period between runs for common Codex cron RRULEs."""
+    if not rrule:
+        return None
+    parts = parse_rrule(rrule)
+    frequency = str(parts.get("FREQ") or "").upper()
+    interval = max(int(parts.get("INTERVAL") or 1), 1)
+    if frequency == "MINUTELY":
+        return interval / 60
+    if frequency == "HOURLY":
+        return float(interval)
+    if frequency == "DAILY":
+        return float(24 * interval)
+    if frequency == "WEEKLY":
+        return float(24 * 7 * interval) / _byday_count(parts)
+    if frequency == "MONTHLY":
+        return float(24 * 30 * interval)
+    if frequency == "YEARLY":
+        return float(24 * 365 * interval)
+    return None
+
+
+def _allowed_months(parts: dict[str, list[str] | str | int]) -> set[int]:
+    return set(values_as_ints(parts, "BYMONTH", list(range(1, 13))))
+
+
+def _allowed_monthdays(parts: dict[str, list[str] | str | int]) -> set[int]:
+    return set(values_as_ints(parts, "BYMONTHDAY", [1]))
+
+
+def _matches_frequency_day(
+    parts: dict[str, list[str] | str | int],
+    current: datetime,
+    start: datetime,
+) -> bool:
+    frequency = str(parts.get("FREQ") or "").upper()
+    interval = max(int(parts.get("INTERVAL") or 1), 1)
+    if current.weekday() not in allowed_days(parts):
+        return False
+    if frequency == "DAILY":
+        return ((current.date() - start.date()).days % interval) == 0
+    if frequency == "WEEKLY":
+        return (((current.date() - start.date()).days // 7) % interval) == 0
+    if frequency == "MONTHLY":
+        months = (current.year - start.year) * 12 + current.month - start.month
+        return (
+            months >= 0
+            and months % interval == 0
+            and current.month in _allowed_months(parts)
+            and current.day in _allowed_monthdays(parts)
+        )
+    if frequency == "YEARLY":
+        years = current.year - start.year
+        return (
+            years >= 0
+            and years % interval == 0
+            and current.month in _allowed_months(parts)
+            and current.day in _allowed_monthdays(parts)
+        )
+    return False
+
+
+def rrule_occurrences_between(
+    rrule: str,
+    start: datetime,
+    end: datetime,
+    *,
+    limit: int = 1000,
+) -> list[datetime]:
+    if not rrule or end <= start or limit <= 0:
+        return []
+    parts = parse_rrule(rrule)
+    frequency = str(parts.get("FREQ") or "").upper()
+    interval = max(int(parts.get("INTERVAL") or 1), 1)
+    minutes = values_as_ints(parts, "BYMINUTE", [0])
+    hours = values_as_ints(parts, "BYHOUR", list(range(24)))
+    result: list[datetime] = []
+
+    if frequency == "HOURLY":
+        cursor = start.replace(second=0, microsecond=0) + timedelta(minutes=1)
+        while cursor <= end and len(result) < limit:
+            if cursor.minute in minutes and cursor.hour in hours and cursor.hour % interval == 0:
+                result.append(cursor)
+            cursor += timedelta(minutes=1)
+        return result
+
+    if frequency not in {"DAILY", "WEEKLY", "MONTHLY", "YEARLY"}:
+        return result
+
+    cursor_day = start.date()
+    end_day = end.date()
+    tzinfo = start.tzinfo
+    while cursor_day <= end_day and len(result) < limit:
+        day_start = datetime.combine(cursor_day, day_time(0, 0), tzinfo=tzinfo)
+        if _matches_frequency_day(parts, day_start, start):
+            for hour in sorted(hours):
+                for minute in sorted(minutes):
+                    candidate = datetime.combine(cursor_day, day_time(hour, minute), tzinfo=tzinfo)
+                    if start < candidate <= end:
+                        result.append(candidate)
+                        if len(result) >= limit:
+                            break
+                if len(result) >= limit:
+                    break
+        cursor_day += timedelta(days=1)
+    return result
+
+
+def _coerce_datetime(value: object) -> datetime | None:
+    if value is None or value == "":
+        return None
+    if isinstance(value, (int, float)):
+        numeric = float(value)
+        if numeric > 10_000_000_000:
+            numeric = numeric / 1000
+        try:
+            return datetime.fromtimestamp(numeric).astimezone()
+        except (OSError, OverflowError, ValueError):
+            return None
+    text = str(value).strip()
+    if not text:
+        return None
+    try:
+        if text.endswith("Z"):
+            text = text[:-1] + "+00:00"
+        parsed = datetime.fromisoformat(text)
+        return parsed.astimezone() if parsed.tzinfo is not None else parsed
+    except ValueError:
+        return None
+
+
+def _align_datetime(value: datetime | None, reference: datetime) -> datetime | None:
+    if value is None:
+        return None
+    if reference.tzinfo is None and value.tzinfo is not None:
+        return value.replace(tzinfo=None)
+    if reference.tzinfo is not None and value.tzinfo is None:
+        return value.replace(tzinfo=reference.tzinfo)
+    if reference.tzinfo is not None and value.tzinfo is not None:
+        return value.astimezone(reference.tzinfo)
+    return value
+
+
+def _datetime_from_ms(value: int | None) -> datetime | None:
+    return _coerce_datetime(value)
+
+
+def _parse_report_datetime(value: str | None) -> datetime | None:
+    return _coerce_datetime(value)
+
+
+def read_observed_runs_from_state(
+    automations: Iterable[Automation],
+    state_db: Path | None = None,
+) -> tuple[dict[str, list[ObservedRun]], str, list[str]]:
+    """Best-effort run history from Codex state, reading only thread IDs/titles/timestamps."""
+    db_path = state_db or codex_state_db_path()
+    notes = [
+        "Run history is best-effort and title-based; prompt bodies are not read.",
+        "No automation is triggered by catchup planning.",
+    ]
+    observed: dict[str, list[ObservedRun]] = {item.id: [] for item in automations}
+    if not db_path.exists():
+        notes.append(f"State DB not found: {db_path}")
+        return observed, "none", notes
+
+    try:
+        uri = f"file:{db_path.resolve().as_posix()}?mode=ro"
+        with sqlite3.connect(uri, uri=True) as connection:
+            connection.row_factory = sqlite3.Row
+            columns = {
+                str(row["name"])
+                for row in connection.execute("PRAGMA table_info(threads)").fetchall()
+            }
+            if not columns:
+                notes.append("No threads table found in state DB.")
+                return observed, str(db_path), notes
+            id_column = "id" if "id" in columns else "thread_id" if "thread_id" in columns else ""
+            if not id_column or "title" not in columns:
+                notes.append("Threads table does not expose id/title columns.")
+                return observed, str(db_path), notes
+            wanted = [
+                column
+                for column in (
+                    id_column,
+                    "title",
+                    "created_at_ms",
+                    "created_at",
+                    "updated_at_ms",
+                    "updated_at",
+                )
+                if column in columns
+            ]
+            order_column = "created_at_ms" if "created_at_ms" in columns else "created_at" if "created_at" in columns else id_column
+            query = f"SELECT {', '.join(wanted)} FROM threads ORDER BY {order_column} DESC LIMIT 2000"
+            rows = [dict(row) for row in connection.execute(query).fetchall()]
+    except sqlite3.Error as exc:
+        notes.append(f"Could not read state DB: {exc}")
+        return observed, str(db_path), notes
+
+    matchers = [
+        (
+            item.id,
+            [needle.casefold() for needle in (item.id, item.name) if len(str(needle).strip()) >= 3],
+        )
+        for item in automations
+    ]
+    for row in rows:
+        title = str(row.get("title") or "")
+        haystack = title.casefold()
+        if not haystack:
+            continue
+        timestamp = (
+            _coerce_datetime(row.get("created_at_ms"))
+            or _coerce_datetime(row.get("created_at"))
+            or _coerce_datetime(row.get("updated_at_ms"))
+            or _coerce_datetime(row.get("updated_at"))
+        )
+        if timestamp is None:
+            continue
+        for automation_id, needles in matchers:
+            if any(needle and needle in haystack for needle in needles):
+                observed.setdefault(automation_id, []).append(
+                    ObservedRun(
+                        automation_id=automation_id,
+                        thread_id=str(row.get(id_column) or ""),
+                        created_at=timestamp.isoformat(timespec="seconds"),
+                        title=title,
+                    )
+                )
+    return observed, str(db_path), notes
+
+
+def build_catchup_report(
+    automations: list[Automation] | None = None,
+    *,
+    now: datetime | None = None,
+    lookback_days: int = 30,
+    min_period_hours: int = 24,
+    max_per_start: int = 1,
+    include_paused: bool = False,
+    state_db: Path | None = None,
+    observed_runs: dict[str, list[ObservedRun]] | None = None,
+) -> CatchupReport:
+    items = automations if automations is not None else load_automations()
+    current = now or local_now()
+    lookback_start = current - timedelta(days=max(lookback_days, 0))
+    if observed_runs is None:
+        observed_runs, history_source, notes = read_observed_runs_from_state(items, state_db)
+    else:
+        history_source = str(state_db or codex_state_db_path())
+        notes = ["Run history was supplied by the caller."]
+
+    candidates: list[CatchupCandidate] = []
+    for item in items:
+        period = rrule_effective_period_hours(item.rrule)
+        if period is None or period <= min_period_hours:
+            continue
+
+        status = (item.original_status or item.status or "UNKNOWN").upper()
+        if not include_paused and status != "ACTIVE":
+            continue
+
+        created_at = _align_datetime(_datetime_from_ms(item.created_at), current)
+        since = max(lookback_start, created_at) if created_at is not None else lookback_start
+        due_times = rrule_occurrences_between(item.rrule, since, current, limit=1000)
+        last_due = due_times[-1] if due_times else None
+        next_due = rrule_next_after(item.rrule, current)
+        observed_for_item = observed_runs.get(item.id, [])
+        observed_dates = [
+            parsed
+            for parsed in (_parse_report_datetime(run.created_at) for run in observed_for_item)
+            if parsed is not None
+        ]
+        aligned_observed = [
+            value
+            for value in (_align_datetime(observed_at, current) for observed_at in observed_dates)
+            if value is not None
+        ]
+        last_observed = max(aligned_observed) if aligned_observed else None
+        missed = bool(last_due and (last_observed is None or last_observed < last_due))
+
+        if status != "ACTIVE":
+            reason = "paused"
+        elif not last_due:
+            reason = "no due time in lookback window"
+        elif missed:
+            reason = "latest rare due time has no observed run"
+        else:
+            reason = "observed after latest due time"
+
+        candidates.append(
+            CatchupCandidate(
+                automation_id=item.id,
+                name=item.name,
+                status=status,
+                rrule=item.rrule,
+                period_hours=round(period, 2),
+                last_due_at=last_due.isoformat(timespec="seconds") if last_due else None,
+                next_due_at=next_due.isoformat(timespec="seconds") if next_due else None,
+                last_observed_at=last_observed.isoformat(timespec="seconds") if last_observed else None,
+                missed=missed,
+                eligible=False,
+                reason=reason,
+                confidence="thread-title" if observed_for_item else "schedule-only",
+            )
+        )
+
+    missed_active = [
+        candidate
+        for candidate in candidates
+        if candidate.missed and candidate.status == "ACTIVE"
+    ]
+    missed_active.sort(key=lambda candidate: candidate.last_due_at or "")
+    eligible_ids = [candidate.automation_id for candidate in missed_active[: max(max_per_start, 0)]]
+    eligible = set(eligible_ids)
+    for candidate in candidates:
+        if candidate.automation_id in eligible:
+            candidate.eligible = True
+            candidate.reason = "eligible for early release"
+        elif candidate.missed and candidate.status == "ACTIVE":
+            candidate.reason = "missed but held by catchup_max_per_start"
+
+    return CatchupReport(
+        created_at=current.isoformat(timespec="seconds"),
+        lookback_days=lookback_days,
+        min_period_hours=min_period_hours,
+        max_per_start=max_per_start,
+        history_source=history_source,
+        candidates=candidates,
+        eligible_ids=eligible_ids,
+        notes=notes,
+    )
+
+
+def write_catchup_report(run_id: str, report: CatchupReport) -> Path:
+    data = {
+        "run_id": run_id,
+        **report.to_dict(),
+    }
+    path = state_dir() / f"{run_id}-catchup-plan.json"
+    path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+    (state_dir() / "latest-catchup-plan.json").write_text(
+        json.dumps(data, ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
+    return path
 
 
 def split_release_queue(
@@ -610,6 +1128,10 @@ class SafeStartGate:
         min_future_lead_minutes: int = DEFAULT_MIN_FUTURE_LEAD_MINUTES,
         launch: bool = True,
         cleanup: bool = True,
+        catchup_enabled: bool = False,
+        catchup_lookback_days: int = 30,
+        catchup_max_per_start: int = 1,
+        catchup_min_period_hours: int = 24,
         dry_run: bool = False,
         notifier: Callable[[str, str], None] | None = None,
         quiet: bool = False,
@@ -620,6 +1142,10 @@ class SafeStartGate:
         self.min_future_lead_minutes = min_future_lead_minutes
         self.launch = launch
         self.cleanup = cleanup
+        self.catchup_enabled = catchup_enabled
+        self.catchup_lookback_days = catchup_lookback_days
+        self.catchup_max_per_start = catchup_max_per_start
+        self.catchup_min_period_hours = catchup_min_period_hours
         self.dry_run = dry_run
         self.notifier = notifier
         self.quiet = quiet
@@ -628,6 +1154,7 @@ class SafeStartGate:
         self.tool_paused: list[Automation] = []
         self.release_queue: list[Automation] = []
         self.cleanup_result: CleanupResult | None = None
+        self.catchup_report: CatchupReport | None = None
         self.stop_event = threading.Event()
         self.lock = threading.RLock()
         self.restored = False
@@ -739,8 +1266,39 @@ class SafeStartGate:
             reference,
             timedelta(minutes=self.min_future_lead_minutes),
         )
-        first = future_safe[: self.initial_release]
-        rest = future_safe[self.initial_release :] + fallback
+        catchup_priority_ids: set[str] = set()
+        if self.catchup_enabled:
+            self.catchup_report = build_catchup_report(
+                self.items,
+                now=reference,
+                lookback_days=self.catchup_lookback_days,
+                min_period_hours=self.catchup_min_period_hours,
+                max_per_start=self.catchup_max_per_start,
+            )
+            write_catchup_report(self.run_id, self.catchup_report)
+            append_log(
+                self.run_id,
+                "catchup_plan",
+                eligible_ids=self.catchup_report.eligible_ids,
+                candidates=len(self.catchup_report.candidates),
+                history_source=self.catchup_report.history_source,
+            )
+            catchup_priority_ids = set(self.catchup_report.eligible_ids)
+            if catchup_priority_ids:
+                self.emit(
+                    "Catch-up plan: "
+                    f"{len(catchup_priority_ids)} rare missed automation(s) prioritized for early release."
+                )
+            else:
+                self.emit("Catch-up plan: no rare missed automation needs early release.")
+
+        ordered = future_safe + fallback
+        priority = [item for item in ordered if item.id in catchup_priority_ids]
+        remaining_future = [item for item in future_safe if item.id not in catchup_priority_ids]
+        remaining_fallback = [item for item in fallback if item.id not in catchup_priority_ids]
+        first_capacity = max(self.initial_release, len(priority))
+        first = priority + remaining_future[: max(first_capacity - len(priority), 0)]
+        rest = remaining_future[max(first_capacity - len(priority), 0) :] + remaining_fallback
         self.release_queue = first + rest
         write_snapshot(
             self.run_id,
@@ -749,6 +1307,7 @@ class SafeStartGate:
             first_release_ids=[item.id for item in first],
             delayed_release_ids=[item.id for item in rest],
             fallback_ids=[item.id for item in fallback],
+            catchup_priority_ids=sorted(catchup_priority_ids),
         )
         self.emit(
             f"Initial release: {len(first)} future-safe automations. "
@@ -774,14 +1333,26 @@ class SafeStartGate:
 
 
 def command_start(args: argparse.Namespace) -> int:
+    settings, config_path, config_exists = resolve_gate_settings(args)
     gate = SafeStartGate(
-        initial_release=args.initial_release,
-        interval_minutes=args.interval_minutes,
-        startup_delay_seconds=args.startup_delay_seconds,
-        min_future_lead_minutes=args.min_future_lead_minutes,
-        launch=args.launch,
-        cleanup=args.cleanup,
+        initial_release=settings.initial_release,
+        interval_minutes=settings.interval_minutes,
+        startup_delay_seconds=settings.startup_delay_seconds,
+        min_future_lead_minutes=settings.min_future_lead_minutes,
+        launch=settings.launch,
+        cleanup=settings.cleanup,
+        catchup_enabled=settings.catchup_enabled,
+        catchup_lookback_days=settings.catchup_lookback_days,
+        catchup_max_per_start=settings.catchup_max_per_start,
+        catchup_min_period_hours=settings.catchup_min_period_hours,
         dry_run=args.dry_run,
+    )
+    append_log(
+        gate.run_id,
+        "config",
+        config_path=str(config_path),
+        config_exists=config_exists,
+        settings=settings.to_dict(),
     )
     try:
         gate.run()
@@ -834,16 +1405,28 @@ def command_tray(args: argparse.Namespace) -> int:
         except Exception:
             pass
 
+    settings, config_path, config_exists = resolve_gate_settings(args)
     gate = SafeStartGate(
-        initial_release=args.initial_release,
-        interval_minutes=args.interval_minutes,
-        startup_delay_seconds=args.startup_delay_seconds,
-        min_future_lead_minutes=args.min_future_lead_minutes,
-        launch=args.launch,
-        cleanup=args.cleanup,
+        initial_release=settings.initial_release,
+        interval_minutes=settings.interval_minutes,
+        startup_delay_seconds=settings.startup_delay_seconds,
+        min_future_lead_minutes=settings.min_future_lead_minutes,
+        launch=settings.launch,
+        cleanup=settings.cleanup,
+        catchup_enabled=settings.catchup_enabled,
+        catchup_lookback_days=settings.catchup_lookback_days,
+        catchup_max_per_start=settings.catchup_max_per_start,
+        catchup_min_period_hours=settings.catchup_min_period_hours,
         dry_run=args.dry_run,
         notifier=notify,
         quiet=True,
+    )
+    append_log(
+        gate.run_id,
+        "config",
+        config_path=str(config_path),
+        config_exists=config_exists,
+        settings=settings.to_dict(),
     )
 
     def on_status(_icon: pystray.Icon, _item: object) -> None:
@@ -906,6 +1489,55 @@ def command_status(_: argparse.Namespace) -> int:
     return 0
 
 
+def command_config_show(args: argparse.Namespace) -> int:
+    settings, config_path, exists = read_gate_config(args.config)
+    data = {
+        "path": str(config_path),
+        "exists": exists,
+        "settings": settings.to_dict(),
+    }
+    print(json.dumps(data, ensure_ascii=False, indent=2))
+    return 0
+
+
+def command_config_init(args: argparse.Namespace) -> int:
+    config_path = args.config or default_config_path()
+    write_default_config(config_path, force=args.force)
+    print(f"Config written: {config_path}")
+    return 0
+
+
+def command_catchup_plan(args: argparse.Namespace) -> int:
+    settings, _, _ = resolve_gate_settings(args)
+    report = build_catchup_report(
+        lookback_days=settings.catchup_lookback_days,
+        min_period_hours=settings.catchup_min_period_hours,
+        max_per_start=settings.catchup_max_per_start,
+        include_paused=args.include_paused,
+    )
+    if args.json:
+        print(json.dumps(report.to_dict(), ensure_ascii=False, indent=2))
+        return 0
+
+    print(f"Catch-up plan created: {report.created_at}")
+    print(f"History source: {report.history_source}")
+    print(f"Rare candidates: {len(report.candidates)}")
+    print(f"Eligible for early release: {len(report.eligible_ids)}")
+    for candidate in report.candidates:
+        marker = "*" if candidate.eligible else "-"
+        print(
+            f"{marker} {candidate.automation_id}: missed={candidate.missed}, "
+            f"last_due={candidate.last_due_at or 'unknown'}, "
+            f"last_observed={candidate.last_observed_at or 'none'}, "
+            f"reason={candidate.reason}"
+        )
+    if report.notes:
+        print("Notes:")
+        for note in report.notes:
+            print(f"- {note}")
+    return 0
+
+
 def command_restore_latest(args: argparse.Namespace) -> int:
     latest = state_dir() / "latest.json"
     if not latest.exists():
@@ -936,14 +1568,23 @@ def command_backup(_: argparse.Namespace) -> int:
 
 
 def add_gate_arguments(parser: argparse.ArgumentParser) -> None:
-    parser.add_argument("--initial-release", type=int, default=DEFAULT_INITIAL_RELEASE)
-    parser.add_argument("--interval-minutes", type=int, default=DEFAULT_INTERVAL_MINUTES)
-    parser.add_argument("--startup-delay-seconds", type=int, default=DEFAULT_STARTUP_DELAY_SECONDS)
-    parser.add_argument("--min-future-lead-minutes", type=int, default=DEFAULT_MIN_FUTURE_LEAD_MINUTES)
+    parser.add_argument(
+        "--config",
+        type=Path,
+        default=None,
+        help=f"Path to a Safe Start config JSON file. Default: {default_config_path()}",
+    )
+    parser.add_argument("--initial-release", type=int, default=None)
+    parser.add_argument("--interval-minutes", type=int, default=None)
+    parser.add_argument("--startup-delay-seconds", type=int, default=None)
+    parser.add_argument("--min-future-lead-minutes", type=int, default=None)
+    parser.add_argument("--catchup-enabled", dest="catchup_enabled", action=argparse.BooleanOptionalAction, default=None)
+    parser.add_argument("--catchup-lookback-days", type=int, default=None)
+    parser.add_argument("--catchup-max-per-start", type=int, default=None)
+    parser.add_argument("--catchup-min-period-hours", type=int, default=None)
     parser.add_argument("--dry-run", action="store_true")
-    parser.add_argument("--no-launch", dest="launch", action="store_false")
-    parser.add_argument("--no-cleanup", dest="cleanup", action="store_false")
-    parser.set_defaults(launch=True, cleanup=True)
+    parser.add_argument("--launch", dest="launch", action=argparse.BooleanOptionalAction, default=None)
+    parser.add_argument("--cleanup", dest="cleanup", action=argparse.BooleanOptionalAction, default=None)
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -962,23 +1603,29 @@ def build_parser() -> argparse.ArgumentParser:
     tray.set_defaults(func=command_tray)
 
     dry = sub.add_parser("dry-run", help="Show the planned flow without changing files.")
-    dry.set_defaults(
-        func=lambda _args: command_start(
-            argparse.Namespace(
-                initial_release=DEFAULT_INITIAL_RELEASE,
-                interval_minutes=DEFAULT_INTERVAL_MINUTES,
-                startup_delay_seconds=0,
-                min_future_lead_minutes=DEFAULT_MIN_FUTURE_LEAD_MINUTES,
-                dry_run=True,
-                launch=False,
-                cleanup=True,
-                restore_on_exit=True,
-            )
-        )
-    )
+    add_gate_arguments(dry)
+    dry.set_defaults(dry_run=True, launch=False, restore_on_exit=True, func=command_start)
 
     status = sub.add_parser("status", help="Show latest snapshot and current ACTIVE/PAUSED state.")
     status.set_defaults(func=command_status)
+
+    config_show = sub.add_parser("config-show", help="Show the resolved Safe Start configuration.")
+    config_show.add_argument("--config", type=Path, default=None)
+    config_show.set_defaults(func=command_config_show)
+
+    config_init = sub.add_parser("config-init", help="Write a default Safe Start config.json.")
+    config_init.add_argument("--config", type=Path, default=None)
+    config_init.add_argument("--force", action="store_true")
+    config_init.set_defaults(func=command_config_init)
+
+    catchup = sub.add_parser(
+        "catchup-plan",
+        help="Report rare automations that appear to have missed a scheduled run.",
+    )
+    add_gate_arguments(catchup)
+    catchup.add_argument("--json", action="store_true")
+    catchup.add_argument("--include-paused", action="store_true")
+    catchup.set_defaults(func=command_catchup_plan)
 
     restore = sub.add_parser("restore-latest", help="Restore only automations paused by this tool.")
     restore.add_argument("--dry-run", action="store_true")

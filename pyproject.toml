@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "safe-start-for-codex"
-version = "1.0.0"
+version = "1.1.0"
 description = "Unofficial Windows startup gate for Codex Desktop automations."
 readme = "README.md"
 requires-python = ">=3.11"

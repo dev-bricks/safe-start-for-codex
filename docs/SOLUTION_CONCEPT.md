@@ -15,6 +15,7 @@ Safe Start for Codex is a conservative local gate around Codex Desktop startup.
 - It is not a scheduler replacement.
 - It is not an official Codex API.
 - It does not try to interpret every possible recurrence rule.
+- It does not call Codex Desktop's manual "Run now" action.
 - It does not publish binaries, shortcuts, or local desktop files.
 
 ## Local Algorithm
@@ -26,6 +27,7 @@ Safe Start for Codex is a conservative local gate around Codex Desktop startup.
 5. Wait for a short startup delay.
 6. Compute a release queue:
    - future-safe automations first,
+   - rare missed automations first when catch-up prioritization is enabled,
    - near-due or unknown schedule automations later.
 7. Release the first small batch.
 8. Release one additional automation per interval.
@@ -54,6 +56,17 @@ The command below restores only automations marked as paused by this tool:
 safe-start-for-codex restore-latest
 ```
 
+## Catch-Up Model
+
+Safe Start can create a read-only catch-up plan for schedules whose effective period is greater
+than 24 hours by default. It compares the latest due time with best-effort run history from
+Codex state, using only thread titles and timestamps, not prompt bodies.
+
+When `catchup_enabled` is true, up to `catchup_max_per_start` rare missed automations are moved
+to the early release group. Safe Start still does not trigger a manual run. This avoids ambiguity
+around whether the UI's "Run now" button counts as a scheduled occurrence and avoids accidentally
+starting the same automation twice.
+
 ## Native Codex Direction
 
 A native implementation should live inside the Codex scheduler instead of editing TOML files. The same policy could be represented internally as:
@@ -61,5 +74,7 @@ A native implementation should live inside the Codex scheduler instead of editin
 - startup grace period,
 - catch-up queue,
 - per-user catch-up limit,
+- explicit last-run and in-flight state,
+- manual-run semantics that cannot race scheduled runs,
 - scheduler-level rate limiting,
 - UI-visible pending automation work.

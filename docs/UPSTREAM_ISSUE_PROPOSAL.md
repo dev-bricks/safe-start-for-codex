@@ -27,6 +27,9 @@ Suggested expectations:
 - Active automations remain logically active, but are internally gated during app bootstrap.
 - Automations whose next scheduled time is in the future can resume first.
 - Due or missed automations are rate-limited or surfaced as pending catch-up work.
+- Manual "Run now" should have clear run-state semantics: it should either count as satisfying a
+  due scheduled occurrence or be explicitly separate, and it should not race with an already
+  starting scheduled run.
 - Users can see that automation catch-up is happening.
 - Startup cleanup does not terminate an active session with a live renderer.
 
@@ -37,8 +40,10 @@ Suggested expectations:
 3. Immediately release only a small first batch whose next run is safely in the future.
 4. Release the rest gradually with a default interval.
 5. Treat missed runs as a catch-up queue instead of starting them all at once.
-6. Expose the queue in the UI or logs.
-7. Add guarded stale-process and lockfile recovery for Windows startup.
+6. Add single-flight/in-flight tracking per automation so manual and scheduled starts cannot
+   silently run the same automation twice.
+7. Expose the queue and last-run state in the UI or logs.
+8. Add guarded stale-process and lockfile recovery for Windows startup.
 
 ## Workaround Reference
 
@@ -48,6 +53,8 @@ This repository contains a local workaround:
 - It pauses currently `ACTIVE` automations by editing local automation TOML files.
 - It launches Codex Desktop.
 - It releases a small first batch and then one automation per interval.
+- It can create a read-only catch-up plan for schedules rarer than daily and prioritize a limited
+  number for early release.
 - It restores only automations it paused.
 - It writes snapshots for recovery.
 
