@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented here.
 
+## [Unreleased]
+
+### Fixed
+
+- Fixed direct execution of `tray_app.py` so the windowed EXE entrypoint can import the package CLI without a parent package context.
+
 ## [1.1.2] - 2026-06-05
 
 ### Fixed

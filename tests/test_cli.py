@@ -2,6 +2,9 @@ from __future__ import annotations
 
 import argparse
 import json
+import runpy
+import sys
+import types
 from datetime import datetime, timedelta
 from pathlib import Path
 
@@ -255,3 +258,48 @@ def test_tray_app_runs_tray_command(monkeypatch) -> None:
 
     assert tray_app.run() == 0
     assert calls == [["tray"]]
+
+
+def test_tray_app_direct_file_import_has_package_fallback() -> None:
+    path = Path(__file__).resolve().parents[1] / "src" / "safe_start_for_codex" / "tray_app.py"
+
+    namespace = runpy.run_path(str(path))
+
+    assert callable(namespace["run"])
+
+
+def test_tray_app_direct_file_execution_reaches_cli(monkeypatch, tmp_path: Path) -> None:
+    class FakeIcon:
+        def __init__(self, *args, **kwargs) -> None:
+            self.title = ""
+
+        def run(self, setup=None) -> None:
+            return None
+
+        def notify(self, *args, **kwargs) -> None:
+            return None
+
+        def stop(self) -> None:
+            return None
+
+    class FakeMenu:
+        def __init__(self, *items) -> None:
+            self.items = items
+
+    class FakeMenuItem:
+        def __init__(self, *args, **kwargs) -> None:
+            self.args = args
+            self.kwargs = kwargs
+
+    fake_pystray = types.ModuleType("pystray")
+    fake_pystray.Icon = FakeIcon
+    fake_pystray.Menu = FakeMenu
+    fake_pystray.MenuItem = FakeMenuItem
+    monkeypatch.setitem(sys.modules, "pystray", fake_pystray)
+    monkeypatch.setenv("CODEX_HOME", str(tmp_path / ".codex"))
+    path = Path(__file__).resolve().parents[1] / "src" / "safe_start_for_codex" / "tray_app.py"
+
+    with pytest.raises(SystemExit) as exc:
+        runpy.run_path(str(path), run_name="__main__")
+
+    assert exc.value.code in {0, 1}
