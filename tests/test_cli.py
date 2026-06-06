@@ -340,3 +340,11 @@ def test_tray_app_direct_file_execution_reaches_cli(monkeypatch, tmp_path: Path)
         runpy.run_path(str(path), run_name="__main__")
 
     assert exc.value.code in {0, 1}
+
+
+def test_rrule_next_after_hourly_interval_zero_no_crash() -> None:
+    # INTERVAL=0 is invalid but must not cause ZeroDivisionError
+    after = datetime(2026, 6, 4, 10, 0)
+    next_at = rrule_next_after("RRULE:FREQ=HOURLY;INTERVAL=0;BYMINUTE=0", after)
+    # interval clamped to 1 → next hit is 11:00
+    assert next_at == datetime(2026, 6, 4, 11, 0)

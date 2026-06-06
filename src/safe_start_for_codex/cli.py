@@ -692,7 +692,7 @@ def rrule_next_after(rrule: str, after: datetime) -> datetime | None:
         return None
     parts = parse_rrule(rrule)
     frequency = str(parts.get("FREQ") or "").upper()
-    interval = int(parts.get("INTERVAL") or 1)
+    interval = max(1, int(parts.get("INTERVAL") or 1))
     minutes = values_as_ints(parts, "BYMINUTE", [0])
     hours = values_as_ints(parts, "BYHOUR", list(range(24)))
     days = allowed_days(parts)
