@@ -697,7 +697,7 @@ def rrule_next_after(rrule: str, after: datetime) -> datetime | None:
     hours = values_as_ints(parts, "BYHOUR", list(range(24)))
     days = allowed_days(parts)
 
-    if frequency == "HOURLY" and interval > 24:
+    if frequency == "HOURLY" and (interval > 24 or 24 % interval != 0):
         step = timedelta(hours=interval)
         target_minute = sorted(minutes)[0] if minutes else 0
         candidate = after.replace(second=0, microsecond=0) + step
@@ -827,7 +827,7 @@ def rrule_occurrences_between(
     result: list[datetime] = []
 
     if frequency == "HOURLY":
-        if interval > 24:
+        if interval > 24 or 24 % interval != 0:
             step = timedelta(hours=interval)
             target_minute = sorted(minutes)[0] if minutes else 0
             cursor = (start.replace(second=0, microsecond=0) + step).replace(minute=target_minute, second=0, microsecond=0)

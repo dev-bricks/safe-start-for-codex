@@ -198,6 +198,25 @@ def test_rrule_occurrences_between_hourly_large_interval() -> None:
     assert occurrences[1] == datetime(2026, 6, 3, 2, 0)
 
 
+def test_rrule_next_after_hourly_interval_23() -> None:
+    # 23 is not a divisor of 24 — modulo path would alias to hour 0 only
+    after = datetime(2026, 6, 4, 10, 0)
+    next_at = rrule_next_after("RRULE:FREQ=HOURLY;INTERVAL=23;BYMINUTE=0", after)
+    # 23 hours after 10:00 = 09:00 the next day
+    assert next_at == datetime(2026, 6, 5, 9, 0)
+
+
+def test_rrule_occurrences_between_hourly_interval_23() -> None:
+    # 23 is not a divisor of 24 — modulo path would produce wrong anchor
+    start = datetime(2026, 6, 1, 0, 0)
+    end = datetime(2026, 6, 3, 12, 0)
+    occurrences = rrule_occurrences_between("RRULE:FREQ=HOURLY;INTERVAL=23;BYMINUTE=0", start, end)
+    # start + 23h = 2026-06-01 23:00, +23h = 2026-06-02 22:00, +23h = 2026-06-03 21:00 (out of range)
+    assert len(occurrences) == 2
+    assert occurrences[0] == datetime(2026, 6, 1, 23, 0)
+    assert occurrences[1] == datetime(2026, 6, 2, 22, 0)
+
+
 def test_rrule_effective_period_detects_rare_schedules() -> None:
     assert rrule_effective_period_hours("RRULE:FREQ=WEEKLY;BYDAY=FR;BYHOUR=9;BYMINUTE=0") == 168
     assert rrule_effective_period_hours("RRULE:FREQ=DAILY;BYHOUR=9;BYMINUTE=0") == 24
