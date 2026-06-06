@@ -697,6 +697,20 @@ def rrule_next_after(rrule: str, after: datetime) -> datetime | None:
     hours = values_as_ints(parts, "BYHOUR", list(range(24)))
     days = allowed_days(parts)
 
+    if frequency == "HOURLY" and interval > 24:
+        step = timedelta(hours=interval)
+        target_minute = sorted(minutes)[0] if minutes else 0
+        candidate = after.replace(second=0, microsecond=0) + step
+        candidate = candidate.replace(minute=target_minute, second=0, microsecond=0)
+        if candidate <= after:
+            candidate += timedelta(hours=1)
+        deadline = after + timedelta(days=14)
+        while candidate <= deadline:
+            if candidate.weekday() in days and candidate.hour in hours:
+                return candidate
+            candidate += step
+        return None
+
     cursor = after.replace(second=0, microsecond=0) + timedelta(minutes=1)
     deadline = after + timedelta(days=14)
     while cursor <= deadline:
@@ -813,6 +827,17 @@ def rrule_occurrences_between(
     result: list[datetime] = []
 
     if frequency == "HOURLY":
+        if interval > 24:
+            step = timedelta(hours=interval)
+            target_minute = sorted(minutes)[0] if minutes else 0
+            cursor = (start.replace(second=0, microsecond=0) + step).replace(minute=target_minute, second=0, microsecond=0)
+            if cursor <= start:
+                cursor += timedelta(hours=1)
+            while cursor <= end and len(result) < limit:
+                if cursor.hour in hours:
+                    result.append(cursor)
+                cursor += step
+            return result
         cursor = start.replace(second=0, microsecond=0) + timedelta(minutes=1)
         while cursor <= end and len(result) < limit:
             if cursor.minute in minutes and cursor.hour in hours and cursor.hour % interval == 0:

@@ -22,6 +22,7 @@ from safe_start_for_codex.cli import (
     resolve_gate_settings,
     rrule_effective_period_hours,
     rrule_next_after,
+    rrule_occurrences_between,
     set_status,
     split_release_queue,
 )
@@ -178,6 +179,23 @@ def test_config_init_writes_default_config(tmp_path: Path, monkeypatch) -> None:
     settings, _, exists = read_gate_config(config)
     assert exists is True
     assert settings == GateSettings()
+
+
+def test_rrule_next_after_hourly_large_interval() -> None:
+    after = datetime(2026, 6, 4, 10, 0)
+    next_at = rrule_next_after("RRULE:FREQ=HOURLY;INTERVAL=25;BYMINUTE=0", after)
+    # 25 hours after 10:00 = 11:00 the next day
+    assert next_at == datetime(2026, 6, 5, 11, 0)
+
+
+def test_rrule_occurrences_between_hourly_large_interval() -> None:
+    start = datetime(2026, 6, 1, 0, 0)
+    end = datetime(2026, 6, 3, 12, 0)
+    occurrences = rrule_occurrences_between("RRULE:FREQ=HOURLY;INTERVAL=25;BYMINUTE=0", start, end)
+    # start + 25h = 2026-06-02 01:00, +25h = 2026-06-03 02:00; third would be 2026-06-04 03:00 (out of range)
+    assert len(occurrences) == 2
+    assert occurrences[0] == datetime(2026, 6, 2, 1, 0)
+    assert occurrences[1] == datetime(2026, 6, 3, 2, 0)
 
 
 def test_rrule_effective_period_detects_rare_schedules() -> None:
