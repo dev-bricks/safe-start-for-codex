@@ -1,0 +1,34 @@
+# safe-start-for-codex - Startup surge prevention for Codex Desktop automations
+
+> safe-start-for-codex is a Python-based Windows startup gate utility for managing local Codex Desktop automations. It temporarily pauses active automations upon startup, starts Codex Desktop, and then gradually restores the automations in a controlled, rate-limited sequence to avoid CPU/API spikes and startup congestion.
+
+It includes optional background tray execution, startup cleanup of stale processes/lockfiles, and a conservative read-only catch-up planning feature for rare schedules that missed runs.
+
+Part of the dev-bricks family. Python, MIT.
+
+## Docs
+
+- [README.md](https://github.com/dev-bricks/safe-start-for-codex/blob/main/README.md): Primary documentation, installation guide, foreground/tray usage, and options.
+- [README_de.md](https://github.com/dev-bricks/safe-start-for-codex/blob/main/README_de.md): German localization.
+- [docs/SOLUTION_CONCEPT.md](https://github.com/dev-bricks/safe-start-for-codex/blob/main/docs/SOLUTION_CONCEPT.md): Technical outline of the gating solution.
+- [docs/UPSTREAM_ISSUE_PROPOSAL.md](https://github.com/dev-bricks/safe-start-for-codex/blob/main/docs/UPSTREAM_ISSUE_PROPOSAL.md): Draft proposal for implementing native startup pacing directly inside Codex Desktop.
+- [LICENSE](https://github.com/dev-bricks/safe-start-for-codex/blob/main/LICENSE): MIT license text.
+
+## Commands
+
+- `safe-start-for-codex dry-run`: Simulates scanning and gating without modifying TOML files.
+- `safe-start-for-codex backup`: Creates a snapshot of all active automation configurations.
+- `safe-start-for-codex start`: Launches Codex Desktop and gates automations in the foreground.
+- `safe-start-for-codex tray`: Launches as a background Windows tray application.
+- `safe-start-for-codex status`: Prints current state of gated automations.
+- `safe-start-for-codex config-init`: Generates a default `config.json` file.
+- `safe-start-for-codex config-show`: Displays the active configuration.
+- `safe-start-for-codex catchup-plan`: Lists missed runs for rare automations.
+- `safe-start-for-codex restore-latest`: Forces restoration of the latest paused automations.
+
+## Related Projects (dev-bricks & ellmos family)
+
+- [companion-for-agy](https://github.com/dev-bricks/companion-for-agy): Node.js wrapper for the Antigravity TUI.
+- [ellmos-filecommander-mcp](https://github.com/ellmos-ai/ellmos-filecommander-mcp): Filesystem and process orchestration.
+- [ellmos-codecommander-mcp](https://github.com/ellmos-ai/ellmos-codecommander-mcp): Code analysis and AST processing.
+- [ellmos-controlcenter-mcp](https://github.com/ellmos-ai/ellmos-controlcenter-mcp): MCP stack control plane.

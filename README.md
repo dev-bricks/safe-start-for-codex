@@ -2,6 +2,10 @@
 
 Unofficial Windows startup gate for Codex Desktop automations.
 
+![Safe Start for Codex Banner](assets/safe_start_banner.png)
+
+[![Deutsch](https://img.shields.io/badge/lang-de-blue.svg)](README_de.md)
+
 Safe Start for Codex is a small Python utility for users who run many Codex Desktop automations and want to avoid a startup surge after opening the app. It temporarily pauses currently active local automations, launches Codex Desktop, then releases the paused automations in a controlled sequence.
 
 This project is not affiliated with, endorsed by, or maintained by OpenAI.
@@ -52,53 +56,17 @@ python -m pip install -e ".[tray]"
 
 ## Usage
 
-Dry run:
-
-```powershell
-safe-start-for-codex dry-run
-```
-
-Start Codex and gate automations in the foreground:
-
-```powershell
-safe-start-for-codex start
-```
-
-Run as a tray app:
-
-```powershell
-safe-start-for-codex tray
-```
-
-Show current status:
-
-```powershell
-safe-start-for-codex status
-```
-
-Create a default config:
-
-```powershell
-safe-start-for-codex config-init
-```
-
-Show the resolved config:
-
-```powershell
-safe-start-for-codex config-show
-```
-
-Show a read-only catch-up plan for rare missed automations:
-
-```powershell
-safe-start-for-codex catchup-plan
-```
-
-Restore the latest tool-paused automations:
-
-```powershell
-safe-start-for-codex restore-latest
-```
+| Command | Description |
+|---|---|
+| `safe-start-for-codex dry-run` | Simulates scanning and gating without changing files. |
+| `safe-start-for-codex backup` | Creates a backup snapshot of active configurations. |
+| `safe-start-for-codex start` | Launches Codex Desktop and gates automations in the foreground. |
+| `safe-start-for-codex tray` | Launches as a background tray application in the Windows system tray. |
+| `safe-start-for-codex status` | Prints the current state of gated automations. |
+| `safe-start-for-codex config-init` | Generates a default `config.json` configuration file. |
+| `safe-start-for-codex config-show` | Displays the currently active configuration. |
+| `safe-start-for-codex catchup-plan` | Lists missed runs for rare/infrequent automations. |
+| `safe-start-for-codex restore-latest` | Forces restoration of the latest paused automations. |
 
 ## Configuration
 
