@@ -4,6 +4,14 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [1.1.3] - 2026-06-10
+
+### Added
+
+- Cross-platform smoke tests (`tests/source_platform_smoke.py`) for rrule, config, TOML, and catchup logic on macOS and Linux.
+- GitHub Actions workflow `source-platform-smoke.yml` running on ubuntu-latest and macos-latest.
+- `PORTIERUNGSPLAN.md` documenting the Windows-first platform boundary.
+
 ### Fixed
 
 - Fixed direct execution of `tray_app.py` so the windowed EXE entrypoint can import the package CLI without a parent package context.
