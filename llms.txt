@@ -1,8 +1,11 @@
 # safe-start-for-codex - Startup surge prevention for Codex Desktop automations
 
+Last-checked: 2026-06-11
+Canonical repository: https://github.com/dev-bricks/safe-start-for-codex
+
 > safe-start-for-codex is a Python-based Windows startup gate utility for managing local Codex Desktop automations. It temporarily pauses active automations upon startup, starts Codex Desktop, and then gradually restores the automations in a controlled, rate-limited sequence to avoid CPU/API spikes and startup congestion.
 
-It includes optional background tray execution, startup cleanup of stale processes/lockfiles, and a conservative read-only catch-up planning feature for rare schedules that missed runs.
+It includes optional background tray execution, startup cleanup of stale processes/lockfiles, conservative read-only catch-up planning for rare schedules that missed runs, Windows CI, and source-platform smoke tests for macOS/Linux parsing and configuration logic.
 
 Part of the dev-bricks family. Python, MIT.
 
@@ -25,6 +28,29 @@ Part of the dev-bricks family. Python, MIT.
 - `safe-start-for-codex config-show`: Displays the active configuration.
 - `safe-start-for-codex catchup-plan`: Lists missed runs for rare automations.
 - `safe-start-for-codex restore-latest`: Forces restoration of the latest paused automations.
+
+## Audience
+
+- Codex Desktop users on Windows who run many local automations.
+- Developers who need a predictable automation startup sequence after opening Codex.
+- Operators who want read-only catch-up visibility without triggering manual "Run now" actions.
+- LLM agents and code assistants looking for the canonical Safe Start documentation.
+
+## Search Phrases
+
+```text
+safe-start-for-codex
+Safe Start for Codex
+Codex Desktop automation startup gate
+Codex Desktop automation surge prevention
+Windows Codex automation scheduler guard
+local Codex automation catch-up planner
+Codex Desktop recurring automation startup control
+```
+
+## Disambiguation
+
+The canonical repository is `dev-bricks/safe-start-for-codex`. It is not OpenAI Codex itself, not a Codex fork, and not a general-purpose scheduler. Broad web searches for Codex startup behavior often surface OpenAI documentation, tutorials, sandboxing articles, or unrelated Codex GitHub projects before this utility.
 
 ## Related Projects (dev-bricks & ellmos family)
 

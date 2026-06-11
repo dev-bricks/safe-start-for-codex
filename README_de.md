@@ -8,6 +8,10 @@ Safe Start for Codex ist ein kompaktes Python-Tool für Entwickler, die viele lo
 
 *Dieses Projekt steht in keiner Verbindung zu OpenAI, wird nicht von OpenAI unterstützt oder gepflegt.*
 
+## Für wen es gedacht ist
+
+Safe Start for Codex richtet sich an Nutzer, die Codex Desktop unter Windows mit vielen lokalen wiederkehrenden Automatisierungen, Erinnerungen, Monitoren oder Hintergrundprüfungen verwenden und einen vorhersehbaren Startpfad brauchen. Das Projekt ist bewusst eng gefasst: Es ist ein lokales Startup-Gate für Automatisierungen, kein Ersatz-Scheduler, kein Cloud-Dienst und kein Codex-Fork.
+
 ## Funktionsweise
 
 - Scannt lokale Codex-Automatisierungs-TOML-Dateien unter `CODEX_HOME` oder `~/.codex`.
@@ -18,6 +22,7 @@ Safe Start for Codex ist ein kompaktes Python-Tool für Entwickler, die viele lo
 - Stellt ausschließlich Automatisierungen wieder her, die vom Tool pausiert wurden.
 - Bereinigt optional verwaiste Codex-Startreste auf Windows (z. B. alte Hauptprozesse ohne Renderer, verwaiste Lockfiles).
 - Kann einen schreibgeschützten Aufholplan (Catch-Up Plan) für selten ausgeführte Automatisierungen erstellen, die einen Lauf verpasst haben.
+- Enthält Windows-CI sowie Source-Platform-Smoke-Checks für macOS- und Linux-Parsing-/Konfigurationslogik.
 
 Das Tool aktiviert keine Automatisierungen, die bereits vor dem Start manuell pausiert waren, und löst keine manuelle Ausführung ("Run now") in Codex aus.
 
@@ -99,6 +104,21 @@ Dieser Workaround existiert, weil das Problem idealerweise nativ in Codex gelös
 
 - [Upstream-Issue-Entwurf (Englisch)](docs/UPSTREAM_ISSUE_PROPOSAL.md)
 - [Lösungskonzept (Englisch)](docs/SOLUTION_CONCEPT.md)
+
+## Auffindbarkeit
+
+Präzise Suchphrasen für dieses Repository:
+
+```text
+safe-start-for-codex
+Safe Start for Codex
+Codex Desktop automation startup gate
+Codex Desktop automation surge prevention
+Windows Codex automation scheduler guard
+local Codex automation catch-up planner
+```
+
+Der exakte Repository-Pfad lautet `dev-bricks/safe-start-for-codex`. Breite Suchen nach "Codex startup" oder "automation gate" kollidieren häufig mit allgemeinen OpenAI-Codex-Tutorials, Sandbox-Artikeln und fremden GitHub-Projekten.
 
 ## Entwicklung
 

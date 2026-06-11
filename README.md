@@ -5,10 +5,16 @@ Unofficial Windows startup gate for Codex Desktop automations.
 ![Safe Start for Codex Banner](assets/safe_start_banner.png)
 
 [![Deutsch](https://img.shields.io/badge/lang-de-blue.svg)](README_de.md)
+[![CI](https://github.com/dev-bricks/safe-start-for-codex/actions/workflows/ci.yml/badge.svg)](https://github.com/dev-bricks/safe-start-for-codex/actions/workflows/ci.yml)
+[![Source Platform Smoke](https://github.com/dev-bricks/safe-start-for-codex/actions/workflows/source-platform-smoke.yml/badge.svg)](https://github.com/dev-bricks/safe-start-for-codex/actions/workflows/source-platform-smoke.yml)
 
 Safe Start for Codex is a small Python utility for users who run many Codex Desktop automations and want to avoid a startup surge after opening the app. It temporarily pauses currently active local automations, launches Codex Desktop, then releases the paused automations in a controlled sequence.
 
 This project is not affiliated with, endorsed by, or maintained by OpenAI.
+
+## Who It Helps
+
+Use Safe Start for Codex if you run Codex Desktop on Windows with many local recurring automations, reminders, monitors, or background checks and need a predictable startup path. The project is intentionally narrow: it is a local automation startup gate, not a replacement scheduler, cloud service, or Codex fork.
 
 ## What It Does
 
@@ -20,6 +26,7 @@ This project is not affiliated with, endorsed by, or maintained by OpenAI.
 - Restores only automations that this tool paused.
 - Optionally removes stale Codex startup leftovers on Windows, such as old main processes without a renderer and stale lockfiles.
 - Can generate a read-only catch-up plan for rare automations that appear to have missed a scheduled run.
+- Includes Windows CI plus source-platform smoke checks for macOS and Linux parsing/config logic.
 
 It does not activate automations that were already paused before the run.
 It does not call Codex Desktop's manual "Run now" action.
@@ -105,6 +112,21 @@ The workaround exists because the underlying behavior is better solved inside Co
 - [Solution concept](docs/SOLUTION_CONCEPT.md)
 
 In short: Codex Desktop could include a native startup catch-up policy, a rate-limited automation release gate, clearer run-state semantics, and safer startup cleanup for stale app processes.
+
+## Discovery Context
+
+Search phrases that describe this repository precisely:
+
+```text
+safe-start-for-codex
+Safe Start for Codex
+Codex Desktop automation startup gate
+Codex Desktop automation surge prevention
+Windows Codex automation scheduler guard
+local Codex automation catch-up planner
+```
+
+The exact repository path is `dev-bricks/safe-start-for-codex`. Broad searches for "Codex startup" or "automation gate" often collide with general OpenAI Codex tutorials, sandboxing articles, and unrelated GitHub projects.
 
 ## Deutsche Kurzfassung
 
