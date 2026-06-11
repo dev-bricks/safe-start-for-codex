@@ -1,6 +1,7 @@
+## Last-checked: 2026-06-11
+
 # safe-start-for-codex - Startup surge prevention for Codex Desktop automations
 
-Last-checked: 2026-06-11
 Canonical repository: https://github.com/dev-bricks/safe-start-for-codex
 
 > safe-start-for-codex is a Python-based Windows startup gate utility for managing local Codex Desktop automations. It temporarily pauses active automations upon startup, starts Codex Desktop, and then gradually restores the automations in a controlled, rate-limited sequence to avoid CPU/API spikes and startup congestion.

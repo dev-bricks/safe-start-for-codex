@@ -44,3 +44,6 @@ token.json
 desktop.ini
 Thumbs.db
 .DS_Store
+
+# Claude Code plugin artifacts
+docs/superpowers/
