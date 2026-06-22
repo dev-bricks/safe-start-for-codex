@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import contextlib
 import json
 import os
 import re
@@ -81,6 +82,15 @@ def codex_user_data_dir() -> Path:
 
 def read_text(path: Path) -> str:
     return path.read_text(encoding="utf-8", errors="replace")
+
+
+def _atomic_write_text(path: Path, text: str, *, newline: str | None = None) -> None:
+    # Bugsweep 20 BUG-A03: atomar schreiben (tmp + os.replace), sonst bleibt bei einem Absturz
+    # mitten im write_text eine korrupte Datei zurueck — latest.json / automation.toml werden
+    # von der Tray-App bzw. dem naechsten Lauf gelesen.
+    tmp = path.with_name(path.name + ".tmp")
+    tmp.write_text(text, encoding="utf-8", newline=newline)
+    os.replace(tmp, path)
 
 
 def quoted_value(text: str, key: str) -> str:
@@ -323,7 +333,7 @@ def set_status(path: Path, status: str) -> bool:
             count=1,
             flags=re.MULTILINE,
         )
-    path.write_text(text, encoding="utf-8", newline="")
+    _atomic_write_text(path, text, newline="")
     return True
 
 
@@ -346,8 +356,8 @@ def write_snapshot(
     }
     path = state_dir() / f"{run_id}-{phase}.json"
     payload = json.dumps(data, ensure_ascii=False, indent=2)
-    path.write_text(payload, encoding="utf-8")
-    (state_dir() / "latest.json").write_text(payload, encoding="utf-8")
+    _atomic_write_text(path, payload)
+    _atomic_write_text(state_dir() / "latest.json", payload)
     return path
 
 
@@ -389,21 +399,37 @@ def windows_processes() -> list[ProcessInfo]:
             "ConvertTo-Json -Compress"
         ),
     ]
-    completed = subprocess.run(
-        command,
-        check=False,
-        capture_output=True,
-        text=True,
-        encoding="utf-8",
-        errors="replace",
-        **no_window_kwargs(),
-    )
-    if completed.returncode != 0 or not completed.stdout.strip():
+    try:
+        completed = subprocess.run(
+            command,
+            check=False,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            timeout=30,
+            **no_window_kwargs(),
+        )
+    except (subprocess.TimeoutExpired, OSError) as exc:
+        # Bugsweep 20 BUG-A01: WMI/PowerShell kann haengen -> ohne timeout blockierte das
+        # Tool dauerhaft. BUG-A02: Fehler sichtbar machen, sonst meldet cleanup faelschlich
+        # "keine Prozesse" (stilles [] wirkt wie "sauber"), obwohl der Abruf scheiterte.
+        print(f"[safe-start] windows_processes fehlgeschlagen: {exc}", file=sys.stderr)
+        return []
+    if completed.returncode != 0:
+        print(
+            f"[safe-start] windows_processes returncode={completed.returncode}: "
+            f"{(completed.stderr or '').strip()[:200]}",
+            file=sys.stderr,
+        )
+        return []
+    if not completed.stdout.strip():
         return []
 
     try:
         rows = _as_process_list(json.loads(completed.stdout))
-    except json.JSONDecodeError:
+    except json.JSONDecodeError as exc:
+        print(f"[safe-start] windows_processes JSON-Parse-Fehler: {exc}", file=sys.stderr)
         return []
 
     processes: list[ProcessInfo] = []
@@ -503,7 +529,9 @@ def process_age_seconds(created_at: str) -> float:
         return float("inf")
     try:
         return (datetime.now() - datetime.fromisoformat(created_at)).total_seconds()
-    except ValueError:
+    except (ValueError, TypeError):
+        # Bugsweep 20 BUG-A04: TypeError moeglich (created_at kein str, oder naive/aware-Mix
+        # bei Offset im Timestamp) -> defensiv als "uralt" behandeln.
         return float("inf")
 
 
@@ -530,15 +558,27 @@ def is_companion_orphan(process: ProcessInfo, *, min_age_seconds: int = 300) -> 
 
 
 def kill_process_tree(pid: int) -> tuple[bool, str]:
-    completed = subprocess.run(
-        ["taskkill", "/PID", str(pid), "/T", "/F"],
-        check=False,
-        capture_output=True,
-        text=True,
-        encoding="utf-8",
-        errors="replace",
-        **no_window_kwargs(),
-    )
+    # BUGSWEEP-20 REVIEW-NOTIZ (L-01/L-02, NICHT auto-gefixt — User-Entscheidung):
+    #  L-01 Self-Kill: `/T` killt den GESAMTEN Prozessbaum. Liefe safe-start jemals selbst als
+    #   Kind/Enkel eines Codex-Mains, koennte es sich mit-killen (der own_pid-Ausschluss in
+    #   find_codex_processes_by_executable schuetzt nur den Listeneintrag, nicht den /T-Descendant).
+    #  L-02 PID-Recycling-Race: zwischen windows_processes()-Snapshot und kill_process_tree(pid)
+    #   kann Windows die PID recyceln -> theoretisch falscher Kill. Niedriges Risiko (einmaliger
+    #   Startup-Lauf), Fix waere Re-Verify des Executable vor dem Kill. Bewusst belassen.
+    # Bugsweep 20 BUG-A01: taskkill kann in seltenen Systemzustaenden blockieren -> timeout.
+    try:
+        completed = subprocess.run(
+            ["taskkill", "/PID", str(pid), "/T", "/F"],
+            check=False,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            timeout=15,
+            **no_window_kwargs(),
+        )
+    except (subprocess.TimeoutExpired, OSError) as exc:
+        return False, f"taskkill fehlgeschlagen/timeout: {exc}"
     output = (completed.stdout or "").strip() or (completed.stderr or "").strip()
     return completed.returncode == 0, output
 
@@ -557,6 +597,10 @@ def cleanup_start_blockers(
     renderer_present = any(process_type(process) == "renderer" for process in codex_processes)
 
     zombie_pids: list[int] = []
+    # BUGSWEEP-20 REVIEW-NOTIZ (L-03, NICHT auto-gefixt — User-Entscheidung): der renderer_present-
+    # Check ist GLOBAL ueber alle Codex-Prozesse. Solange IRGENDeine Instanz einen Renderer hat,
+    # wird die Zombie-Main-Erkennung komplett uebersprungen — auch fuer voellig separate, tote Mains.
+    # Wirkt konservativ (lieber nichts killen), ist aber evtl. unvollstaendig. Semantik bewusst belassen.
     if not renderer_present:
         for main in mains:
             subtree = tree_pids(main.pid, all_processes)
@@ -775,6 +819,10 @@ def _allowed_months(parts: dict[str, list[str] | str | int]) -> set[int]:
 
 
 def _allowed_monthdays(parts: dict[str, list[str] | str | int]) -> set[int]:
+    # BUGSWEEP-20 REVIEW-NOTIZ (L-02 RRULE, NICHT auto-gefixt — User-Entscheidung): MONTHLY ohne
+    # BYMONTHDAY defaultet hier auf den 1. statt (RFC 5545) den Tag aus DTSTART abzuleiten. Eine am
+    # 15. angelegte MONTHLY-Automation ohne BYMONTHDAY=15 gilt dadurch evtl. faelschlich als verpasst.
+    # RRULE-Semantik bewusst nicht angetastet (Terminlogik ist heikel).
     return set(values_as_ints(parts, "BYMONTHDAY", [1]))
 
 
@@ -927,7 +975,9 @@ def read_observed_runs_from_state(
 
     try:
         uri = f"file:{db_path.resolve().as_posix()}?mode=ro"
-        with sqlite3.connect(uri, uri=True) as connection:
+        # Bugsweep 20 BUG-B1: `with sqlite3.connect(...)` committet/rollbackt nur, schliesst die
+        # Connection NICHT -> Datei-Handle bleibt bis zum GC offen (Leak, mehrfache catchup-Aufrufe).
+        with contextlib.closing(sqlite3.connect(uri, uri=True)) as connection:
             connection.row_factory = sqlite3.Row
             columns = {
                 str(row["name"])
@@ -1502,7 +1552,13 @@ def command_status(_: argparse.Namespace) -> int:
     if not latest.exists():
         print("No Safe Start snapshot exists yet.")
         return 0
-    data = json.loads(latest.read_text(encoding="utf-8"))
+    # Bugsweep 20 BUG-B3: korrupte/halb-geschriebene latest.json (Absturz, OneDrive-Sync-Konflikt)
+    # soll eine lesbare Meldung geben statt das CLI mit JSONDecodeError abzubrechen.
+    try:
+        data = json.loads(latest.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError) as exc:
+        print(f"Snapshot beschaedigt/unlesbar ({latest}): {exc}")
+        return 1
     print(f"Latest snapshot: {latest}")
     print(f"Run: {data.get('run_id')} | Phase: {data.get('phase')} | Time: {data.get('created_at')}")
     print(f"Tool-paused: {len(data.get('tool_paused_ids') or [])}")
@@ -1568,7 +1624,12 @@ def command_restore_latest(args: argparse.Namespace) -> int:
     if not latest.exists():
         print("No snapshot found for restore.")
         return 1
-    data = json.loads(latest.read_text(encoding="utf-8"))
+    # Bugsweep 20 BUG-B3: korrupte latest.json -> lesbare Meldung statt unkontrolliertem Crash.
+    try:
+        data = json.loads(latest.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError) as exc:
+        print(f"Snapshot beschaedigt/unlesbar ({latest}): {exc}")
+        return 1
     restored = 0
     for row in data.get("items") or []:
         if not row.get("tool_paused"):
