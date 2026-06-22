@@ -4,12 +4,21 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+### Security
+
+- Raised the optional tray dependency floor for Pillow to `>=12.2.0` after OSV reported advisories for the previous `>=10.0` lower bound.
+
 ### Documentation
 
 - Added README/README_de discovery context for exact `dev-bricks/safe-start-for-codex` search phrases and Codex Desktop startup-gate disambiguation.
 - Added workflow badges and refreshed `llms.txt` with `Last-checked`, audience, search phrases, and source-platform smoke context.
 - Standardized `llms.txt`: moved `Last-checked` to `## Last-checked:` header at line 1 (llms.txt format convention).
 - Added `docs/superpowers/` to `.gitignore` (Claude Code plugin artifacts).
+
+### Fixed
+
+- Made the windowed tray EXE leave startup-error logs under `C:\_Local_DEV\codex-safe-start\logs` instead of failing silently.
+- Updated `build_exe.bat` to install and bundle PyStray/Pillow tray dependencies explicitly.
 
 ## [1.1.3] - 2026-06-10
 

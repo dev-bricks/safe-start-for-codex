@@ -29,7 +29,7 @@ dependencies = []
 
 [project.optional-dependencies]
 tray = [
-  "pillow>=10.0",
+  "pillow>=12.2.0",
   "pystray>=0.19"
 ]
 dev = [

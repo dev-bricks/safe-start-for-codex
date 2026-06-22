@@ -28,11 +28,17 @@ if exist "%SCANNER%" (
   echo [build] Auto-Excludes: !EXCLUDES!
 )
 
+python -m pip install --upgrade "pyinstaller>=6.0" "pillow>=12.2.0" "pystray>=0.19"
+if errorlevel 1 pause & exit /b 1
+
 python -m PyInstaller --noconfirm --clean --onefile --windowed ^
   --name CodexSafeStart ^
   --icon "%PROJECT_ROOT%\assets\codex_safe_start.ico" ^
   --add-data "%PROJECT_ROOT%\assets\codex_safe_start.ico;." ^
   --paths "%PROJECT_ROOT%\src" ^
+  --collect-submodules pystray ^
+  --collect-submodules PIL ^
+  --hidden-import pystray._win32 ^
   %EXCLUDES% ^
   --distpath "%DIST_DIR%" ^
   --workpath "%WORK_DIR%" ^
