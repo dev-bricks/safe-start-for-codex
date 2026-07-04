@@ -17,6 +17,7 @@ All notable changes to this project are documented here.
 
 ### Fixed
 
+- Use the existing atomic JSON writer for `config-init` and catch-up plan state files, so interrupted writes do not leave partial local Safe Start state.
 - Made the windowed tray EXE leave startup-error logs under `C:\_Local_DEV\codex-safe-start\logs` instead of failing silently.
 - Updated `build_exe.bat` to install and bundle PyStray/Pillow tray dependencies explicitly.
 

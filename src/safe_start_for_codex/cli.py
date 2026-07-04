@@ -224,7 +224,7 @@ def write_default_config(path: Path, *, force: bool = False) -> None:
         raise SystemExit(f"Config already exists: {path}. Use --force to overwrite it.")
     path.parent.mkdir(parents=True, exist_ok=True)
     payload = json.dumps(GateSettings().to_dict(), ensure_ascii=False, indent=2)
-    path.write_text(payload + "\n", encoding="utf-8")
+    _atomic_write_text(path, payload + "\n")
 
 
 @dataclass(frozen=True, slots=True)
@@ -1149,12 +1149,10 @@ def write_catchup_report(run_id: str, report: CatchupReport) -> Path:
         "run_id": run_id,
         **report.to_dict(),
     }
+    payload = json.dumps(data, ensure_ascii=False, indent=2)
     path = state_dir() / f"{run_id}-catchup-plan.json"
-    path.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
-    (state_dir() / "latest-catchup-plan.json").write_text(
-        json.dumps(data, ensure_ascii=False, indent=2),
-        encoding="utf-8",
-    )
+    _atomic_write_text(path, payload)
+    _atomic_write_text(state_dir() / "latest-catchup-plan.json", payload)
     return path
 
 
