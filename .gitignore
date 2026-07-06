@@ -22,6 +22,7 @@ dist/
 
 # Local app state
 automation-safe-start/
+LOCK*.txt
 *.log
 events.jsonl
 latest.json

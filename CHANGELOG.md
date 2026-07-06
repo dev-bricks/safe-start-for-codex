@@ -10,6 +10,7 @@ All notable changes to this project are documented here.
 
 ### Documentation
 
+- Documented visible tray failure reporting and ignored local project lock files.
 - Added README/README_de discovery context for exact `dev-bricks/safe-start-for-codex` search phrases and Codex Desktop startup-gate disambiguation.
 - Added workflow badges and refreshed `llms.txt` with `Last-checked`, audience, search phrases, and source-platform smoke context.
 - Standardized `llms.txt`: moved `Last-checked` to `## Last-checked:` header at line 1 (llms.txt format convention).
@@ -18,6 +19,7 @@ All notable changes to this project are documented here.
 ### Fixed
 
 - Use the existing atomic JSON writer for `config-init` and catch-up plan state files, so interrupted writes do not leave partial local Safe Start state.
+- Made tray worker `SystemExit` failures visible through the Safe Start event log and notifications instead of letting the background thread die silently.
 - Made the windowed tray EXE leave startup-error logs under `C:\_Local_DEV\codex-safe-start\logs` instead of failing silently.
 - Updated `build_exe.bat` to install and bundle PyStray/Pillow tray dependencies explicitly.
 

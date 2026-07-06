@@ -4,6 +4,7 @@ import argparse
 import json
 import runpy
 import sys
+import time
 import types
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -15,6 +16,7 @@ from safe_start_for_codex.cli import (
     GateSettings,
     ObservedRun,
     build_catchup_report,
+    command_tray,
     command_config_init,
     default_config_path,
     load_automations,
@@ -297,6 +299,21 @@ def test_tray_app_runs_tray_command(monkeypatch) -> None:
     assert calls == [["tray"]]
 
 
+def test_tray_app_logs_system_exit_from_windowed_entrypoint(tmp_path: Path, monkeypatch) -> None:
+    log_dir = tmp_path / "logs"
+    monkeypatch.setenv("SAFE_START_LOG_DIR", str(log_dir))
+
+    def fake_main(_argv: list[str]) -> int:
+        raise SystemExit("bad config")
+
+    monkeypatch.setattr(tray_app, "main", fake_main)
+
+    assert tray_app.run() == 1
+    logs = list(log_dir.glob("startup-error-*.txt"))
+    assert len(logs) == 1
+    assert "SystemExit: bad config" in logs[0].read_text(encoding="utf-8")
+
+
 def test_tray_app_direct_file_import_has_package_fallback() -> None:
     path = Path(__file__).resolve().parents[1] / "src" / "safe_start_for_codex" / "tray_app.py"
 
@@ -340,6 +357,75 @@ def test_tray_app_direct_file_execution_reaches_cli(monkeypatch, tmp_path: Path)
         runpy.run_path(str(path), run_name="__main__")
 
     assert exc.value.code in {0, 1}
+
+
+def test_tray_worker_logs_system_exit_when_automations_dir_missing(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    class FakeIcon:
+        def __init__(self, *args, **kwargs) -> None:
+            self.title = ""
+
+        def run(self, setup=None) -> None:
+            if setup:
+                setup(self)
+            deadline = time.time() + 2
+            while time.time() < deadline:
+                if event_log.exists() and "worker_error" in event_log.read_text(encoding="utf-8"):
+                    return None
+                time.sleep(0.05)
+            return None
+
+        def notify(self, *args, **kwargs) -> None:
+            return None
+
+        def stop(self) -> None:
+            return None
+
+    class FakeMenu:
+        def __init__(self, *items) -> None:
+            self.items = items
+
+    class FakeMenuItem:
+        def __init__(self, *args, **kwargs) -> None:
+            self.args = args
+            self.kwargs = kwargs
+
+    codex_home = tmp_path / ".codex"
+    config_dir = codex_home / "automation-safe-start"
+    config_dir.mkdir(parents=True)
+    (config_dir / "config.json").write_text(
+        json.dumps({"launch": False, "cleanup": False}),
+        encoding="utf-8",
+    )
+    event_log = config_dir / "events.jsonl"
+    fake_pystray = types.ModuleType("pystray")
+    fake_pystray.Icon = FakeIcon
+    fake_pystray.Menu = FakeMenu
+    fake_pystray.MenuItem = FakeMenuItem
+    monkeypatch.setitem(sys.modules, "pystray", fake_pystray)
+    monkeypatch.setenv("CODEX_HOME", str(codex_home))
+
+    args = argparse.Namespace(
+        config=None,
+        initial_release=None,
+        interval_minutes=None,
+        startup_delay_seconds=None,
+        min_future_lead_minutes=None,
+        catchup_enabled=None,
+        catchup_lookback_days=None,
+        catchup_max_per_start=None,
+        catchup_min_period_hours=None,
+        dry_run=True,
+        launch=None,
+        cleanup=None,
+    )
+
+    assert command_tray(args) == 0
+    text = event_log.read_text(encoding="utf-8")
+    assert "worker_error" in text
+    assert "SystemExit: Automations directory not found" in text
 
 
 def test_rrule_next_after_hourly_interval_zero_no_crash() -> None:

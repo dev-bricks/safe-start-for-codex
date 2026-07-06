@@ -1524,10 +1524,11 @@ def command_tray(args: argparse.Namespace) -> int:
     def worker() -> None:
         try:
             gate.run()
-        except Exception as exc:
-            append_log(gate.run_id, "worker_error", error=str(exc))
+        except BaseException as exc:  # noqa: BLE001 - background tray workers must not fail silently.
+            message = f"{type(exc).__name__}: {exc}"
+            append_log(gate.run_id, "worker_error", error=message)
             gate.restore("worker-error")
-            notify("Safe Start for Codex error", str(exc))
+            notify("Safe Start for Codex error", message)
 
     def updater() -> None:
         while not gate.stop_event.wait(30):

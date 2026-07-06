@@ -41,7 +41,7 @@ def _log_startup_error(message: str) -> None:
 def run() -> int:
     try:
         code = int(_load_main()(["tray"]))
-    except Exception:  # noqa: BLE001 - windowed EXEs need a visible breadcrumb.
+    except BaseException:  # noqa: BLE001 - windowed EXEs need a visible breadcrumb.
         _log_startup_error(traceback.format_exc())
         return 1
     if code:

@@ -12,6 +12,8 @@ Safe Start for Codex is a small Python utility for users who run many Codex Desk
 
 This project is not affiliated with, endorsed by, or maintained by OpenAI.
 
+The tray mode reports startup and background worker failures through local logs and desktop notifications, so configuration errors do not fail silently in the background.
+
 ## Who It Helps
 
 Use Safe Start for Codex if you run Codex Desktop on Windows with many local recurring automations, reminders, monitors, or background checks and need a predictable startup path. The project is intentionally narrow: it is a local automation startup gate, not a replacement scheduler, cloud service, or Codex fork.
