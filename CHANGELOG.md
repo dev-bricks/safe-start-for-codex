@@ -22,6 +22,7 @@ All notable changes to this project are documented here.
 - Made tray worker `SystemExit` failures visible through the Safe Start event log and notifications instead of letting the background thread die silently.
 - Made the windowed tray EXE leave startup-error logs under `C:\_Local_DEV\codex-safe-start\logs` instead of failing silently.
 - Updated `build_exe.bat` to install and bundle PyStray/Pillow tray dependencies explicitly.
+- Made tray status text clearer when nothing is currently gated or when all gated automations have already been released, so users do not see confusing `0/0` progress wording.
 
 ## [1.1.3] - 2026-06-10
 

@@ -1308,6 +1308,10 @@ class SafeStartGate:
             paused = len(self.tool_paused)
             released = sum(1 for item in self.tool_paused if item.released)
             remaining = max(paused - released, 0)
+            if paused == 0:
+                return f"No automations are currently gated. Last status: {self.last_message}"
+            if remaining == 0:
+                return f"All {paused} gated automations have been released. Last status: {self.last_message}"
             return f"{released}/{paused} released, {remaining} still gated. Last status: {self.last_message}"
 
     def run(self) -> None:

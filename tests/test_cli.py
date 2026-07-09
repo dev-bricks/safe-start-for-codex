@@ -15,6 +15,7 @@ from safe_start_for_codex.cli import (
     Automation,
     GateSettings,
     ObservedRun,
+    SafeStartGate,
     build_catchup_report,
     command_tray,
     command_config_init,
@@ -217,6 +218,30 @@ def test_rrule_occurrences_between_hourly_interval_23() -> None:
     assert len(occurrences) == 2
     assert occurrences[0] == datetime(2026, 6, 1, 23, 0)
     assert occurrences[1] == datetime(2026, 6, 2, 22, 0)
+
+
+def test_status_text_reports_no_gated_automations_clearly() -> None:
+    gate = SafeStartGate()
+    gate.last_message = "Found 3 automations; paused 0 active automations."
+
+    assert gate.status_text() == (
+        "No automations are currently gated. "
+        "Last status: Found 3 automations; paused 0 active automations."
+    )
+
+
+def test_status_text_reports_finished_release_clearly() -> None:
+    gate = SafeStartGate()
+    gate.last_message = "Release staggering finished. Tray remains available for restore/quit."
+    gate.tool_paused = [
+        Automation("a", "a", "a.toml", "ACTIVE", "ACTIVE", "cron", "RRULE:FREQ=DAILY", 1, 1, released=True),
+        Automation("b", "b", "b.toml", "ACTIVE", "ACTIVE", "cron", "RRULE:FREQ=DAILY", 1, 1, released=True),
+    ]
+
+    assert gate.status_text() == (
+        "All 2 gated automations have been released. "
+        "Last status: Release staggering finished. Tray remains available for restore/quit."
+    )
 
 
 def test_rrule_effective_period_detects_rare_schedules() -> None:
