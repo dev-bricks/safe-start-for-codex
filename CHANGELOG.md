@@ -10,6 +10,8 @@ All notable changes to this project are documented here.
 
 ### Documentation
 
+- Added `THIRD_PARTY_LICENSES.txt` for direct build, tray, and development
+  dependency license metadata.
 - Documented visible tray failure reporting and ignored local project lock files.
 - Added README/README_de discovery context for exact `dev-bricks/safe-start-for-codex` search phrases and Codex Desktop startup-gate disambiguation.
 - Added workflow badges and refreshed `llms.txt` with `Last-checked`, audience, search phrases, and source-platform smoke context.

@@ -138,3 +138,6 @@ Kompilieren der Tray-EXE:
 ## Lizenz
 
 MIT-Lizenz. Siehe [LICENSE](LICENSE).
+
+Die direkten Drittanbieter-Abhängigkeiten und ihre Lizenz-Metadaten sind in
+[THIRD_PARTY_LICENSES.txt](THIRD_PARTY_LICENSES.txt) dokumentiert.

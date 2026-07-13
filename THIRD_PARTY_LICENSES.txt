@@ -1,0 +1,38 @@
+# Third-Party Licenses
+
+Last checked: 2026-07-13 against PyPI project metadata.
+
+Scope: direct dependencies declared in `pyproject.toml`. This file is a
+direct dependency inventory, not a frozen transitive SBOM and not a replacement
+for dependency license files shipped inside bundled wheels or executables.
+
+## Project License
+
+Safe Start for Codex is licensed under the MIT License. See `LICENSE`.
+
+## Core Runtime
+
+The base package declares no external runtime dependencies in
+`project.dependencies`.
+
+## Direct Build, Tray, and Development Dependencies
+
+| Package | Declared use | Constraint | PyPI version checked | License metadata | Source |
+|---|---|---:|---:|---|---|
+| hatchling | Build backend | `>=1.24` | 1.31.0 | MIT | https://pypi.org/project/hatchling/ |
+| Pillow | Optional tray/image runtime | `>=12.2.0` | 12.3.0 | MIT-CMU | https://pypi.org/project/pillow/ |
+| pystray | Optional tray runtime | `>=0.19` | 0.19.5 | LGPLv3 | https://pypi.org/project/pystray/ |
+| pytest | Development tests | `>=8.0` | 9.1.1 | MIT | https://pypi.org/project/pytest/ |
+| PyInstaller | Optional Windows EXE build | `>=6.0` | 6.21.0 | GPLv2-or-later with PyInstaller's special exception | https://pypi.org/project/pyinstaller/ |
+
+## Distribution Notes
+
+- Installing the base package should not install third-party runtime packages.
+- The optional `tray` extra installs `pystray` and `Pillow`. PyPI metadata for
+  `pystray` also declares platform-specific transitive dependencies such as
+  `pyobjc-framework-Quartz` on macOS and `python-xlib` on Linux.
+- The optional `build` extra uses PyInstaller. PyInstaller metadata states a
+  GPLv2-or-later license with a special exception that allows building and
+  distributing non-free applications.
+- Binary release preparation should still inspect the actual bundled wheel set
+  and include the license files from bundled distributions.
