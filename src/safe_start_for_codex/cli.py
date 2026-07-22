@@ -818,12 +818,12 @@ def _allowed_months(parts: dict[str, list[str] | str | int]) -> set[int]:
     return set(values_as_ints(parts, "BYMONTH", list(range(1, 13))))
 
 
-def _allowed_monthdays(parts: dict[str, list[str] | str | int]) -> set[int]:
-    # BUGSWEEP-20 REVIEW-NOTIZ (L-02 RRULE, NICHT auto-gefixt — User-Entscheidung): MONTHLY ohne
-    # BYMONTHDAY defaultet hier auf den 1. statt (RFC 5545) den Tag aus DTSTART abzuleiten. Eine am
-    # 15. angelegte MONTHLY-Automation ohne BYMONTHDAY=15 gilt dadurch evtl. faelschlich als verpasst.
-    # RRULE-Semantik bewusst nicht angetastet (Terminlogik ist heikel).
-    return set(values_as_ints(parts, "BYMONTHDAY", [1]))
+def _allowed_monthdays(
+    parts: dict[str, list[str] | str | int],
+    *,
+    default_day: int = 1,
+) -> set[int]:
+    return set(values_as_ints(parts, "BYMONTHDAY", [default_day]))
 
 
 def _matches_frequency_day(
@@ -845,7 +845,7 @@ def _matches_frequency_day(
             months >= 0
             and months % interval == 0
             and current.month in _allowed_months(parts)
-            and current.day in _allowed_monthdays(parts)
+            and current.day in _allowed_monthdays(parts, default_day=start.day)
         )
     if frequency == "YEARLY":
         years = current.year - start.year
@@ -863,6 +863,7 @@ def rrule_occurrences_between(
     start: datetime,
     end: datetime,
     *,
+    dtstart: datetime | None = None,
     limit: int = 1000,
 ) -> list[datetime]:
     if not rrule or end <= start or limit <= 0:
@@ -870,6 +871,7 @@ def rrule_occurrences_between(
     parts = parse_rrule(rrule)
     frequency = str(parts.get("FREQ") or "").upper()
     interval = max(int(parts.get("INTERVAL") or 1), 1)
+    anchor = dtstart or start
     minutes = values_as_ints(parts, "BYMINUTE", [0])
     hours = values_as_ints(parts, "BYHOUR", list(range(24)))
     result: list[datetime] = []
@@ -901,7 +903,7 @@ def rrule_occurrences_between(
     tzinfo = start.tzinfo
     while cursor_day <= end_day and len(result) < limit:
         day_start = datetime.combine(cursor_day, day_time(0, 0), tzinfo=tzinfo)
-        if _matches_frequency_day(parts, day_start, start):
+        if _matches_frequency_day(parts, day_start, anchor):
             for hour in sorted(hours):
                 for minute in sorted(minutes):
                     candidate = datetime.combine(cursor_day, day_time(hour, minute), tzinfo=tzinfo)
@@ -1074,7 +1076,13 @@ def build_catchup_report(
 
         created_at = _align_datetime(_datetime_from_ms(item.created_at), current)
         since = max(lookback_start, created_at) if created_at is not None else lookback_start
-        due_times = rrule_occurrences_between(item.rrule, since, current, limit=1000)
+        due_times = rrule_occurrences_between(
+            item.rrule,
+            since,
+            current,
+            dtstart=created_at,
+            limit=1000,
+        )
         last_due = due_times[-1] if due_times else None
         next_due = rrule_next_after(item.rrule, current)
         observed_for_item = observed_runs.get(item.id, [])

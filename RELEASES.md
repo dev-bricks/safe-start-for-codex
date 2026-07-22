@@ -1,13 +1,15 @@
 # Safe Start for Codex — Releases
 
-Stand: 2026-06-18
-Aktueller veröffentlichter Tag: `v1.1.3`
+Stand: 2026-07-22
+Aktueller dokumentierter Release: `v1.1.3`
 Release-Modell: Open Source frei
 
 ## Release-Anker
 
 - Kanonischer Release-Anker ist GitHub: `dev-bricks/safe-start-for-codex`
-- Versionierung läuft über `pyproject.toml` und `CHANGELOG.md`
+- `pyproject.toml` ist die Versionsautorität; die Paketkonstante wird per
+  Regressionstest darauf geprüft.
+- `CHANGELOG.md` dokumentiert die veröffentlichten und offenen Änderungen.
 - `CHANGELOG.md` führt zusätzlich einen `Unreleased`-Block für den nächsten Tag
 
 ## Aktueller Release-Workflow
@@ -16,6 +18,10 @@ Release-Modell: Open Source frei
 
 - Source-Stand und Tags werden über das öffentliche GitHub-Repo veröffentlicht.
 - Der aktuelle dokumentierte Release-Stand ist `v1.1.3` vom 2026-06-10.
+- Readback am 2026-07-22: `origin/main` steht auf
+  `dcb369a64f403f6551bcb3bac16565c56ec79474`; weder `v1.1.3` noch `1.1.3`
+  war als Remote-Tag-Ref auffindbar. Diese fehlende Ref ist ein offener
+  Veröffentlichungsrest, kein nachträglich erzeugter Release-Status.
 
 ### Lokales Windows-Komfortartefakt
 

@@ -90,6 +90,79 @@ def test_rrule_next_after_weekly_byday() -> None:
     assert next_at == datetime(2026, 6, 5, 9, 30)
 
 
+@pytest.mark.parametrize(
+    ("dtstart", "end", "expected"),
+    [
+        (datetime(2026, 1, 1), datetime(2026, 3, 2), [datetime(2026, 2, 1), datetime(2026, 3, 1)]),
+        (datetime(2026, 1, 15), datetime(2026, 3, 16), [datetime(2026, 2, 15), datetime(2026, 3, 15)]),
+        (datetime(2024, 1, 29), datetime(2024, 3, 1), [datetime(2024, 2, 29)]),
+        (datetime(2026, 1, 31), datetime(2026, 4, 1), [datetime(2026, 3, 31)]),
+    ],
+)
+def test_monthly_default_monthday_uses_dtstart(
+    dtstart: datetime,
+    end: datetime,
+    expected: list[datetime],
+) -> None:
+    occurrences = rrule_occurrences_between("RRULE:FREQ=MONTHLY;BYHOUR=0;BYMINUTE=0", dtstart, end)
+
+    assert occurrences == expected
+
+
+def test_monthly_explicit_bymonthday_overrides_dtstart() -> None:
+    occurrences = rrule_occurrences_between(
+        "RRULE:FREQ=MONTHLY;BYMONTHDAY=3;BYHOUR=0;BYMINUTE=0",
+        datetime(2026, 1, 15),
+        datetime(2026, 3, 4),
+    )
+
+    assert occurrences == [datetime(2026, 2, 3), datetime(2026, 3, 3)]
+
+
+def test_monthly_catchup_keeps_original_dtstart_when_looking_back() -> None:
+    item = Automation(
+        "monthly-15th",
+        "monthly-15th",
+        "monthly-15th.toml",
+        "ACTIVE",
+        "ACTIVE",
+        "cron",
+        "RRULE:FREQ=MONTHLY;BYHOUR=9;BYMINUTE=0",
+        int(datetime(2026, 2, 15, 9, 0).timestamp() * 1000),
+        int(datetime(2026, 2, 15, 9, 0).timestamp() * 1000),
+    )
+
+    report = build_catchup_report(
+        [item],
+        now=datetime(2026, 4, 20, 12, 0),
+        lookback_days=30,
+        min_period_hours=1,
+        observed_runs={"monthly-15th": []},
+    )
+
+    assert report.candidates[0].last_due_at == "2026-04-15T09:00:00"
+    assert report.candidates[0].missed is True
+
+
+def test_monthly_fix_leaves_weekly_and_yearly_matching_unchanged() -> None:
+    weekly = rrule_occurrences_between(
+        "RRULE:FREQ=WEEKLY;BYDAY=MO;BYHOUR=0;BYMINUTE=0",
+        datetime(2026, 1, 15),
+        datetime(2026, 1, 27),
+    )
+    yearly = rrule_occurrences_between(
+        "RRULE:FREQ=YEARLY;BYHOUR=0;BYMINUTE=0",
+        datetime(2026, 1, 15),
+        datetime(2027, 1, 2),
+    )
+
+    assert weekly == [datetime(2026, 1, 19), datetime(2026, 1, 26)]
+    assert yearly == [
+        datetime(2026, month, 1)
+        for month in range(2, 13)
+    ] + [datetime(2027, 1, 1)]
+
+
 def test_split_release_queue_keeps_immediate_jobs_for_fallback() -> None:
     reference = datetime(2026, 6, 4, 8, 58)
     future = Automation("future", "future", "future.toml", "ACTIVE", "ACTIVE", "cron", "RRULE:FREQ=DAILY;BYHOUR=9;BYMINUTE=5", 1, 1)
