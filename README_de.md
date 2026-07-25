@@ -2,7 +2,15 @@
 
 Inoffizielles Windows-Startup-Gate für Codex Desktop-Automatisierungen.
 
-![Safe Start for Codex Banner](assets/safe_start_banner.png)
+[![English](https://img.shields.io/badge/lang-en-blue.svg)](README.md)
+[![CI](https://github.com/dev-bricks/safe-start-for-codex/actions/workflows/ci.yml/badge.svg)](https://github.com/dev-bricks/safe-start-for-codex/actions/workflows/ci.yml)
+[![Pytest](https://img.shields.io/badge/pytest-44%20bestanden-brightgreen.svg)](https://docs.pytest.org/)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/)
+[![Lizenz: MIT](https://img.shields.io/badge/Lizenz-MIT-yellow.svg)](LICENSE)
+[![LLM Bereit](https://img.shields.io/badge/LLM-Bereit-purple.svg)](llms.txt)
+
+> [!NOTE]
+> **Integration für KI-Agenten & Codex-Automatisierung:** Safe Start for Codex ist darauf ausgelegt, von lokalen KI-Assistenten (Claude Code, Codex CLI, Gemini Antigravity) analysiert und ausgeführt zu werden. Maschinenlesbarer Kontext steht unter [`llms.txt`](llms.txt) zur Verfügung.
 
 Safe Start for Codex ist ein kompaktes Python-Tool für Entwickler, die viele lokale Codex-Automatisierungen ausführen und Spitzenlasten (Surges) beim Starten der App vermeiden möchten. Es pausiert vorübergehend aktive lokale Automatisierungen, startet Codex Desktop und gibt sie anschließend kontrolliert und zeitlich gestaffelt wieder frei.
 

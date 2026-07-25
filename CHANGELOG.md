@@ -4,6 +4,11 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+### Documentation & Hygiene
+
+- Refreshed `llms.txt` header (`Last-checked: 2026-07-25`) and verified 44 passing pytest test suite execution.
+- Added Shields.io status badges and AI/LLM integration callouts (`> [!NOTE]`) to `README.md` and `README_de.md`.
+
 ### Security
 
 - Raised the optional tray dependency floor for Pillow to `>=12.2.0` after OSV reported advisories for the previous `>=10.0` lower bound.

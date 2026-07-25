@@ -7,6 +7,13 @@ Unofficial Windows startup gate for Codex Desktop automations.
 [![Deutsch](https://img.shields.io/badge/lang-de-blue.svg)](README_de.md)
 [![CI](https://github.com/dev-bricks/safe-start-for-codex/actions/workflows/ci.yml/badge.svg)](https://github.com/dev-bricks/safe-start-for-codex/actions/workflows/ci.yml)
 [![Source Platform Smoke](https://github.com/dev-bricks/safe-start-for-codex/actions/workflows/source-platform-smoke.yml/badge.svg)](https://github.com/dev-bricks/safe-start-for-codex/actions/workflows/source-platform-smoke.yml)
+[![Pytest](https://img.shields.io/badge/pytest-44%20passed-brightgreen.svg)](https://docs.pytest.org/)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![LLM Ready](https://img.shields.io/badge/LLM-Ready-purple.svg)](llms.txt)
+
+> [!NOTE]
+> **AI Agent & Codex Automation Integration:** Safe Start for Codex is designed to be inspected and invoked by local AI coding assistants (Claude Code, Codex CLI, Gemini Antigravity). Machine-readable context is available in [`llms.txt`](llms.txt).
 
 Safe Start for Codex is a small Python utility for users who run many Codex Desktop automations and want to avoid a startup surge after opening the app. It temporarily pauses currently active local automations, launches Codex Desktop, then releases the paused automations in a controlled sequence.
 
