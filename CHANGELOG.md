@@ -10,6 +10,7 @@ All notable changes to this project are documented here.
 
 ### Documentation
 
+- Technical hygiene audit: verified test suite (36/36 passed), updated `llms.txt` `Last-checked` timestamp to 2026-07-25, tracked `PLAN_D_POINTER.md` asset inventory documentation.
 - Added `THIRD_PARTY_LICENSES.txt` for direct build, tray, and development
   dependency license metadata.
 - Documented visible tray failure reporting and ignored local project lock files.
