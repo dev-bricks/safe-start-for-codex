@@ -154,9 +154,20 @@ Kompilieren der Tray-EXE:
 .\build_exe.bat
 ```
 
+## Verwandte Tools & Ökosystem
+
+- [CareCenter-for-Codex](https://github.com/dev-bricks/CareCenter-for-Codex): Wartungs-Datenbank und Log-Viewer für Codex CLI und Desktop.
+- [CodeBox](https://github.com/dev-bricks/CodeBox): Isolierte Python-Codeausführungsumgebung.
+- [companion-for-agy](https://github.com/dev-bricks/companion-for-agy): Terminal-Wrapper & UI-Helfer für Antigravity.
+- [ellmos-filecommander-mcp](https://github.com/ellmos-ai/ellmos-filecommander-mcp): Dateisystem- und Prozess-Orchestrierungs-MCP-Server.
+
 ## Lizenz
 
 MIT-Lizenz. Siehe [LICENSE](LICENSE).
 
 Die direkten Drittanbieter-Abhängigkeiten und ihre Lizenz-Metadaten sind in
 [THIRD_PARTY_LICENSES.txt](THIRD_PARTY_LICENSES.txt) dokumentiert.
+
+---
+*Zuletzt geprüft: 2026-07-26 durch GitHubBot Visibility & SEO Optimizer.*
+

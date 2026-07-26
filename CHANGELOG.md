@@ -6,9 +6,11 @@ All notable changes to this project are documented here.
 
 ### Documentation & Hygiene
 
+- Conducted Path B Discoverability & SEO audit, added ecosystem cross-links (`CareCenter-for-Codex`, `CodeBox`, `companion-for-agy`, `ellmos-filecommander-mcp`) and verification timestamps to `README.md` and `README_de.md`.
 - Refreshed `llms.txt` header (`Last-checked: 2026-07-26`) and verified 44 passing pytest test suite execution.
 - Added Mermaid system flow diagrams to `README.md` and `README_de.md`.
 - Added Shields.io status badges and AI/LLM integration callouts (`> [!NOTE]`) to `README.md` and `README_de.md`.
+
 
 ### Security
 

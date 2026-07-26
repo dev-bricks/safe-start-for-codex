@@ -165,9 +165,20 @@ Build the windowed tray EXE:
 .\build_exe.bat
 ```
 
+## Related Tools & Ecosystem
+
+- [CareCenter-for-Codex](https://github.com/dev-bricks/CareCenter-for-Codex): Maintenance database and log viewer for Codex CLI and Desktop runs.
+- [CodeBox](https://github.com/dev-bricks/CodeBox): Isolated python code execution box.
+- [companion-for-agy](https://github.com/dev-bricks/companion-for-agy): Terminal wrapper & UI helper for Antigravity.
+- [ellmos-filecommander-mcp](https://github.com/ellmos-ai/ellmos-filecommander-mcp): File and process orchestration MCP server.
+
 ## License
 
 MIT License. See [LICENSE](LICENSE).
 
 Direct third-party dependency license metadata is documented in
 [THIRD_PARTY_LICENSES.txt](THIRD_PARTY_LICENSES.txt).
+
+---
+*Last checked: 2026-07-26 by GitHubBot Visibility & SEO Optimizer.*
+
