@@ -37,6 +37,17 @@ Use Safe Start for Codex if you run Codex Desktop on Windows with many local rec
 - Can generate a read-only catch-up plan for rare automations that appear to have missed a scheduled run.
 - Includes Windows CI plus source-platform smoke checks for macOS and Linux parsing/config logic.
 
+```mermaid
+flowchart TD
+    A["Safe Start Launch"] --> B["Scan ~/.codex/automations"]
+    B --> C["Pause ACTIVE Automations"]
+    C --> D["Create Snapshot Backup"]
+    D --> E["Launch Codex Desktop"]
+    E --> F["Release Immediate Lead Batch"]
+    F --> G["Staggered Background Release"]
+    G --> H["All Automations Restored"]
+```
+
 It does not activate automations that were already paused before the run.
 It does not call Codex Desktop's manual "Run now" action.
 

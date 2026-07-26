@@ -34,6 +34,17 @@ Safe Start for Codex richtet sich an Nutzer, die Codex Desktop unter Windows mit
 - Kann einen schreibgeschützten Aufholplan (Catch-Up Plan) für selten ausgeführte Automatisierungen erstellen, die einen Lauf verpasst haben.
 - Enthält Windows-CI sowie Source-Platform-Smoke-Checks für macOS- und Linux-Parsing-/Konfigurationslogik.
 
+```mermaid
+flowchart TD
+    A["Safe Start Starten"] --> B["Scan ~/.codex/automations"]
+    B --> C["Pausiere ACTIVE Automatisierungen"]
+    C --> D["Erstelle Snapshot-Backup"]
+    D --> E["Starte Codex Desktop"]
+    E --> F["Freigabe der ersten Vorlauf-Gruppe"]
+    F --> G["Gestaffelte Hintergrund-Freigabe"]
+    G --> H["Alle Automatisierungen wiederhergestellt"]
+```
+
 Das Tool aktiviert keine Automatisierungen, die bereits vor dem Start manuell pausiert waren, und löst keine manuelle Ausführung ("Run now") in Codex aus.
 
 ## Sicherheitshinweis
