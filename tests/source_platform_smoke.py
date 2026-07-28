@@ -8,6 +8,7 @@ are NOT tested here; they are covered by tests/test_cli.py on windows-latest.
 from __future__ import annotations
 
 import json
+import sys
 from datetime import datetime
 from pathlib import Path
 
@@ -171,3 +172,90 @@ def test_build_catchup_report_no_observed(tmp_path: Path, monkeypatch) -> None:
 
     assert report is not None
     assert hasattr(report, "candidates")
+
+
+# ---------------------------------------------------------------------------
+# 7. Tray-App Headless vs Display Smoke Test
+# ---------------------------------------------------------------------------
+
+def test_tray_headless_missing_dependency(monkeypatch) -> None:
+    """Headless environment without pystray returns exit code 1 gracefully."""
+    import argparse
+    from safe_start_for_codex.cli import command_tray
+
+    monkeypatch.setitem(sys.modules, "pystray", None)
+    args = argparse.Namespace(
+        config=None,
+        initial_release=None,
+        interval_minutes=None,
+        startup_delay_seconds=None,
+        min_future_lead_minutes=None,
+        catchup_enabled=None,
+        catchup_lookback_days=None,
+        catchup_max_per_start=None,
+        catchup_min_period_hours=None,
+        dry_run=True,
+        launch=None,
+        cleanup=None,
+    )
+    assert command_tray(args) == 1
+
+
+def test_tray_display_smoke_with_mocked_pystray(tmp_path: Path, monkeypatch) -> None:
+    """Display environment or mocked pystray executes tray lifecycle cleanly."""
+    import argparse
+    import types
+    from safe_start_for_codex.cli import command_tray
+
+    class FakeIcon:
+        def __init__(self, name, icon_img, title, menu) -> None:
+            self.name = name
+            self.title = title
+            self.menu = menu
+            self.notifications = []
+
+        def run(self, setup=None) -> None:
+            if setup:
+                setup(self)
+
+        def notify(self, message, title) -> None:
+            self.notifications.append((title, message))
+
+        def stop(self) -> None:
+            pass
+
+    class FakeMenu:
+        def __init__(self, *items) -> None:
+            self.items = items
+
+    class FakeMenuItem:
+        def __init__(self, label, action, default=False) -> None:
+            self.label = label
+            self.action = action
+            self.default = default
+
+    fake_pystray = types.ModuleType("pystray")
+    fake_pystray.Icon = FakeIcon
+    fake_pystray.Menu = FakeMenu
+    fake_pystray.MenuItem = FakeMenuItem
+
+    monkeypatch.setitem(sys.modules, "pystray", fake_pystray)
+    monkeypatch.setenv("CODEX_HOME", str(tmp_path))
+
+    args = argparse.Namespace(
+        config=None,
+        initial_release=None,
+        interval_minutes=None,
+        startup_delay_seconds=None,
+        min_future_lead_minutes=None,
+        catchup_enabled=None,
+        catchup_lookback_days=None,
+        catchup_max_per_start=None,
+        catchup_min_period_hours=None,
+        dry_run=True,
+        launch=None,
+        cleanup=None,
+    )
+
+    code = command_tray(args)
+    assert code == 0
