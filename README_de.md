@@ -7,6 +7,7 @@ Inoffizielles Windows-Startup-Gate für Codex Desktop-Automatisierungen.
 [![Pytest](https://img.shields.io/badge/pytest-44%20bestanden-brightgreen.svg)](https://docs.pytest.org/)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/)
 [![Lizenz: MIT](https://img.shields.io/badge/Lizenz-MIT-yellow.svg)](LICENSE)
+[![open-bricks](https://img.shields.io/badge/ecosystem-open--bricks-blue.svg)](https://github.com/open-bricks)
 [![LLM Bereit](https://img.shields.io/badge/LLM-Bereit-purple.svg)](llms.txt)
 
 > [!NOTE]

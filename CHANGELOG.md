@@ -6,6 +6,7 @@ All notable changes to this project are documented here.
 
 ### Documentation & Hygiene
 
+- Refreshed `llms.txt` header (`Last-checked: 2026-07-30`), added `open-bricks` ecosystem badges to `README.md` and `README_de.md`, and verified 44 passing pytest tests. [G 2026-07-30]
 - Conducted Path B Discoverability & SEO audit, added ecosystem cross-links (`CareCenter-for-Codex`, `CodeBox`, `companion-for-agy`, `ellmos-filecommander-mcp`) and verification timestamps to `README.md` and `README_de.md`.
 - Refreshed `llms.txt` header (`Last-checked: 2026-07-26`) and verified 44 passing pytest test suite execution.
 - Added Mermaid system flow diagrams to `README.md` and `README_de.md`.
