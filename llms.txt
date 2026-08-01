@@ -1,4 +1,4 @@
-## Last-checked: 2026-07-30
+## Last-checked: 2026-08-01
 
 # safe-start-for-codex - Startup surge prevention for Codex Desktop automations
 
@@ -9,6 +9,10 @@ Canonical repository: https://github.com/dev-bricks/safe-start-for-codex
 It includes optional background tray execution, startup cleanup of stale processes/lockfiles, conservative read-only catch-up planning for rare schedules that missed runs, atomic JSON state writes for config and catch-up report files, Windows CI, and source-platform smoke tests for macOS/Linux parsing and configuration logic.
 
 Part of the dev-bricks family. Python, MIT.
+
+Verification: 44 pytest tests passed; the separate source-platform smoke suite
+passed 11 tests on 2026-08-01. Compileall passed; no live Codex Desktop or tray
+runtime was started.
 
 ## Docs
 

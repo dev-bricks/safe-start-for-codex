@@ -181,5 +181,5 @@ Direct third-party dependency license metadata is documented in
 [THIRD_PARTY_LICENSES.txt](THIRD_PARTY_LICENSES.txt).
 
 ---
-*Last checked: 2026-07-26 by GitHubBot Visibility & SEO Optimizer.*
+*Last checked: 2026-08-01 by the MAINTAINER verification loop.*
 

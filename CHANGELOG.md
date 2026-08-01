@@ -13,6 +13,11 @@ All notable changes to this project are documented here.
 
 ### Documentation & Hygiene
 
+- Maintainer verification on 2026-08-01 passed the full suite (44 tests), the
+  separate source-platform smoke suite (11 tests), and `compileall`; refreshed
+  verification dates in the README files and `llms.txt`, and advanced the
+  Plan-D pointer to the current synchronized `main` HEAD. No code or release
+  artifact was changed.
 - Refreshed `llms.txt` header (`Last-checked: 2026-07-30`), added `open-bricks` ecosystem badges to `README.md` and `README_de.md`, and verified 44 passing pytest tests. [G 2026-07-30]
 - Conducted Path B Discoverability & SEO audit, added ecosystem cross-links (`CareCenter-for-Codex`, `CodeBox`, `companion-for-agy`, `ellmos-filecommander-mcp`) and verification timestamps to `README.md` and `README_de.md`.
 - Refreshed `llms.txt` header (`Last-checked: 2026-07-26`) and verified 44 passing pytest test suite execution.

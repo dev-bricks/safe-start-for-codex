@@ -1,11 +1,11 @@
 # Plan-D-Pointer — Safe Start for Codex
 
-Stand: 2026-07-22
+Stand: 2026-08-01
 
 Die verifizierte Code-Arbeitskopie liegt unter
 `C:\_Local_DEV\repos\safe-start-for-codex` auf `main` mit Remote
 `https://github.com/dev-bricks/safe-start-for-codex.git` und HEAD
-`dcb369a64f403f6551bcb3bac16565c56ec79474`.
+`4993d54` (lokal und `origin/main` gleich).
 
 Dieser OneDrive-Pfad bleibt für Registry, Dokumentation und Artefakte. Er wird
 nicht mehr als Arbeitskopie für nachfolgende Codeänderungen verwendet. Es gab
