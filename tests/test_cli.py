@@ -21,6 +21,7 @@ from safe_start_for_codex.cli import (
     command_config_init,
     default_config_path,
     load_automations,
+    main,
     read_gate_config,
     resolve_gate_settings,
     rrule_effective_period_hours,
@@ -63,6 +64,36 @@ def test_load_automations_uses_codex_home(tmp_path: Path, monkeypatch) -> None:
     assert len(items) == 1
     assert items[0].id == "daily-check"
     assert items[0].status == "ACTIVE"
+
+
+def test_status_reports_snapshot_when_automations_directory_is_missing(
+    tmp_path: Path,
+    monkeypatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """A historical snapshot remains inspectable after a fresh CODEX_HOME reset."""
+    codex_home = tmp_path / ".codex"
+    state_dir = codex_home / "automation-safe-start"
+    state_dir.mkdir(parents=True)
+    (state_dir / "latest.json").write_text(
+        json.dumps(
+            {
+                "run_id": "run-1",
+                "phase": "released",
+                "created_at": "2026-08-03T18:00:00+02:00",
+                "tool_paused_ids": [],
+                "released_ids": [],
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setenv("CODEX_HOME", str(codex_home))
+
+    assert main(["status"]) == 1
+
+    output = capsys.readouterr().out
+    assert "Latest snapshot:" in output
+    assert "Current state unavailable" in output
 
 
 def test_set_status_rewrites_status_and_updated_at(tmp_path: Path) -> None:

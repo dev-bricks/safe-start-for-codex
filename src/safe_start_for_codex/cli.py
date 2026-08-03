@@ -1574,7 +1574,11 @@ def command_status(_: argparse.Namespace) -> int:
     print(f"Run: {data.get('run_id')} | Phase: {data.get('phase')} | Time: {data.get('created_at')}")
     print(f"Tool-paused: {len(data.get('tool_paused_ids') or [])}")
     print(f"Released: {len(data.get('released_ids') or [])}")
-    current = load_automations()
+    try:
+        current = load_automations()
+    except SystemExit as exc:
+        print(f"Current state unavailable: {exc}")
+        return 1
     active = sum(1 for item in current if item.status.upper() == "ACTIVE")
     paused = sum(1 for item in current if item.status.upper() == "PAUSED")
     print(f"Current state: {active} ACTIVE, {paused} PAUSED, {len(current)} total")

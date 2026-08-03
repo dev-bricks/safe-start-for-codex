@@ -4,6 +4,13 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+### Fixed
+
+- Kept `status` readable when a historical Safe Start snapshot exists but the
+  configured Codex home has no automations directory yet: the command now
+  prints the snapshot plus a clear unavailable-state message and exits with
+  code 1 instead of propagating `SystemExit`.
+
 ### Documentation & Hygiene
 
 - Refreshed `llms.txt` header (`Last-checked: 2026-07-30`), added `open-bricks` ecosystem badges to `README.md` and `README_de.md`, and verified 44 passing pytest tests. [G 2026-07-30]
