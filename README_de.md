@@ -170,5 +170,5 @@ Die direkten Drittanbieter-Abhängigkeiten und ihre Lizenz-Metadaten sind in
 [THIRD_PARTY_LICENSES.txt](THIRD_PARTY_LICENSES.txt) dokumentiert.
 
 ---
-*Zuletzt geprüft: 2026-08-01 durch den MAINTAINER-Verifikationslauf.*
+*Zuletzt geprüft: 2026-08-04 durch die Technische Hygiene-Automation.*
 

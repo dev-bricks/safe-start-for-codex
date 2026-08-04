@@ -1,7 +1,7 @@
 # Offene Befunde — safe-start-for-codex
 
-**Erfasst am:** 2026-08-01
-**Rolle:** MAINTAINER (TaskMaster Loop)
+**Erfasst am:** 2026-08-04
+**Rolle:** MAINTAINER (GitHubBot Pfad A Hygiene)
 
 ---
 
@@ -9,9 +9,8 @@
 
 - **Fundort:** Repository `C:\_Local_DEV\repos\safe-start-for-codex` (Branch `main`).
 - **Beleg:**  
-  Vor dem Maintainer-Lauf war `git status` sauber (`main...origin/main`).
-- **Status:** Die eigene Dokumentationspflege dieses Laufs wird separat gelesen,
-  geprüft und lokal committed; keine fremden Änderungen werden übernommen.
+  `git status` war sauber (`main...origin/main`).
+- **Status:** Dokumentation und Zeitstempel für Pfad A erneuert.
 
 ---
 
@@ -24,5 +23,5 @@
   tests/source_platform_smoke.py -q -ra`). `python -m compileall -q src tests`
   lief ohne Fehler.
 - **Maßnahme:**  
-  `llms.txt` sowie die README-Prüfstände wurden im MAINTAINER-Lauf vom
-  2026-08-01 aktualisiert.
+  `llms.txt` sowie die README-Prüfstände wurden im Pfad-A-Hygiene-Lauf vom
+  2026-08-04 aktualisiert.

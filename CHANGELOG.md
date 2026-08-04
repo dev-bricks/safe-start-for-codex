@@ -13,6 +13,7 @@ All notable changes to this project are documented here.
 
 ### Documentation & Hygiene
 
+- Technical Hygiene & Maintenance Check (Pfad A) on 2026-08-04: refreshed `llms.txt` and README timestamps (`2026-08-04`), verified full unit test suite (44 passed) and source-platform smoke test suite (11 passed, total 55/55 passed 100% green), verified `compileall`. [G 2026-08-04]
 - Maintainer verification on 2026-08-01 passed the full suite (44 tests), the
   separate source-platform smoke suite (11 tests), and `compileall`; refreshed
   verification dates in the README files and `llms.txt`, and advanced the
