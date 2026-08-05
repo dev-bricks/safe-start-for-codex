@@ -20,6 +20,16 @@ dist/
 *.msix
 *.lnk
 
+# Interne Planungsdateien -- die leben im OneDrive-Projektordner, nicht im Repo
+# (Plan D: Planung/Steuerung in OneDrive, gebaut und committet wird im Klon).
+# PORTIERUNGSPLAN.md steht bewusst NICHT hier: die Datei ist seit Release 1.1.3
+# veroeffentlichte Dokumentation der Windows-first-Plattformgrenze.
+AUFGABEN.txt
+AUFGABEN.md
+TODO.md
+TODO.txt
+DONE.md
+
 # Local app state
 automation-safe-start/
 LOCK*.txt
