@@ -20,6 +20,9 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install
-        run: python -m pip install -e ".[dev]"
+        # tray is part of the smoke: the tray test mocks pystray but draws the
+        # fallback icon for real, so Pillow has to be there on Linux and macOS
+        # too -- same extras as the Windows job in ci.yml.
+        run: python -m pip install -e ".[dev,tray]"
       - name: Smoke tests
         run: pytest tests/source_platform_smoke.py -v

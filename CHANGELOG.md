@@ -6,6 +6,11 @@ All notable changes to this project are documented here.
 
 ### Fixed
 
+- Source Platform Smoke now installs the `tray` extra on Linux and macOS. The
+  tray test mocks `pystray` but draws the fallback icon for real, so Pillow has
+  to be present; without it `command_tray` returned 1 and the workflow had been
+  red on every push since 2026-08-01.
+
 - Kept `status` readable when a historical Safe Start snapshot exists but the
   configured Codex home has no automations directory yet: the command now
   prints the snapshot plus a clear unavailable-state message and exits with
