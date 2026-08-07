@@ -7,7 +7,7 @@ Unofficial Windows startup gate for Codex Desktop automations.
 [![Deutsch](https://img.shields.io/badge/lang-de-blue.svg)](README_de.md)
 [![CI](https://github.com/dev-bricks/safe-start-for-codex/actions/workflows/ci.yml/badge.svg)](https://github.com/dev-bricks/safe-start-for-codex/actions/workflows/ci.yml)
 [![Source Platform Smoke](https://github.com/dev-bricks/safe-start-for-codex/actions/workflows/source-platform-smoke.yml/badge.svg)](https://github.com/dev-bricks/safe-start-for-codex/actions/workflows/source-platform-smoke.yml)
-[![Pytest](https://img.shields.io/badge/pytest-44%20passed-brightgreen.svg)](https://docs.pytest.org/)
+[![Pytest](https://img.shields.io/badge/pytest-45%20passed-brightgreen.svg)](https://docs.pytest.org/)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![open-bricks](https://img.shields.io/badge/ecosystem-open--bricks-blue.svg)](https://github.com/open-bricks)
@@ -181,5 +181,5 @@ Direct third-party dependency license metadata is documented in
 [THIRD_PARTY_LICENSES.txt](THIRD_PARTY_LICENSES.txt).
 
 ---
-*Last checked: 2026-08-04 by Technical Hygiene Automation.*
+*Last checked: 2026-08-07 by SOFTWARE GITHUB automation.*
 

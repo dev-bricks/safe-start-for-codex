@@ -1,4 +1,4 @@
-## Last-checked: 2026-08-04
+## Last-checked: 2026-08-07
 
 # safe-start-for-codex - Startup surge prevention for Codex Desktop automations
 
@@ -10,7 +10,7 @@ It includes optional background tray execution, startup cleanup of stale process
 
 Part of the dev-bricks family. Python, MIT.
 
-Verification: 44 pytest unit tests passed; the separate source-platform smoke suite passed 11 tests on 2026-08-04. Compileall passed; no live Codex Desktop or tray runtime was started.
+Verification: 45 pytest unit tests passed; the separate source-platform smoke suite passed 11 tests on 2026-08-07. Compileall passed; no live Codex Desktop or tray runtime was started.
 
 ## Docs
 

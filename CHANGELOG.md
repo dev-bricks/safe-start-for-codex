@@ -18,6 +18,11 @@ All notable changes to this project are documented here.
 
 ### Documentation & Hygiene
 
+- SOFTWARE GITHUB check on 2026-08-07: fast-forwarded the verified local
+  Plan-D clone to `origin/main`, refreshed README/README_de/`llms.txt`
+  verification timestamps and pytest badge counts (45 unit tests, 11 source
+  platform smoke tests), and updated `PLAN_D_POINTER.md` plus `RELEASES.md`
+  to the current HEAD/tag-readback state.
 - Technical Hygiene & Maintenance Check (Pfad A) on 2026-08-04: refreshed `llms.txt` and README timestamps (`2026-08-04`), verified full unit test suite (44 passed) and source-platform smoke test suite (11 passed, total 55/55 passed 100% green), verified `compileall`. [G 2026-08-04]
 - Maintainer verification on 2026-08-01 passed the full suite (44 tests), the
   separate source-platform smoke suite (11 tests), and `compileall`; refreshed
