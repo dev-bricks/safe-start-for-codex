@@ -6,6 +6,11 @@ All notable changes to this project are documented here.
 
 ### Fixed
 
+- Windows Store installations now classify both the `ChatGPT.exe` host and
+  child `codex.exe` app-server as one Codex process family. Startup cleanup no
+  longer proposes terminating the live Store app-server after the zombie age
+  threshold when a renderer is active.
+
 - Source Platform Smoke now installs the `tray` extra on Linux and macOS. The
   tray test mocks `pystray` but draws the fallback icon for real, so Pillow has
   to be present; without it `command_tray` returned 1 and the workflow had been

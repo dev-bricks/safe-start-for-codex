@@ -14,12 +14,15 @@ import pytest
 from safe_start_for_codex.cli import (
     Automation,
     GateSettings,
+    ProcessInfo,
     ObservedRun,
     SafeStartGate,
     build_catchup_report,
+    cleanup_start_blockers,
     command_tray,
     command_config_init,
     default_config_path,
+    matches_codex_executable,
     load_automations,
     main,
     read_gate_config,
@@ -30,6 +33,7 @@ from safe_start_for_codex.cli import (
     set_status,
     split_release_queue,
 )
+import safe_start_for_codex.cli as cli
 from safe_start_for_codex import tray_app
 
 
@@ -53,6 +57,55 @@ def write_automation(root: Path, name: str, status: str, rrule: str) -> Path:
         encoding="utf-8",
     )
     return path
+
+
+def test_store_codex_host_and_app_server_are_process_matches() -> None:
+    package = r"C:\Program Files\WindowsApps\OpenAI.Codex_26.803.5235.0_x64__2p2nqsd0c76g0"
+    host = ProcessInfo(100, "ChatGPT.exe", f"{package}\\app\\ChatGPT.exe")
+    app_server = ProcessInfo(
+        101,
+        "codex.exe",
+        f"{package}\\app\\resources\\codex.exe",
+        f'"{package}\\app\\resources\\codex.exe" app-server --analytics-default-enabled',
+    )
+
+    assert matches_codex_executable(host) is True
+    assert matches_codex_executable(app_server) is True
+
+
+def test_cleanup_does_not_flag_active_store_app_server_as_zombie(monkeypatch) -> None:
+    package = r"C:\Program Files\WindowsApps\OpenAI.Codex_26.803.5235.0_x64__2p2nqsd0c76g0"
+    created_at = (datetime.now() - timedelta(minutes=10)).isoformat(timespec="seconds")
+    processes = [
+        ProcessInfo(100, "ChatGPT.exe", f"{package}\\app\\ChatGPT.exe", created_at=created_at),
+        ProcessInfo(
+            101,
+            "ChatGPT.exe",
+            f"{package}\\app\\ChatGPT.exe",
+            f'"{package}\\app\\ChatGPT.exe" --type=renderer',
+            parent_pid=100,
+            created_at=created_at,
+        ),
+        ProcessInfo(
+            102,
+            "codex.exe",
+            f"{package}\\app\\resources\\codex.exe",
+            f'"{package}\\app\\resources\\codex.exe" app-server --analytics-default-enabled',
+            parent_pid=100,
+            created_at=created_at,
+        ),
+    ]
+    monkeypatch.setattr(cli, "windows_processes", lambda: processes)
+    monkeypatch.setattr(cli, "append_log", lambda *args, **kwargs: None)
+
+    result = cleanup_start_blockers(
+        execute=False,
+        run_id="store-active",
+        zombie_min_age_seconds=120,
+    )
+
+    assert result.renderer_present is True
+    assert result.zombie_pids == []
 
 
 def test_load_automations_uses_codex_home(tmp_path: Path, monkeypatch) -> None:

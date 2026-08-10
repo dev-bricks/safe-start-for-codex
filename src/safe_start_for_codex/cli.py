@@ -22,6 +22,7 @@ from typing import Callable, Iterable
 CREATE_NO_WINDOW = 0x08000000
 CODEX_STORE_AUMID = "OpenAI.Codex_2p2nqsd0c76g0!App"
 CODEX_STORE_MARKER = r"\WindowsApps\OpenAI.Codex"
+CODEX_STORE_EXECUTABLE_NAMES = frozenset({"codex.exe", "chatgpt.exe"})
 DEFAULT_INITIAL_RELEASE = 3
 DEFAULT_INTERVAL_MINUTES = 5
 DEFAULT_STARTUP_DELAY_SECONDS = 45
@@ -458,6 +459,24 @@ def _normalise_path(path: str) -> str:
     return path.replace("/", "\\").strip().strip('"').lower()
 
 
+def _matches_store_process_path(value: str) -> bool:
+    """Return whether *value* points to a Codex Store package process.
+
+    The Store package starts ``ChatGPT.exe`` as its desktop host and a child
+    ``codex.exe`` app-server.  Both belong to the same live process tree; only
+    matching the latter makes the cleanup gate misclassify a running session as
+    a stale main once the age threshold is reached.
+    """
+    normalized = _normalise_path(value)
+    marker = _normalise_path(CODEX_STORE_MARKER)
+    if not marker or marker not in normalized:
+        return False
+    return any(
+        re.search(rf"(?:^|\\){re.escape(name)}(?:$|[\"\s])", normalized)
+        for name in CODEX_STORE_EXECUTABLE_NAMES
+    )
+
+
 def find_codex_exe() -> Path | None:
     local_appdata = os.environ.get("LOCALAPPDATA")
     if local_appdata:
@@ -474,14 +493,13 @@ def matches_codex_executable(process: ProcessInfo) -> bool:
     if target and executable == target:
         return True
 
-    marker = _normalise_path(CODEX_STORE_MARKER)
-    if marker and marker in executable and executable.endswith("\\codex.exe"):
+    if _matches_store_process_path(executable):
         return True
 
     command_line = _normalise_path(process.command_line)
     if target and (command_line == target or command_line.startswith(target + " ")):
         return True
-    return bool(marker and marker in command_line and "codex.exe" in command_line)
+    return _matches_store_process_path(command_line)
 
 
 def find_codex_processes_by_executable(processes: Iterable[ProcessInfo]) -> list[ProcessInfo]:

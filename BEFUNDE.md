@@ -76,3 +76,22 @@
   Release-Akzeptanz bleiben ohne entsprechenden Nachweis offen.
 - **Maßnahme:** Nur dieser aktuelle Readback wurde ergänzt; keine Code-, Release-,
   Build-, Nutzerdaten- oder externen Remote-Änderung.
+
+---
+
+### Befund 5: TASKPLAN #1397 — Windows Live-Smoke (2026-08-10)
+
+- **Status:** Task #1397 wurde nach einem reproduzierten Store-Cleanup-Fehler,
+  minimalem Fix und erneutem Live-Readback abgeschlossen. Die vollständige
+  Evidenz steht in `TASKPLAN_STATUS_2026-08-10_1397.md`.
+- **Bug/Fix:** Die Store-App startet `ChatGPT.exe` als Host und
+  `app\\resources\\codex.exe` als App-Server. Vor dem Fix wurde nur der zweite
+  Prozess erkannt; nach der Zombie-Altersgrenze wurde deshalb ein aktiver
+  App-Server vorgeschlagen. Die Prozessfamilie erkennt nun beide Namen unter
+  dem signierten `\\WindowsApps\\OpenAI.Codex`-Marker.
+- **Beleg:** AUMID-Event und Store-Prozessfamilie waren live sichtbar; der
+  reparierte Cleanup-Dry-Run meldete Renderer aktiv, keine Zombies, keine
+  gekillten Prozesse und kein entferntes Lockfile. 47 Pytests, 11
+  Source-Smokes und Compileall bestanden.
+- **Grenze:** Der Smoke nutzte ein isoliertes `CODEX_HOME`; kein reales
+  Automationsverzeichnis wurde geändert und kein Prozess wurde beendet.
