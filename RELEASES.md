@@ -1,6 +1,6 @@
 # Safe Start for Codex — Releases
 
-Stand: 2026-08-08
+Stand: 2026-08-12
 Aktueller dokumentierter Release: `v1.1.3`
 Release-Modell: Open Source frei
 
@@ -18,11 +18,11 @@ Release-Modell: Open Source frei
 
 - Source-Stand und Tags werden über das öffentliche GitHub-Repo veröffentlicht.
 - Der aktuelle dokumentierte Release-Stand ist `v1.1.3` vom 2026-06-10.
-- Readback am 2026-08-08 aus dem lokalen Clone: `origin/main` steht auf
-  `0201c6f73af8bad818c7dfd1bd1ea12e9172a30a`; der frühere Pin
-  `153b84fc782c808d3353b5b1be359e00581ed9a0` ist damit als Statusstand
-  überholt. Ein Live-GitHub-Tag-Readback wurde in diesem Lauf nicht ausgeführt;
-  der Tag-Status für `v1.1.3` bleibt offen.
+- Der jeweils veröffentlichte Source-Stand ist per frischem GitHub-Readback zu
+  verifizieren; lokale Ahead-Slices und historische Pins gehören nicht als
+  dauerhafte Release-Wahrheit in diese Datei.
+- Ein Live-GitHub-Tag-Readback für `v1.1.3` bleibt erforderlich, bevor der
+  Tag-Status erneut als verifiziert dokumentiert wird.
 
 ### Lokales Windows-Komfortartefakt
 

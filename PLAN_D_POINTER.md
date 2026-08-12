@@ -1,13 +1,13 @@
 # Plan-D-Pointer — Safe Start for Codex
 
-Stand: 2026-08-08
+Stand: 2026-08-12
 
 Die verifizierte Code-Arbeitskopie liegt unter
 `C:\_Local_DEV\repos\safe-start-for-codex` auf `main` mit Remote
-`https://github.com/dev-bricks/safe-start-for-codex.git`. Der verifizierte
-Source-Pin ist `0201c6f73af8bad818c7dfd1bd1ea12e9172a30a` (lokal und
-`origin/main` gleich laut lokalem Git-Readback); der lokale MAINTAINER-
-Metadaten-Commit `356c31d` ist nicht gepusht.
+`https://github.com/dev-bricks/safe-start-for-codex.git`. Der veröffentlichte
+GitHub-Stand und der lokale Arbeitsstand müssen vor jeder Mutation frisch per
+Git-Readback verglichen werden; dieser Pointer ist Dokumentation, kein
+dauerhafter Ersatz für einen Live-Remote-Abgleich.
 
 Dieser OneDrive-Pfad bleibt für Registry, Dokumentation und Artefakte. Er wird
 nicht mehr als Arbeitskopie für nachfolgende Codeänderungen verwendet. Es gab

@@ -23,6 +23,10 @@ All notable changes to this project are documented here.
 
 ### Documentation & Hygiene
 
+- SOFTWARE GITHUB check on 2026-08-12: stopped tracking internal maintainer
+  artefacts (`BEFUNDE.md`, `TASKPLAN_STATUS_*.md`), hardened `.gitignore` for
+  local verification files, and refreshed README/README_de/`llms.txt` plus the
+  Plan-D/release pointer documents after a clean verification run.
 - SOFTWARE GITHUB check on 2026-08-07: fast-forwarded the verified local
   Plan-D clone to `origin/main`, refreshed README/README_de/`llms.txt`
   verification timestamps and pytest badge counts (45 unit tests, 11 source
