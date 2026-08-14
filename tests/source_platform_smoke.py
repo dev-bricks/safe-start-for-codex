@@ -12,7 +12,8 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-import pytest
+# Ensure src is in sys.path for direct script execution
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from safe_start_for_codex.cli import (
     build_catchup_report,

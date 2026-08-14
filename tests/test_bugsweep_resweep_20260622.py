@@ -11,7 +11,6 @@ cli.py ist importierbar -> echte Unit-Tests wo moeglich; subprocess-timeouts sta
   B3 command_status/command_restore_latest: json.loads ohne Guard -> try/except (korrupte latest.json).
 """
 import argparse
-import json
 import os
 import sys
 from pathlib import Path

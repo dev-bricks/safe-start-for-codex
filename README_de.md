@@ -4,7 +4,7 @@ Inoffizielles Windows-Startup-Gate für Codex Desktop-Automatisierungen.
 
 [![English](https://img.shields.io/badge/lang-en-blue.svg)](README.md)
 [![CI](https://github.com/dev-bricks/safe-start-for-codex/actions/workflows/ci.yml/badge.svg)](https://github.com/dev-bricks/safe-start-for-codex/actions/workflows/ci.yml)
-[![Pytest](https://img.shields.io/badge/pytest-47%20bestanden-brightgreen.svg)](https://docs.pytest.org/)
+[![Pytest](https://img.shields.io/badge/pytest-58%20bestanden-brightgreen.svg)](https://docs.pytest.org/)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/)
 [![Lizenz: MIT](https://img.shields.io/badge/Lizenz-MIT-yellow.svg)](LICENSE)
 [![open-bricks](https://img.shields.io/badge/ecosystem-open--bricks-blue.svg)](https://github.com/open-bricks)
@@ -170,5 +170,4 @@ Die direkten Drittanbieter-Abhängigkeiten und ihre Lizenz-Metadaten sind in
 [THIRD_PARTY_LICENSES.txt](THIRD_PARTY_LICENSES.txt) dokumentiert.
 
 ---
-*Zuletzt geprüft: 2026-08-12 durch den SOFTWARE-GITHUB-Repohygiene- und Verifikationslauf.*
-
+*Zuletzt geprüft: 2026-08-14 durch den technischen Hygiene- und Wartungslauf (Pfad A).*

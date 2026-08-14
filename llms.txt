@@ -1,4 +1,4 @@
-## Last-checked: 2026-08-12
+## Last-checked: 2026-08-14
 
 # safe-start-for-codex - Startup surge prevention for Codex Desktop automations
 
@@ -10,7 +10,7 @@ It includes optional background tray execution, startup cleanup of stale process
 
 Part of the dev-bricks family. Python, MIT.
 
-Verification: 47 pytest unit tests passed; the separate source-platform smoke suite passed 11 tests on 2026-08-10. Compileall passed. The Windows Store AUMID launch produced the packaged Codex process family, and the cleanup dry-run preserved the live renderer without mutations.
+Verification: 58 pytest tests passed (47 unit/regression tests + 11 source-platform smoke tests) on 2026-08-14. Compileall passed. Ruff lint passed. The Windows Store AUMID launch produced the packaged Codex process family, and the cleanup dry-run preserved the live renderer without mutations.
 
 ## Docs
 

@@ -23,6 +23,7 @@ All notable changes to this project are documented here.
 
 ### Documentation & Hygiene
 
+- Technical Hygiene & Maintenance Check (Pfad A) on 2026-08-14: configured pytest discovery for cross-platform smoke tests in `pyproject.toml` (58/58 passed), resolved ruff unused import diagnostics, added sys.path fallback for standalone smoke test script execution, and refreshed README/README_de/`llms.txt` verification status and timestamps. [G 2026-08-14]
 - SOFTWARE GITHUB check on 2026-08-12: stopped tracking internal maintainer
   artefacts (`BEFUNDE.md`, `TASKPLAN_STATUS_*.md`), hardened `.gitignore` for
   local verification files, and refreshed README/README_de/`llms.txt` plus the
