@@ -20,6 +20,7 @@ from safe_start_for_codex.cli import (
     build_catchup_report,
     cleanup_start_blockers,
     command_tray,
+    command_backup,
     command_config_init,
     default_config_path,
     matches_codex_executable,
@@ -616,3 +617,34 @@ def test_rrule_next_after_hourly_interval_zero_no_crash() -> None:
     next_at = rrule_next_after("RRULE:FREQ=HOURLY;INTERVAL=0;BYMINUTE=0", after)
     # interval clamped to 1 → next hit is 11:00
     assert next_at == datetime(2026, 6, 4, 11, 0)
+
+
+def test_rrule_next_after_monthly_with_bymonthday() -> None:
+    after = datetime(2026, 8, 14, 10, 0)
+    next_at = rrule_next_after("RRULE:FREQ=MONTHLY;BYMONTHDAY=25;BYHOUR=9;BYMINUTE=0", after)
+    assert next_at == datetime(2026, 8, 25, 9, 0)
+
+
+def test_rrule_next_after_monthly_default_dtstart() -> None:
+    after = datetime(2026, 8, 10, 0, 0)
+    dtstart = datetime(2026, 1, 15, 9, 0)
+    next_at = rrule_next_after("RRULE:FREQ=MONTHLY;BYHOUR=9;BYMINUTE=0", after, dtstart=dtstart)
+    assert next_at == datetime(2026, 8, 15, 9, 0)
+
+
+def test_rrule_next_after_yearly() -> None:
+    after = datetime(2026, 8, 14, 10, 0)
+    next_at = rrule_next_after(
+        "RRULE:FREQ=YEARLY;BYMONTH=10;BYMONTHDAY=15;BYHOUR=8;BYMINUTE=30",
+        after,
+    )
+    assert next_at == datetime(2026, 10, 15, 8, 30)
+
+
+def test_command_backup_missing_automations_dir(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]) -> None:
+    codex_home = tmp_path / "nonexistent_codex"
+    monkeypatch.setenv("CODEX_HOME", str(codex_home))
+    args = argparse.Namespace()
+    assert command_backup(args) == 1
+    captured = capsys.readouterr()
+    assert "Automations directory not found" in captured.out

@@ -4,7 +4,9 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
-### Fixed
+- Fixed recurrence calculation in `rrule_next_after` for `FREQ=MONTHLY` and `FREQ=YEARLY` so explicit `BYMONTHDAY` / `BYMONTH` rules and `dtstart` anchors are respected instead of incorrectly matching tomorrow or aborting at a 14-day limit.
+
+- Handled missing automations directory in `command_backup` with a clear error message instead of raising unhandled `FileNotFoundError`.
 
 - Windows Store installations now classify both the `ChatGPT.exe` host and
   child `codex.exe` app-server as one Codex process family. Startup cleanup no
