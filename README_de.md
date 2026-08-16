@@ -3,10 +3,13 @@
 Inoffizielles Windows-Startup-Gate für Codex Desktop-Automatisierungen.
 
 [![English](https://img.shields.io/badge/lang-en-blue.svg)](README.md)
+[![Version: 1.1.3](https://img.shields.io/badge/Version-1.1.3-blue.svg)](pyproject.toml)
 [![CI](https://github.com/dev-bricks/safe-start-for-codex/actions/workflows/ci.yml/badge.svg)](https://github.com/dev-bricks/safe-start-for-codex/actions/workflows/ci.yml)
-[![Pytest](https://img.shields.io/badge/pytest-58%20bestanden-brightgreen.svg)](https://docs.pytest.org/)
+[![Source Platform Smoke](https://github.com/dev-bricks/safe-start-for-codex/actions/workflows/source-platform-smoke.yml/badge.svg)](https://github.com/dev-bricks/safe-start-for-codex/actions/workflows/source-platform-smoke.yml)
+[![Pytest](https://img.shields.io/badge/pytest-66%20bestanden-brightgreen.svg)](https://docs.pytest.org/)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/)
 [![Lizenz: MIT](https://img.shields.io/badge/Lizenz-MIT-yellow.svg)](LICENSE)
+[![dev-bricks](https://img.shields.io/badge/ecosystem-dev--bricks-blue.svg)](https://github.com/dev-bricks)
 [![open-bricks](https://img.shields.io/badge/ecosystem-open--bricks-blue.svg)](https://github.com/open-bricks)
 [![LLM Bereit](https://img.shields.io/badge/LLM-Bereit-purple.svg)](llms.txt)
 
@@ -18,6 +21,41 @@ Safe Start for Codex ist ein kompaktes Python-Tool für Entwickler, die viele lo
 *Dieses Projekt steht in keiner Verbindung zu OpenAI, wird nicht von OpenAI unterstützt oder gepflegt.*
 
 Der Tray-Modus meldet Start- und Hintergrundfehler über lokale Logs und Desktop-Benachrichtigungen, damit Konfigurationsfehler nicht still im Hintergrund verschwinden.
+
+## Systemarchitektur
+
+```mermaid
+graph TB
+    subgraph KontrollSchnittstellen ["Kontroll-Schnittstellen"]
+        CLI["safe-start-for-codex CLI<br/>(start, dry-run, backup, status)"]
+        Tray["Windows Tray-Anwendung<br/>(Hintergrund-Worker & Benachrichtigungen)"]
+        AIAssistants["KI-Coding-Assistenten<br/>(Claude Code / Codex / Antigravity)"]
+    end
+
+    subgraph KernEngine ["Safe Start Gating-Kern"]
+        Scanner["Automations-Scanner<br/>(~/.codex/automations)"]
+        BackupEngine["Snapshot- & Backup-Manager<br/>(~/.codex/automation-safe-start)"]
+        GatingScheduler["Gating- & Release-Scheduler<br/>(Vorlauf-Gruppe + Gestaffelte Timer)"]
+        ProcessGuard["Prozessfamilien-Supervisor<br/>(ChatGPT.exe / codex.exe)"]
+        CatchUp["Aufhol-Planer<br/>(Analyse verpasster seltener Läufe)"]
+    end
+
+    subgraph ZielUmgebung ["Codex Desktop Umgebung"]
+        CodexApp["Codex Desktop Anwendung<br/>(Windows Store / Win32)"]
+        AutomationConfigs["Automations-TOML-Konfigurationen<br/>(ACTIVE / PAUSED Zustand)"]
+    end
+
+    CLI --> Scanner
+    Tray --> Scanner
+    AIAssistants -.->|Inspektion via llms.txt| CLI
+
+    Scanner --> BackupEngine
+    BackupEngine --> GatingScheduler
+    GatingScheduler --> ProcessGuard
+    ProcessGuard --> CodexApp
+    GatingScheduler --> AutomationConfigs
+    CatchUp --> GatingScheduler
+```
 
 ## Für wen es gedacht ist
 
@@ -160,7 +198,12 @@ Kompilieren der Tray-EXE:
 - [CareCenter-for-Codex](https://github.com/dev-bricks/CareCenter-for-Codex): Wartungs-Datenbank und Log-Viewer für Codex CLI und Desktop.
 - [CodeBox](https://github.com/dev-bricks/CodeBox): Isolierte Python-Codeausführungsumgebung.
 - [companion-for-agy](https://github.com/dev-bricks/companion-for-agy): Terminal-Wrapper & UI-Helfer für Antigravity.
+- [automation-master](https://github.com/dev-bricks/automation-master): Multi-Agent-Budgetierung, Governance-Ledger & Ausführungs-Orchestrierung.
+- [WikiStub-Seed](https://github.com/dev-bricks/WikiStub-Seed): Seed-Dokumentation & statischer Webseiten-Generator.
+- [MethodenAnalyser](https://github.com/dev-bricks/MethodenAnalyser): Methoden- und Strukturanalyse-Toolkit für Multi-Agenten-Workflows.
 - [ellmos-filecommander-mcp](https://github.com/ellmos-ai/ellmos-filecommander-mcp): Dateisystem- und Prozess-Orchestrierungs-MCP-Server.
+- [ellmos-codecommander-mcp](https://github.com/ellmos-ai/ellmos-codecommander-mcp): Code-Analyse und AST-Verarbeitung.
+- [ellmos-controlcenter-mcp](https://github.com/ellmos-ai/ellmos-controlcenter-mcp): MCP-Stack-Steuerungsebene.
 
 ## Lizenz
 
@@ -170,4 +213,4 @@ Die direkten Drittanbieter-Abhängigkeiten und ihre Lizenz-Metadaten sind in
 [THIRD_PARTY_LICENSES.txt](THIRD_PARTY_LICENSES.txt) dokumentiert.
 
 ---
-*Zuletzt geprüft: 2026-08-14 durch den technischen Hygiene- und Wartungslauf (Pfad A).*
+*Zuletzt geprüft: 2026-08-16 durch den technischen Hygiene- und Auffindbarkeits-Audit (Pfad B).*

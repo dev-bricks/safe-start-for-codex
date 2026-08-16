@@ -1,4 +1,4 @@
-## Last-checked: 2026-08-14
+## Last-checked: 2026-08-16
 
 # safe-start-for-codex - Startup surge prevention for Codex Desktop automations
 
@@ -10,7 +10,7 @@ It includes optional background tray execution, startup cleanup of stale process
 
 Part of the dev-bricks family. Python, MIT.
 
-Verification: 58 pytest tests passed (47 unit/regression tests + 11 source-platform smoke tests) on 2026-08-14. Compileall passed. Ruff lint passed. The Windows Store AUMID launch produced the packaged Codex process family, and the cleanup dry-run preserved the live renderer without mutations.
+Verification: 66 pytest tests passed (55 unit/regression/metadata tests + 11 source-platform smoke tests) on 2026-08-16. Compileall passed. Ruff lint passed. The Windows Store AUMID launch produced the packaged Codex process family, and the cleanup dry-run preserved the live renderer without mutations.
 
 ## Docs
 
@@ -55,9 +55,15 @@ Codex Desktop recurring automation startup control
 
 The canonical repository is `dev-bricks/safe-start-for-codex`. It is not OpenAI Codex itself, not a Codex fork, and not a general-purpose scheduler. Broad web searches for Codex startup behavior often surface OpenAI documentation, tutorials, sandboxing articles, or unrelated Codex GitHub projects before this utility.
 
-## Related Projects (dev-bricks & ellmos family)
+## Related Projects (dev-bricks & open-bricks family)
 
-- [companion-for-agy](https://github.com/dev-bricks/companion-for-agy): Node.js wrapper for the Antigravity TUI.
-- [ellmos-filecommander-mcp](https://github.com/ellmos-ai/ellmos-filecommander-mcp): Filesystem and process orchestration.
+- [CareCenter-for-Codex](https://github.com/dev-bricks/CareCenter-for-Codex): Maintenance database and log viewer for Codex CLI and Desktop runs.
+- [CodeBox](https://github.com/dev-bricks/CodeBox): Isolated Python execution box.
+- [companion-for-agy](https://github.com/dev-bricks/companion-for-agy): Node.js wrapper & UI helper for the Antigravity TUI.
+- [automation-master](https://github.com/dev-bricks/automation-master): Multi-agent credit budgeting, governance ledger & execution orchestration.
+- [WikiStub-Seed](https://github.com/dev-bricks/WikiStub-Seed): Seed documentation & static site generator.
+- [MethodenAnalyser](https://github.com/dev-bricks/MethodenAnalyser): Method and structural analysis toolkit for multi-agent workflows.
+- [ellmos-filecommander-mcp](https://github.com/ellmos-ai/ellmos-filecommander-mcp): Filesystem and process orchestration MCP server.
 - [ellmos-codecommander-mcp](https://github.com/ellmos-ai/ellmos-codecommander-mcp): Code analysis and AST processing.
 - [ellmos-controlcenter-mcp](https://github.com/ellmos-ai/ellmos-controlcenter-mcp): MCP stack control plane.
+

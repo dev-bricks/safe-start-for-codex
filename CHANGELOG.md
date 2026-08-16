@@ -25,6 +25,7 @@ All notable changes to this project are documented here.
 
 ### Documentation & Hygiene
 
+- Discoverability, README-Design, Badges & Metadata Parity Check (Pfad B) on 2026-08-16: synchronized testsuite badge to 66 passed (55 unit/regression/metadata + 11 platform smoke), added version and ecosystem (`dev-bricks`, `open-bricks`) badges, added interactive bilingual Mermaid system architecture diagrams, expanded sibling tools ecosystem cross-references (`CareCenter-for-Codex`, `CodeBox`, `companion-for-agy`, `automation-master`, `WikiStub-Seed`, `MethodenAnalyser`), implemented automated metadata & manifest parity test suite (`tests/test_version_metadata.py`), added ruff configuration in `pyproject.toml`, and refreshed `llms.txt` verification timestamps and test counts. [G 2026-08-16]
 - Technical Hygiene & Maintenance Check (Pfad A) on 2026-08-14: configured pytest discovery for cross-platform smoke tests in `pyproject.toml` (58/58 passed), resolved ruff unused import diagnostics, added sys.path fallback for standalone smoke test script execution, and refreshed README/README_de/`llms.txt` verification status and timestamps. [G 2026-08-14]
 - SOFTWARE GITHUB check on 2026-08-12: stopped tracking internal maintainer
   artefacts (`BEFUNDE.md`, `TASKPLAN_STATUS_*.md`), hardened `.gitignore` for

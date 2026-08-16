@@ -53,3 +53,13 @@ packages = ["src/safe_start_for_codex"]
 testpaths = ["tests"]
 pythonpath = ["src"]
 python_files = ["test_*.py", "*_test.py", "*_smoke.py"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "W"]
+ignore = ["E501"]
+
+
