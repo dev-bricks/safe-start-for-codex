@@ -8,7 +8,7 @@ Unofficial Windows startup gate for Codex Desktop automations.
 [![Version: 1.1.3](https://img.shields.io/badge/version-1.1.3-blue.svg)](pyproject.toml)
 [![CI](https://github.com/dev-bricks/safe-start-for-codex/actions/workflows/ci.yml/badge.svg)](https://github.com/dev-bricks/safe-start-for-codex/actions/workflows/ci.yml)
 [![Source Platform Smoke](https://github.com/dev-bricks/safe-start-for-codex/actions/workflows/source-platform-smoke.yml/badge.svg)](https://github.com/dev-bricks/safe-start-for-codex/actions/workflows/source-platform-smoke.yml)
-[![Pytest](https://img.shields.io/badge/pytest-66%20passed-brightgreen.svg)](https://docs.pytest.org/)
+[![Pytest](https://img.shields.io/badge/pytest-70%20passed-brightgreen.svg)](https://docs.pytest.org/)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![dev-bricks](https://img.shields.io/badge/ecosystem-dev--bricks-blue.svg)](https://github.com/dev-bricks)

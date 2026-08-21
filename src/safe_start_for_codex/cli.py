@@ -779,8 +779,15 @@ def rrule_next_after(
             candidate += step
         return None
 
-    if frequency in {"MONTHLY", "YEARLY"}:
-        max_days = max(730, interval * 400) if frequency == "YEARLY" else max(90, interval * 35 + 30)
+    if frequency in {"DAILY", "WEEKLY", "MONTHLY", "YEARLY"}:
+        if frequency == "YEARLY":
+            max_days = max(730, interval * 400)
+        elif frequency == "MONTHLY":
+            max_days = max(90, interval * 35 + 30)
+        elif frequency == "WEEKLY":
+            max_days = max(60, interval * 14 + 14)
+        else:  # DAILY
+            max_days = max(30, interval * 3 + 14)
         deadline_day = (after + timedelta(days=max_days)).date()
         cursor_day = after.date()
         tzinfo = after.tzinfo
@@ -801,11 +808,9 @@ def rrule_next_after(
         if cursor.weekday() not in days or cursor.minute not in minutes:
             cursor += timedelta(minutes=1)
             continue
-        if frequency in {"DAILY", "WEEKLY"} and cursor.hour in hours:
-            return cursor
         if frequency == "HOURLY" and cursor.hour in hours and cursor.hour % max(interval, 1) == 0:
             return cursor
-        if frequency not in {"DAILY", "WEEKLY", "HOURLY"} and cursor.hour in hours:
+        if frequency not in {"HOURLY"} and cursor.hour in hours:
             return cursor
         cursor += timedelta(minutes=1)
     return None
@@ -876,9 +881,13 @@ def _matches_frequency_day(
     if current.weekday() not in allowed_days(parts):
         return False
     if frequency == "DAILY":
-        return ((current.date() - start.date()).days % interval) == 0
+        days_diff = (current.date() - start.date()).days
+        return days_diff >= 0 and (days_diff % interval) == 0
     if frequency == "WEEKLY":
-        return (((current.date() - start.date()).days // 7) % interval) == 0
+        start_monday = start.date() - timedelta(days=start.weekday())
+        current_monday = current.date() - timedelta(days=current.weekday())
+        weeks_diff = (current_monday - start_monday).days // 7
+        return weeks_diff >= 0 and (weeks_diff % interval) == 0
     if frequency == "MONTHLY":
         months = (current.year - start.year) * 12 + current.month - start.month
         return (
@@ -1690,9 +1699,13 @@ def command_restore_latest(args: argparse.Namespace) -> int:
     for row in data.get("items") or []:
         if not row.get("tool_paused"):
             continue
-        original = row.get("original_status")
+        original = str(row.get("original_status") or "")
         path = Path(row.get("path") or "")
-        if original == "ACTIVE" and path.exists():
+        if not path.exists() and row.get("id"):
+            fallback_path = automations_dir() / str(row.get("id")) / "automation.toml"
+            if fallback_path.exists():
+                path = fallback_path
+        if original.upper() == "ACTIVE" and path.exists():
             print(f"[restore] {row.get('id')} -> {original}")
             if not args.dry_run:
                 set_status(path, original)

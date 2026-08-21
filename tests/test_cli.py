@@ -648,3 +648,108 @@ def test_command_backup_missing_automations_dir(tmp_path: Path, monkeypatch: pyt
     assert command_backup(args) == 1
     captured = capsys.readouterr()
     assert "Automations directory not found" in captured.out
+
+
+def test_rrule_next_after_daily_interval_greater_than_one() -> None:
+    dtstart = datetime(2026, 8, 1, 10, 0)
+    after = datetime(2026, 8, 1, 12, 0)
+    # Every 2 days at 10:00 -> Aug 1, Aug 3, Aug 5...
+    next_at = rrule_next_after(
+        "RRULE:FREQ=DAILY;INTERVAL=2;BYHOUR=10;BYMINUTE=0",
+        after,
+        dtstart=dtstart,
+    )
+    assert next_at == datetime(2026, 8, 3, 10, 0)
+
+    # After Aug 3 11:00 -> Aug 5 10:00
+    next_after_3 = rrule_next_after(
+        "RRULE:FREQ=DAILY;INTERVAL=2;BYHOUR=10;BYMINUTE=0",
+        datetime(2026, 8, 3, 11, 0),
+        dtstart=dtstart,
+    )
+    assert next_after_3 == datetime(2026, 8, 5, 10, 0)
+
+
+def test_rrule_next_after_weekly_interval_greater_than_one() -> None:
+    # Anchor is Wednesday 2026-08-05
+    dtstart = datetime(2026, 8, 5, 10, 0)
+    after = datetime(2026, 8, 5, 12, 0)
+    # Biweekly on Saturday at 10:00 -> Week 1 has Sat Aug 8, Week 2 is off, Week 3 has Sat Aug 22
+    next_at = rrule_next_after(
+        "RRULE:FREQ=WEEKLY;INTERVAL=2;BYDAY=SA;BYHOUR=10;BYMINUTE=0",
+        after,
+        dtstart=dtstart,
+    )
+    assert next_at == datetime(2026, 8, 8, 10, 0)
+
+    # After Sat Aug 8 -> Next hit must be in Week 3 (Aug 22), not Week 2 (Aug 15)
+    next_after_week1 = rrule_next_after(
+        "RRULE:FREQ=WEEKLY;INTERVAL=2;BYDAY=SA;BYHOUR=10;BYMINUTE=0",
+        datetime(2026, 8, 8, 12, 0),
+        dtstart=dtstart,
+    )
+    assert next_after_week1 == datetime(2026, 8, 22, 10, 0)
+
+
+def test_rrule_occurrences_between_weekly_calendar_alignment() -> None:
+    # Start on Wednesday 2026-08-05. Active week 1 is Aug 3-9, Off week 2 is Aug 10-16, Active week 3 is Aug 17-23.
+    dtstart = datetime(2026, 8, 5, 10, 0)
+    start_search = datetime(2026, 8, 3, 0, 0)
+    end_search = datetime(2026, 8, 24, 0, 0)
+    rrule = "RRULE:FREQ=WEEKLY;INTERVAL=2;BYDAY=MO,WE,FR;BYHOUR=10;BYMINUTE=0"
+
+    hits = rrule_occurrences_between(
+        rrule,
+        start_search,
+        end_search,
+        dtstart=dtstart,
+    )
+    expected = [
+        datetime(2026, 8, 3, 10, 0),   # Mon (week 1)
+        datetime(2026, 8, 5, 10, 0),   # Wed (week 1)
+        datetime(2026, 8, 7, 10, 0),   # Fri (week 1)
+        # Week 2 (Aug 10, 12, 14) skipped!
+        datetime(2026, 8, 17, 10, 0),  # Mon (week 3)
+        datetime(2026, 8, 19, 10, 0),  # Wed (week 3)
+        datetime(2026, 8, 21, 10, 0),  # Fri (week 3)
+    ]
+    assert hits == expected
+
+
+def test_command_restore_latest_case_insensitive_status_and_fallback_path(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    codex_home = tmp_path / ".codex"
+    monkeypatch.setenv("CODEX_HOME", str(codex_home))
+    auto_path = write_automation(tmp_path, "case-test", "PAUSED", "RRULE:FREQ=DAILY;BYHOUR=9;BYMINUTE=0")
+
+    state_dir = codex_home / "automation-safe-start"
+    state_dir.mkdir(parents=True)
+    # Stale path pointing to old location, but fallback will find it via automations_dir()
+    snapshot = {
+        "run_id": "case-run-1",
+        "phase": "paused",
+        "created_at": "2026-08-21T04:00:00+02:00",
+        "items": [
+            {
+                "id": "case-test",
+                "path": str(tmp_path / "old_location" / "automation.toml"),
+                "tool_paused": True,
+                "original_status": "active",  # lowercase
+            }
+        ],
+    }
+    (state_dir / "latest.json").write_text(json.dumps(snapshot), encoding="utf-8")
+
+    args = argparse.Namespace(dry_run=False)
+    exit_code = cli.command_restore_latest(args)
+    assert exit_code == 0
+
+    output = capsys.readouterr().out
+    assert "Restored 1 tool-paused automations" in output
+    assert "case-test -> active" in output
+
+    content = auto_path.read_text(encoding="utf-8")
+    assert 'status = "active"' in content

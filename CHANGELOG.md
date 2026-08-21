@@ -4,6 +4,11 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- Fixed `rrule_next_after` and `_matches_frequency_day` for `FREQ=DAILY` and `FREQ=WEEKLY` with `INTERVAL > 1`: DAILY and WEEKLY recurrences are now properly evaluated with day-by-day frequency matching and Monday-aligned calendar weeks rather than skipping interval checks in the cursor loop or misaligning mid-week anchor intervals.
+- Hardened `command_restore_latest` to evaluate automation `original_status` case-insensitively (supporting lowercase `"active"` TOML status) and added fallback path resolution via `automations_dir()`.
+- Added regression tests for DAILY/WEEKLY intervals, calendar week alignment, and case-insensitive restore handling (70/70 pytest tests passing). [G 2026-08-21]
+
+
 - Fixed recurrence calculation in `rrule_next_after` for `FREQ=MONTHLY` and `FREQ=YEARLY` so explicit `BYMONTHDAY` / `BYMONTH` rules and `dtstart` anchors are respected instead of incorrectly matching tomorrow or aborting at a 14-day limit.
 
 - Handled missing automations directory in `command_backup` with a clear error message instead of raising unhandled `FileNotFoundError`.
