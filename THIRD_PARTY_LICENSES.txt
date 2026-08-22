@@ -1,10 +1,11 @@
 # Third-Party Licenses
 
-Last checked: 2026-07-13 against PyPI project metadata.
+Last checked: 2026-08-23 against PyPI project metadata.
 
-Scope: direct dependencies declared in `pyproject.toml`. This file is a
-direct dependency inventory, not a frozen transitive SBOM and not a replacement
-for dependency license files shipped inside bundled wheels or executables.
+Scope: direct dependencies declared in `pyproject.toml` as well as transitive
+runtime and build helper packages. This file is a direct dependency inventory,
+not a frozen transitive SBOM and not a replacement for dependency license files
+shipped inside bundled wheels or executables.
 
 ## Project License
 
@@ -21,9 +22,20 @@ The base package declares no external runtime dependencies in
 |---|---|---:|---:|---|---|
 | hatchling | Build backend | `>=1.24` | 1.31.0 | MIT | https://pypi.org/project/hatchling/ |
 | Pillow | Optional tray/image runtime | `>=12.2.0` | 12.3.0 | MIT-CMU | https://pypi.org/project/pillow/ |
-| pystray | Optional tray runtime | `>=0.19` | 0.19.5 | LGPLv3 | https://pypi.org/project/pystray/ |
-| pytest | Development tests | `>=8.0` | 9.1.1 | MIT | https://pypi.org/project/pytest/ |
+| pystray | Optional tray runtime | `>=0.19.5` | 0.19.5 | LGPLv3 | https://pypi.org/project/pystray/ |
+| pytest | Development tests | `>=9.1.1` | 9.1.1 | MIT | https://pypi.org/project/pytest/ |
 | PyInstaller | Optional Windows EXE build | `>=6.0` | 6.21.0 | GPLv2-or-later with PyInstaller's special exception | https://pypi.org/project/pyinstaller/ |
+
+## Transitive Build & Test Inventory
+
+| Package | Used By | Version Checked | License | Source |
+|---|---|---:|---|---|
+| altgraph | PyInstaller | 0.17.5 | MIT | https://pypi.org/project/altgraph/ |
+| pyinstaller-hooks-contrib | PyInstaller | 2026.6 | Apache-2.0 | https://pypi.org/project/pyinstaller-hooks-contrib/ |
+| pluggy | pytest | 1.6.0 | MIT | https://pypi.org/project/pluggy/ |
+| iniconfig | pytest | 2.3.0 | MIT | https://pypi.org/project/iniconfig/ |
+| packaging | pytest / build | 26.2 | Apache-2.0 / BSD-2-Clause | https://pypi.org/project/packaging/ |
+| colorama | pytest / CLI | 0.4.6 | BSD-3-Clause | https://pypi.org/project/colorama/ |
 
 ## Distribution Notes
 

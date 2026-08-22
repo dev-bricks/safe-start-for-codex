@@ -4,6 +4,12 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- Technical Hygiene, Security & License Audit (SOFTWARE_SECURITY_LICENSE_AUDIT) on 2026-08-23:
+  - Hardened dependency floors in `pyproject.toml` (`pytest>=9.1.1` to prevent GHSA-6w46-j5rx-g56g / CVE-2025-7117, `pystray>=0.19.5`) and expanded project URLs (`Documentation`, `Repository`, `Changelog`, `Security`).
+  - Enriched bilingual `SECURITY.md` with official reporting guidelines, direct security contacts (`security@ellmos.ai`, `support@lukasgeiger.com`), local-first & zero-egress architecture guarantees, unprivileged user-mode execution, and non-destructive atomic file safeguards.
+  - Updated `THIRD_PARTY_LICENSES.txt` with refreshed inventory timestamp (`2026-08-23`), hardened dependency constraints, and full transitive build/test package inventory (`altgraph`, `pyinstaller-hooks-contrib`, `pluggy`, `iniconfig`, `packaging`, `colorama`).
+  - Strengthened `.gitignore` with sync conflict patterns (`*-WORKSTATION-LG*`, `*.conflict`, `*.sync-conflict-*`) and removed stale OneDrive conflict files.
+  - Added comprehensive security & license contract test suite `tests/test_security_license_contract.py` verifying dependency vulnerability floors, license metadata, bilingual security policy, repo hygiene, PEP 621 URLs/classifiers, and zero plaintext secrets or hardcoded user paths (76/76 pytest tests passing 100% green). [G 2026-08-23]
 - Fixed `rrule_next_after` and `_matches_frequency_day` for `FREQ=DAILY` and `FREQ=WEEKLY` with `INTERVAL > 1`: DAILY and WEEKLY recurrences are now properly evaluated with day-by-day frequency matching and Monday-aligned calendar weeks rather than skipping interval checks in the cursor loop or misaligning mid-week anchor intervals.
 - Hardened `command_restore_latest` to evaluate automation `original_status` case-insensitively (supporting lowercase `"active"` TOML status) and added fallback path resolution via `automations_dir()`.
 - Added regression tests for DAILY/WEEKLY intervals, calendar week alignment, and case-insensitive restore handling (70/70 pytest tests passing). [G 2026-08-21]

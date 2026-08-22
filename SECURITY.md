@@ -4,18 +4,38 @@
 
 ### Sicherheitslücken melden
 
-Bitte keine öffentlichen Issues für Sicherheitslücken eröffnen. Verwenden Sie GitHub Private Vulnerability Reporting, falls es im Repository aktiviert ist. Falls nicht, kontaktieren Sie die Maintainer über GitHub und veröffentlichen Sie keine Details.
+Bitte eröffnen Sie **keine öffentlichen Issues** für Sicherheitslücken. Verwenden Sie vorrangig das [GitHub Private Vulnerability Reporting](https://github.com/dev-bricks/safe-start-for-codex/security/advisories/new).
 
-### Geltungsbereich
+Alternativ erreichen Sie das Sicherheitsteam direkt per E-Mail:
+- **Primary Security Contact:** `security@ellmos.ai`
+- **Secondary Security Contact:** `support@lukasgeiger.com`
 
-Dieses Tool verändert lokale Codex-Automationsdateien und kann auf Windows verwaiste Codex-Prozesse beenden. Sicherheitsrelevante Meldungen zu Dateisystemzugriffen, Prozessbehandlung oder unerwarteter Datenweitergabe sind im Geltungsbereich.
+Wir bemühen uns um eine Erstprüfung innerhalb von 48 Stunden und koordinieren Patches vor der Veröffentlichung.
+
+### Geltungsbereich & Sicherheitsarchitektur
+
+1. **Local-First & Zero-Egress:** Safe Start for Codex arbeitet zu 100% lokal und offline. Es werden keine Telemetrie- oder Nutzungsdaten übertragen.
+2. **Unprivilegierter User-Mode (Non-Elevation):** Das Tool benötigt und verlangt keine Administrator- bzw. UAC-Rechte. Alle Aktionen verbleiben im Kontext des regulären Benutzers.
+3. **Nicht-destruktive Dateioperationen:** Alle Schreibzugriffe auf Codex-Konfigurationen (`~/.codex/automations`) erfolgen atomar über temporäre Dateien mit anschließendem Rename und automatischen Backups (`~/.codex/automation-safe-start`), um Dateibeschädigungen bei Systemabstürzen auszuschließen.
+4. **Prozessbehandlung:** Das Bereinigen von verwaisten Prozessen beschränkt sich strikt auf die bekannte Codex-Prozessfamilie (`ChatGPT.exe`, `codex.exe`) unter Berücksichtigung definierter Zombie-Schwellenwerte.
+
+---
 
 ## English
 
 ### Reporting a Vulnerability
 
-Please do not open public issues for security vulnerabilities. Use GitHub Private Vulnerability Reporting if it is enabled for the repository. If it is not enabled, contact the maintainers through GitHub and do not disclose details publicly.
+Please **do not open public issues** for security vulnerabilities. We encourage using [GitHub Private Vulnerability Reporting](https://github.com/dev-bricks/safe-start-for-codex/security/advisories/new).
 
-### Scope
+Alternatively, you may contact the security team directly via email:
+- **Primary Security Contact:** `security@ellmos.ai`
+- **Secondary Security Contact:** `support@lukasgeiger.com`
 
-This tool changes local Codex automation files and can terminate stale Codex-related Windows processes. Security reports about file access, process handling, or unexpected data disclosure are in scope.
+We aim to acknowledge and triage reports within 48 hours and coordinate fixes before public release.
+
+### Scope & Security Guarantees
+
+1. **Local-First & Zero-Egress:** Safe Start for Codex operates 100% locally and offline. No telemetry, crash logs, or user analytics are transmitted over the network.
+2. **Unprivileged User-Mode (Non-Elevation):** The tool requires no administrative or elevated UAC privileges and executes entirely within standard unprivileged user space.
+3. **Non-Destructive File Safety:** All automation file modifications (`~/.codex/automations`) use atomic writes via temporary files and automatic snapshot backups (`~/.codex/automation-safe-start`) to prevent corruption during unexpected shutdowns.
+4. **Targeted Process Supervision:** Process cleanup is strictly constrained to the recognized Codex desktop process family (`ChatGPT.exe`, `codex.exe`) with explicit zombie timeout safeguards.

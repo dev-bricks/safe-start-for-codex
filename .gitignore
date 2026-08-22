@@ -50,6 +50,13 @@ token.json
 *.sqlite
 *.sqlite3
 
+# Sync conflict and backup files
+*-WORKSTATION-LG*
+*-ASUS-GEI*
+*.conflict
+*.sync-conflict-*
+*.bak
+
 # Editor and OS files
 .vscode/
 .idea/

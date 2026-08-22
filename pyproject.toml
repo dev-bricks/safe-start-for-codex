@@ -30,10 +30,10 @@ dependencies = []
 [project.optional-dependencies]
 tray = [
   "pillow>=12.2.0",
-  "pystray>=0.19"
+  "pystray>=0.19.5"
 ]
 dev = [
-  "pytest>=8.0"
+  "pytest>=9.1.1"
 ]
 build = [
   "pyinstaller>=6.0"
@@ -44,7 +44,11 @@ safe-start-for-codex = "safe_start_for_codex.cli:main"
 
 [project.urls]
 Homepage = "https://github.com/dev-bricks/safe-start-for-codex"
+Documentation = "https://github.com/dev-bricks/safe-start-for-codex#readme"
+Repository = "https://github.com/dev-bricks/safe-start-for-codex"
 Issues = "https://github.com/dev-bricks/safe-start-for-codex/issues"
+Changelog = "https://github.com/dev-bricks/safe-start-for-codex/blob/main/CHANGELOG.md"
+Security = "https://github.com/dev-bricks/safe-start-for-codex/security/advisories"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/safe_start_for_codex"]
