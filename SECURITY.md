@@ -2,13 +2,22 @@
 
 ## Deutsch
 
+### Unterstützte Versionen
+
+| Version | Unterstützt |
+| ------- | ----------- |
+| 1.1.x   | :white_check_mark: |
+| < 1.1.0 | :x:         |
+
 ### Sicherheitslücken melden
 
 Bitte eröffnen Sie **keine öffentlichen Issues** für Sicherheitslücken. Verwenden Sie vorrangig das [GitHub Private Vulnerability Reporting](https://github.com/dev-bricks/safe-start-for-codex/security/advisories/new).
 
 Alternativ erreichen Sie das Sicherheitsteam direkt per E-Mail:
 - **Primary Security Contact:** `security@ellmos.ai`
+- **Umbrella Security Contact:** `security@open-bricks.org`
 - **Secondary Security Contact:** `support@lukasgeiger.com`
+- **Maintainer Contact:** `lukas@open-bricks.org`
 
 Wir bemühen uns um eine Erstprüfung innerhalb von 48 Stunden und koordinieren Patches vor der Veröffentlichung.
 
@@ -23,13 +32,22 @@ Wir bemühen uns um eine Erstprüfung innerhalb von 48 Stunden und koordinieren 
 
 ## English
 
+### Supported Versions
+
+| Version | Supported          |
+| ------- | ------------------ |
+| 1.1.x   | :white_check_mark: |
+| < 1.1.0 | :x:                |
+
 ### Reporting a Vulnerability
 
 Please **do not open public issues** for security vulnerabilities. We encourage using [GitHub Private Vulnerability Reporting](https://github.com/dev-bricks/safe-start-for-codex/security/advisories/new).
 
 Alternatively, you may contact the security team directly via email:
 - **Primary Security Contact:** `security@ellmos.ai`
+- **Umbrella Security Contact:** `security@open-bricks.org`
 - **Secondary Security Contact:** `support@lukasgeiger.com`
+- **Maintainer Contact:** `lukas@open-bricks.org`
 
 We aim to acknowledge and triage reports within 48 hours and coordinate fixes before public release.
 

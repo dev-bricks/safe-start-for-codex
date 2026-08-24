@@ -4,7 +4,15 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- Technical Hygiene, Multi-OS CI Matrix & Contract Test Suite (GITHUBBOT_ONE_REPO_CLEANER / Pfad A) on 2026-08-24:
+  - Hardened GitHub Actions CI workflows (`.github/workflows/ci.yml` and `.github/workflows/source-platform-smoke.yml`) with concurrency groups (`cancel-in-progress: true`), multi-version Python matrix testing (Python 3.11, 3.12, 3.13), and automated `ruff check .` linting gate before test execution.
+  - Expanded `pyproject.toml` with PEP 621 classifiers (`Environment :: Console`, `Environment :: MacOS X`, `Environment :: X11 Applications`, `Operating System :: OS Independent`, `Operating System :: POSIX :: Linux`, `Operating System :: MacOS`, `Programming Language :: Python :: 3.13`, `Topic :: Desktop Environment`), `dev` dependencies (`ruff>=0.5.0`), and full `[project.urls]` (`Bug Tracker`, `Parent Organization`, `Umbrella Ecosystem`).
+  - Enriched bilingual `SECURITY.md` with Supported Versions table (`1.1.x`) and full official security contacts (`security@ellmos.ai`, `security@open-bricks.org`, `support@lukasgeiger.com`, `lukas@open-bricks.org`).
+  - Refreshed direct dependency license inventory `THIRD_PARTY_LICENSES.txt` with 2026-08-24 verification timestamp and `ruff` license metadata.
+  - Expanded automated contract test suite in `tests/test_security_license_contract.py`, `tests/test_third_party_licenses.py`, and `tests/test_version_metadata.py` with CI concurrency, ruff lint gate, CLI parser subcommand registry, and README/README_de bilingual section parity validation (79/79 pytest tests passing 100% green).
+  - Synchronized Shields.io test badges and `llms.txt` verification timestamp (`2026-08-24`). [G 2026-08-24]
 - Technical Hygiene, Security & License Audit (SOFTWARE_SECURITY_LICENSE_AUDIT) on 2026-08-23:
+
   - Hardened dependency floors in `pyproject.toml` (`pytest>=9.1.1` to prevent GHSA-6w46-j5rx-g56g / CVE-2025-7117, `pystray>=0.19.5`) and expanded project URLs (`Documentation`, `Repository`, `Changelog`, `Security`).
   - Enriched bilingual `SECURITY.md` with official reporting guidelines, direct security contacts (`security@ellmos.ai`, `support@lukasgeiger.com`), local-first & zero-egress architecture guarantees, unprivileged user-mode execution, and non-destructive atomic file safeguards.
   - Updated `THIRD_PARTY_LICENSES.txt` with refreshed inventory timestamp (`2026-08-23`), hardened dependency constraints, and full transitive build/test package inventory (`altgraph`, `pyinstaller-hooks-contrib`, `pluggy`, `iniconfig`, `packaging`, `colorama`).

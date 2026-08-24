@@ -24,7 +24,7 @@ def test_dependency_versions_no_vulnerable_floors() -> None:
 
 def test_third_party_license_inventory_metadata() -> None:
     text = (ROOT / "THIRD_PARTY_LICENSES.txt").read_text(encoding="utf-8")
-    assert "Last checked: 2026-08-23" in text
+    assert "Last checked: 2026-08-24" in text
     assert "Safe Start for Codex is licensed under the MIT License" in text
     assert "Transitive Build & Test Inventory" in text
     for pkg in [
@@ -32,6 +32,7 @@ def test_third_party_license_inventory_metadata() -> None:
         "pillow",
         "pystray",
         "pytest",
+        "ruff",
         "pyinstaller",
         "altgraph",
         "pluggy",
@@ -46,8 +47,12 @@ def test_security_policy_bilingual_and_contacts() -> None:
     text = (ROOT / "SECURITY.md").read_text(encoding="utf-8")
     assert "## Deutsch" in text
     assert "## English" in text
+    assert "### Unterstützte Versionen" in text
+    assert "### Supported Versions" in text
     assert "security@ellmos.ai" in text
+    assert "security@open-bricks.org" in text
     assert "support@lukasgeiger.com" in text
+    assert "lukas@open-bricks.org" in text
     assert "Local-First & Zero-Egress" in text
     assert "Non-Elevation" in text or "Unprivilegierter User-Mode" in text
     assert "Non-Destructive File Safety" in text or "Nicht-destruktive Dateioperationen" in text
@@ -86,13 +91,32 @@ def test_pyproject_pep621_classifiers_and_urls() -> None:
     classifiers = project.get("classifiers", [])
     assert "License :: OSI Approved :: MIT License" in classifiers
     assert "Operating System :: Microsoft :: Windows" in classifiers
+    assert "Operating System :: OS Independent" in classifiers
     assert "Programming Language :: Python :: 3.11" in classifiers
     assert "Programming Language :: Python :: 3.12" in classifiers
+    assert "Programming Language :: Python :: 3.13" in classifiers
 
     urls = project.get("urls", {})
     assert "Homepage" in urls
     assert "Documentation" in urls
     assert "Repository" in urls
     assert "Issues" in urls
+    assert "Bug Tracker" in urls
     assert "Changelog" in urls
     assert "Security" in urls
+    assert "Parent Organization" in urls
+    assert "Umbrella Ecosystem" in urls
+
+
+def test_ci_workflows_concurrency_and_lint_gate() -> None:
+    ci_yml = (ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
+    smoke_yml = (ROOT / ".github" / "workflows" / "source-platform-smoke.yml").read_text(encoding="utf-8")
+
+    assert "concurrency:" in ci_yml
+    assert "cancel-in-progress: true" in ci_yml
+    assert "ruff check ." in ci_yml
+    assert '"3.13"' in ci_yml
+
+    assert "concurrency:" in smoke_yml
+    assert "cancel-in-progress: true" in smoke_yml
+    assert '"3.13"' in smoke_yml
