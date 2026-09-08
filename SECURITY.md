@@ -19,7 +19,7 @@ Alternativ erreichen Sie das Sicherheitsteam direkt per E-Mail:
 - **Secondary Security Contact:** `support@lukasgeiger.com`
 - **Maintainer Contact:** `lukas@open-bricks.org`
 
-Wir bemühen uns um eine Erstprüfung innerhalb von 48 Stunden und koordinieren Patches vor der Veröffentlichung.
+Wir bestätigen den Eingang von Meldungen innerhalb von 48 Stunden, schließen die technische Triage innerhalb von 5 Werktagen ab und koordinieren Sicherheitspatches vor der Veröffentlichung.
 
 ### Geltungsbereich & Sicherheitsarchitektur
 
@@ -49,7 +49,7 @@ Alternatively, you may contact the security team directly via email:
 - **Secondary Security Contact:** `support@lukasgeiger.com`
 - **Maintainer Contact:** `lukas@open-bricks.org`
 
-We aim to acknowledge and triage reports within 48 hours and coordinate fixes before public release.
+We aim to acknowledge reports within 48 hours, complete technical triage within 5 business days, and coordinate security patches before public disclosure.
 
 ### Scope & Security Guarantees
 

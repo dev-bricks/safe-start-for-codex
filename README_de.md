@@ -1,28 +1,94 @@
 # Safe Start for Codex
 
-Inoffizielles Windows-Startup-Gate für Codex Desktop-Automatisierungen.
+Inoffizielles Windows-Startup-Gate für Codex Desktop-Automatisierungen und gestaffelte Ausführung.
 
-[![English](https://img.shields.io/badge/lang-en-blue.svg)](README.md)
-[![Version: 1.1.3](https://img.shields.io/badge/Version-1.1.3-blue.svg)](pyproject.toml)
-[![CI](https://github.com/dev-bricks/safe-start-for-codex/actions/workflows/ci.yml/badge.svg)](https://github.com/dev-bricks/safe-start-for-codex/actions/workflows/ci.yml)
-[![Source Platform Smoke](https://github.com/dev-bricks/safe-start-for-codex/actions/workflows/source-platform-smoke.yml/badge.svg)](https://github.com/dev-bricks/safe-start-for-codex/actions/workflows/source-platform-smoke.yml)
-[![Pytest](https://img.shields.io/badge/pytest-79%20bestanden-brightgreen.svg)](https://docs.pytest.org/)
-[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/)
-[![Lizenz: MIT](https://img.shields.io/badge/Lizenz-MIT-yellow.svg)](LICENSE)
-[![dev-bricks](https://img.shields.io/badge/ecosystem-dev--bricks-blue.svg)](https://github.com/dev-bricks)
-[![open-bricks](https://img.shields.io/badge/ecosystem-open--bricks-blue.svg)](https://github.com/open-bricks)
-[![LLM Bereit](https://img.shields.io/badge/LLM-Bereit-purple.svg)](llms.txt)
+![Safe Start for Codex Banner](assets/safe_start_banner.png)
+
+<p align="center">
+  <a href="pyproject.toml"><img src="https://img.shields.io/badge/Version-1.1.3-blue.svg" alt="Version"></a>
+  <a href="https://github.com/dev-bricks/safe-start-for-codex/actions/workflows/ci.yml"><img src="https://img.shields.io/badge/CI-GitHub%20Actions-brightgreen.svg" alt="CI Status"></a>
+  <a href="https://github.com/dev-bricks/safe-start-for-codex/actions/workflows/source-platform-smoke.yml"><img src="https://img.shields.io/badge/Smoke-macOS%20%7C%20Linux-brightgreen.svg" alt="Plattform Smoke"></a>
+  <a href="tests/"><img src="https://img.shields.io/badge/pytest-84%20bestanden%20%7C%20100%25-brightgreen.svg" alt="Pytest Status"></a>
+  <img src="https://img.shields.io/badge/python-3.11%20%7C%203.12%20%7C%203.13-blue.svg" alt="Python Versionen">
+  <img src="https://img.shields.io/badge/plattform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey.svg" alt="Plattformen">
+  <img src="https://img.shields.io/badge/architektur-100%25%20Local--First%20%7C%20Zero--Egress-success.svg" alt="Local-First Architektur">
+  <img src="https://img.shields.io/badge/sicherheit-Non--Elevation%20%7C%20User--Mode-informational.svg" alt="Sicherheitsmodus">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/Lizenz-MIT-yellow.svg" alt="Lizenz"></a>
+  <a href="https://github.com/dev-bricks"><img src="https://img.shields.io/badge/ecosystem-dev--bricks-blue.svg" alt="dev-bricks"></a>
+  <a href="https://github.com/open-bricks"><img src="https://img.shields.io/badge/ecosystem-open--bricks-blue.svg" alt="open-bricks"></a>
+  <a href="llms.txt"><img src="https://img.shields.io/badge/LLM-Bereit-purple.svg" alt="LLM-Bereit"></a>
+</p>
+
+**[English](README.md)** | **[Deutsch](README_de.md)**
 
 > [!NOTE]
-> **Integration für KI-Agenten & Codex-Automatisierung:** Safe Start for Codex ist darauf ausgelegt, von lokalen KI-Assistenten (Claude Code, Codex CLI, Gemini Antigravity) analysiert und ausgeführt zu werden. Maschinenlesbarer Kontext steht unter [`llms.txt`](llms.txt) zur Verfügung.
+> **Integration für KI-Agenten & Codex-Automatisierung:** Safe Start for Codex ist darauf ausgelegt, von lokalen KI-Coding-Assistenten (Claude Code, Codex CLI, Gemini Antigravity, Kimi) inspiziert, ausgeführt und verifiziert zu werden. Strukturierter, maschinenlesbarer Kontext steht unter [`llms.txt`](llms.txt) zur Verfügung.
 
-Safe Start for Codex ist ein kompaktes Python-Tool für Entwickler, die viele lokale Codex-Automatisierungen ausführen und Spitzenlasten (Surges) beim Starten der App vermeiden möchten. Es pausiert vorübergehend aktive lokale Automatisierungen, startet Codex Desktop und gibt sie anschließend kontrolliert und zeitlich gestaffelt wieder frei.
+---
 
-*Dieses Projekt steht in keiner Verbindung zu OpenAI, wird nicht von OpenAI unterstützt oder gepflegt.*
+### 🧭 Schnellnavigation
 
-Der Tray-Modus meldet Start- und Hintergrundfehler über lokale Logs und Desktop-Benachrichtigungen, damit Konfigurationsfehler nicht still im Hintergrund verschwinden.
+1. [Übersicht & Systemarchitektur](#1-übersicht--systemarchitektur)
+2. [Für wen es gedacht ist & Das Problem der Startspitzen](#2-für-wen-es-gedacht-ist--das-problem-der-startspitzen)
+3. [Funktionsweise von Safe Start](#3-funktionsweise-von-safe-start)
+4. [Systemarchitektur](#4-systemarchitektur)
+5. [Start-Gating & Freigabe-Lebenszyklus](#5-start-gating--freigabe-lebenszyklus)
+6. [Governance- & Laufzeitinvarianten](#6-governance--laufzeitinvarianten)
+7. [CLI-Nutzung & Unterbefehle](#7-cli-nutzung--unterbefehle)
+8. [Konfiguration & Feinabstimmung](#8-konfiguration--feinabstimmung)
+9. [Windows Tray-Modus & Prozessüberwachung](#9-windows-tray-modus--prozessüberwachung)
+10. [Konservativer Aufholplaner (Catch-Up Planner)](#10-konservativer-aufholplaner-catch-up-planner)
+11. [Upstream-Verbesserungsvorschlag & Lösungskonzept](#11-upstream-verbesserungsvorschlag--lösungskonzept)
+12. [Verwandte Tools & Ökosystem](#12-verwandte-tools--ökosystem)
+13. [Auffindbarkeit](#13-auffindbarkeit)
+14. [Entwicklung, Sicherheit & Lizenz](#14-entwicklung-sicherheit--lizenz)
 
-## Systemarchitektur
+---
+
+## 1. Übersicht & Systemarchitektur
+
+Safe Start for Codex ist ein kompaktes Python-Tool und Windows-Startup-Gate für Entwickler, die mehrere lokale Codex Desktop-Automatisierungen betreiben. Beim Start von Codex Desktop werden wiederkehrende Automatisierungen, die während Ruhephasen oder im Standby fällig wurden, oft gleichzeitig ausgelöst. Dies führt zu Systemüberlastung, CPU-Spitzen, verbrauchten API-Quoten und blockierten Benutzeroberflächen.
+
+Safe Start verhindert dieses Verhalten kontrolliert:
+1. Es erstellt vorab ein atomares Snapshot-Backup aller aktiven Konfigurationen.
+2. Es versetzt aktive Automatisierungen vor dem Codex-Start in den Zustand `PAUSED`.
+3. Es startet Codex Desktop im unprivilegierten Benutzer-Modus.
+4. Es reaktiviert eine kleine Vorlauf-Gruppe, deren geplanter Lauf sicher in der Zukunft liegt.
+5. Es gibt die verbleibenden Automatisierungen gestaffelt in zeitlichen Intervallen im Hintergrund frei.
+
+Dieses Projekt ist eine unabhängige Open-Source-Entwicklung und steht in keiner Verbindung zu OpenAI.
+
+---
+
+## 2. Für wen es gedacht ist & Das Problem der Startspitzen
+
+| Herausforderung | Ohne Safe Start | Mit Safe Start for Codex |
+|:---|:---|:---|
+| **Gleichzeitiger Start** | Alle fälligen Automatisierungen starten simultan beim Desktop-Boot. | Automatisierungen werden vor dem Start pausiert und kontrolliert freigegeben. |
+| **Lastspitzen & API-Limits** | CPU-, Festplatten- und API-Kontingente werden schlagartig überlastet. | Vorhersehbare, gestaffelte Ressourcennutzung durch einstellbare Freigabe-Intervalle. |
+| **Verwaiste Restprozesse** | Zombie-Instanzen von `codex.exe` oder `ChatGPT.exe` verbleiben unbemerkt. | Automatische Prozessüberwachung mit konservativen Schwellenwerten für Zombies. |
+| **Konfigurationssicherheit** | Manuelle TOML-Edits bergen Syntaxfehler- und Datenverlustrisiken. | Atomare Schreibvorgänge via Staging-Dateien und automatische Snapshot-Backups. |
+| **Verpasste seltene Läufe** | Seltene Automatisierungen (z. B. wöchentlich) laufen unvorhersehbar nach. | Schreibgeschützter Aufholplan analysiert verpasste Läufe ohne erzwungene Ausführung. |
+
+Safe Start ist bewusst fokussiert: Es ist ein lokales Startup-Gate und Sicherheitswächter, kein Ersatz-Scheduler, kein Cloud-Dienst und kein Codex-Fork.
+
+---
+
+## 3. Funktionsweise von Safe Start
+
+- **Automations-Scan:** Erkennt lokale Codex-Automatisierungs-TOML-Dateien unter `CODEX_HOME` oder `~/.codex/automations`.
+- **Pre-Boot Gating:** Pausiert beim Start aktive (`ACTIVE`) Automatisierungen zur Vermeidung von Lastspitzen.
+- **Atomares Backup:** Schreibt einen zeitgestempelten Snapshot aller Konfigurationen vor jeder Änderung.
+- **Prozess-Supervisor:** Beendet optional verwaiste, fensterlose Zombie-Prozesse oberhalb definierter Altersgrenzen.
+- **Sauberer Start:** Startet Codex Desktop (unterstützt Windows Store AUMID sowie native Win32-Installationen).
+- **Gestaffelte Freigabe:** Aktiviert zuerst eine Vorlauf-Gruppe und reaktiviert den Rest schrittweise nach Zeitintervallen.
+- **Selektive Wiederherstellung:** Stellt ausschließlich Automatisierungen wieder her, die vom Tool in dieser Sitzung pausiert wurden; manuell pausierte Einträge bleiben unverändert.
+- **Aufhol-Planer:** Erstellt eine schreibgeschützte Übersicht verpasster seltener Läufe ohne manuelle "Run now"-Auslösung.
+- **Plattform-Portabilität:** Produktivbetrieb unter Windows mit Linux- und macOS-Source-Smoke-Tests.
+
+---
+
+## 4. Systemarchitektur
 
 ```mermaid
 graph TB
@@ -57,88 +123,102 @@ graph TB
     CatchUp --> GatingScheduler
 ```
 
-## Für wen es gedacht ist
+---
 
-Safe Start for Codex richtet sich an Nutzer, die Codex Desktop unter Windows mit vielen lokalen wiederkehrenden Automatisierungen, Erinnerungen, Monitoren oder Hintergrundprüfungen verwenden und einen vorhersehbaren Startpfad brauchen. Das Projekt ist bewusst eng gefasst: Es ist ein lokales Startup-Gate für Automatisierungen, kein Ersatz-Scheduler, kein Cloud-Dienst und kein Codex-Fork.
-
-## Funktionsweise
-
-- Scannt lokale Codex-Automatisierungs-TOML-Dateien unter `CODEX_HOME` oder `~/.codex`.
-- Pausiert Automatisierungen, die zum Startzeitpunkt aktiv (`ACTIVE`) waren.
-- Startet Codex Desktop auf Windows.
-- Gibt eine erste kleine Gruppe frei, deren nächster Lauf sicher in der Zukunft liegt.
-- Reaktiviert die verbleibenden Automatisierungen schrittweise (gestaffelt).
-- Stellt ausschließlich Automatisierungen wieder her, die vom Tool pausiert wurden.
-- Bereinigt optional verwaiste Codex-Startreste auf Windows (z. B. alte Hauptprozesse ohne Renderer, verwaiste Lockfiles).
-- Kann einen schreibgeschützten Aufholplan (Catch-Up Plan) für selten ausgeführte Automatisierungen erstellen, die einen Lauf verpasst haben.
-- Enthält Windows-CI sowie Source-Platform-Smoke-Checks für macOS- und Linux-Parsing-/Konfigurationslogik.
+## 5. Start-Gating & Freigabe-Lebenszyklus
 
 ```mermaid
-flowchart TD
-    A["Safe Start Starten"] --> B["Scan ~/.codex/automations"]
-    B --> C["Pausiere ACTIVE Automatisierungen"]
-    C --> D["Erstelle Snapshot-Backup"]
-    D --> E["Starte Codex Desktop"]
-    E --> F["Freigabe der ersten Vorlauf-Gruppe"]
-    F --> G["Gestaffelte Hintergrund-Freigabe"]
-    G --> H["Alle Automatisierungen wiederhergestellt"]
+sequenceDiagram
+    autonumber
+    actor User as Benutzer / KI-Agent / Autostart
+    participant CLI as Safe Start CLI / Tray
+    participant Scanner as Automations-Scanner
+    participant Storage as Backup & State (~/.codex)
+    participant Supervisor as Prozess-Supervisor
+    participant Codex as Codex Desktop (ChatGPT.exe)
+    participant Scheduler as Gating-Scheduler
+
+    User->>CLI: safe-start-for-codex start
+    CLI->>Scanner: scan_automations()
+    Scanner->>Storage: Lese aktive automation.toml Dateien
+    Storage-->>Scanner: Liste aktiver Automatisierungen
+    CLI->>Storage: Erstelle zeitgestempelten Snapshot-Backup
+    CLI->>Storage: Setze status = 'paused' (atomarer Schreibvorgang)
+    CLI->>Supervisor: inspect_stale_processes()
+    Supervisor-->>CLI: Bereinige verwaiste Zombie-Prozesse falls Schwellenwert überschritten
+    CLI->>Codex: Starte Codex Desktop (Win32 / Store AUMID)
+    CLI->>Scheduler: Initialisiere gestaffelte Freigabeschlange
+    Scheduler->>Storage: Freigabe der ersten Vorlauf-Gruppe (status = 'active')
+    Note over Scheduler,Storage: Vorlauf-Gruppe: Nächster Lauf sicher in der Zukunft
+    loop Gestaffelte Freigabe-Intervalle
+        Scheduler->>Scheduler: Warte interval_minutes
+        Scheduler->>Storage: Freigabe der nächsten Automationsgruppe
+    end
+    Scheduler->>CLI: Alle pausierten Automatisierungen wiederhergestellt
+    CLI-->>User: Startvorgang sauber abgeschlossen
 ```
 
-Das Tool aktiviert keine Automatisierungen, die bereits vor dem Start manuell pausiert waren, und löst keine manuelle Ausführung ("Run now") in Codex aus.
+---
 
-## Sicherheitshinweis
+## 6. Governance- & Laufzeitinvarianten
 
-Dies ist ein Workaround um das lokale Startverhalten von Codex Desktop. Das Tool bearbeitet Dateien unter `~/.codex/automations/*/automation.toml`, erstellt Snapshots in `~/.codex/automation-safe-start` und beendet ggf. verwaiste Codex-Prozesse.
+Safe Start for Codex erzwingt 10 strikte Architektur- und Laufzeitgarantien:
 
-Führen Sie vor der ersten echten Nutzung einen Testlauf aus:
+| # | Invariante | Bereich | Garantie & Überprüfung |
+|---|:---|:---|:---|
+| 1 | **Local-First & Zero Egress** | Netzwerk | 100% offline; keine Netzwerkaufrufe, keine Telemetrie, kein Tracking. Alle Zustände sind lokal. |
+| 2 | **Non-Elevation (User-Mode)** | Sicherheit | Läuft vollständig mit Standard-Benutzerrechten. Erfordert und fordert niemals Administrator-/UAC-Rechte an. |
+| 3 | **Snapshot-Before-Mutation** | Datensicherheit | Erstellt ein atomares Backup in `~/.codex/automation-safe-start/backups/` vor jeder Änderung an `automation.toml`. |
+| 4 | **Selektive Wiederherstellung** | Idempotenz | Reaktiviert nur Automatisierungen, die Safe Start in der jeweiligen Sitzung pausiert hat. Bereits inaktive bleiben unverändert. |
+| 5 | **Konservative Aufholpolitik** | Ablaufplanung | Die Aufholanalyse ist rein schreibgeschützt; sie löst niemals manuelle "Run now"-Aktionen oder Sofortläufe aus. |
+| 6 | **Gezielte Prozessüberwachung** | Betriebssystem | Die Bereinigung beschränkt sich strikt auf die Codex-Prozessfamilie (`ChatGPT.exe`, `codex.exe`) mit Altersgrenzen. |
+| 7 | **Atomare TOML-Serialisierung** | Integrität | Schreibzugriffe nutzen Staging-Dateien und atomare Umbenennungen gegen Datenverlust bei abruptem Abbruch. |
+| 8 | **Fail-Closed Diagnostik** | Zuverlässigkeit | Fehlerhafte Konfigurationen oder Dateizustände brechen kontrolliert ab, ohne Dateien unvollständig zu modifizieren. |
+| 9 | **Duale Plattformarchitektur** | Portabilität | Produktiver Einsatz unter Windows mit plattformübergreifenden Smoke-Tests für Linux und macOS. |
+| 10 | **Ökosystem-Parität** | Governance | Vollständige Metadaten-, Dokumentations- und Vertragstest-Konformität mit `dev-bricks`- und `open-bricks`-Standards. |
 
-```powershell
-safe-start-for-codex dry-run
-```
+---
 
-Erstellen Sie ein Backup:
+## 7. CLI-Nutzung & Unterbefehle
 
-```powershell
-safe-start-for-codex backup
-```
-
-## Installation
-
-Aus einem lokalen Klon:
-
-```powershell
-python -m pip install -e .
-```
-
-Für den optionalen System-Tray-Modus:
-
-```powershell
-python -m pip install -e ".[tray]"
-```
-
-## Nutzung
+### Unterbefehle im Überblick
 
 | Befehl | Beschreibung |
-|---|---|
-| `safe-start-for-codex dry-run` | Simuliert das Scannen und Pausieren, ohne Dateien zu ändern. |
-| `safe-start-for-codex backup` | Erstellt ein Backup aller aktiven Automations-Konfigurationen. |
-| `safe-start-for-codex start` | Startet Codex Desktop und steuert die Freigabe im Vordergrund. |
-| `safe-start-for-codex tray` | Startet als Hintergrund-Anwendung im Windows System-Tray. |
-| `safe-start-for-codex status` | Zeigt den aktuellen Zustand der gesteuerten Automatisierungen. |
-| `safe-start-for-codex config-init` | Erstellt eine Standard-Konfiguration (`config.json`). |
-| `safe-start-for-codex config-show` | Zeigt die aktuell geladene Konfiguration an. |
-| `safe-start-for-codex catchup-plan` | Zeigt verpasste Läufe für seltene Automatisierungen an. |
-| `safe-start-for-codex restore-latest` | Erzwingt die Wiederherstellung aller zuletzt pausierten Automatisierungen. |
+|:---|:---|
+| `safe-start-for-codex dry-run` | Simuliert Scan und Gating ohne Änderungen an TOML-Dateien. |
+| `safe-start-for-codex backup` | Erstellt ein manuelles Snapshot-Backup aller aktiven Konfigurationen. |
+| `safe-start-for-codex start` | Startet Codex Desktop und steuert Automatisierungen im Vordergrund. |
+| `safe-start-for-codex tray` | Startet als Hintergrund-System-Tray-Anwendung mit Windows-Benachrichtigungen. |
+| `safe-start-for-codex status` | Zeigt den aktuellen Status der Automatisierungen und Snapshots an. |
+| `safe-start-for-codex config-init` | Erzeugt eine Standard-`config.json`-Konfigurationsdatei. |
+| `safe-start-for-codex config-show` | Zeigt die aktuell geladene Konfiguration und Pfade an. |
+| `safe-start-for-codex catchup-plan` | Listet verpasste Läufe seltener Automatisierungen auf. |
+| `safe-start-for-codex restore-latest` | Notfallbefehl: Reaktiviert die vom letzten Snapshot pausierten Automatisierungen. |
 
-## Konfiguration
+### Typische Arbeitsabläufe
 
-Standardmäßig liest das Tool die Konfiguration unter:
+```powershell
+# 1. Start-Gating gefahrlos simulieren
+safe-start-for-codex dry-run
 
-```text
-~/.codex/automation-safe-start/config.json
+# 2. Manuelles Backup erstellen
+safe-start-for-codex backup
+
+# 3. Codex Desktop mit kontrolliertem Gating starten
+safe-start-for-codex start
+
+# 4. Status der Automatisierungen abfragen
+safe-start-for-codex status
+
+# 5. Verpasste Läufe seltener Automatisierungen prüfen
+safe-start-for-codex catchup-plan
 ```
 
-Beispiel:
+---
+
+## 8. Konfiguration & Feinabstimmung
+
+Die Konfiguration liegt lokal unter `~/.codex/automation-safe-start/config.json`:
 
 ```json
 {
@@ -155,19 +235,83 @@ Beispiel:
 }
 ```
 
-- `initial_release`, `interval_minutes` und `startup_delay_seconds` steuern die Anzahl der sofort reaktivierten Automatisierungen, die Wartezeit zwischen weiteren Freigaben und die Verzögerung nach dem Codex-Start.
-- Wenn `catchup_enabled` auf `true` gesetzt ist, analysiert Safe Start die Ausführungshistorie und priorisiert bis zu `catchup_max_per_start` seltene, verpasste Automatisierungen für eine frühere Reaktivierung (Schwellenwert gesteuert durch `catchup_min_period_hours`).
+### Parameter-Referenz
 
-## Upstream-Vorschlag
+- `initial_release` (Standard: `3`): Anzahl der Automatisierungen in der ersten Vorlauf-Gruppe.
+- `interval_minutes` (Standard: `5`): Wartezeit zwischen aufeinanderfolgenden Freigabeschritten.
+- `startup_delay_seconds` (Standard: `45`): Pause nach dem Codex-Start vor der ersten Freigabe.
+- `min_future_lead_minutes` (Standard: `2`): Vorlaufzeit, die der nächste geplante Lauf der ersten Gruppe in der Zukunft liegen muss.
+- `launch` (Standard: `true`): Gibt an, ob Safe Start die Codex Desktop-App startet.
+- `cleanup` (Standard: `true`): Prüft und bereinigt verwaiste Zombie-Prozesse von Codex.
+- `catchup_enabled` (Standard: `false`): Priorisiert verpasste seltene Läufe in der Vorlauf-Gruppe.
+- `catchup_lookback_days` (Standard: `30`): Rückblickzeitraum zur Erkennung verpasster Ausführungen.
+- `catchup_max_per_start` (Standard: `1`): Maximale Anzahl priorisierter Aufhol-Läufe pro Start.
+- `catchup_min_period_hours` (Standard: `24`): Wiederholungsschwelle (nur Zeitpläne seltener als täglich).
 
-Dieser Workaround existiert, weil das Problem idealerweise nativ in Codex gelöst werden sollte. Siehe dazu:
+---
 
-- [Upstream-Issue-Entwurf (Englisch)](docs/UPSTREAM_ISSUE_PROPOSAL.md)
-- [Lösungskonzept (Englisch)](docs/SOLUTION_CONCEPT.md)
+## 9. Windows Tray-Modus & Prozessüberwachung
 
-## Auffindbarkeit
+Für den unauffälligen Alltagsbetrieb kann Safe Start im Windows System-Tray minimiert laufen:
 
-Präzise Suchphrasen für dieses Repository:
+```powershell
+python -m pip install -e ".[tray]"
+safe-start-for-codex tray
+```
+
+- **Desktop-Benachrichtigungen:** Informiert über Startfortschritt, Batch-Freigaben und Hintergrundfehler via Windows Toast Notifications.
+- **Prozess-Supervisor:** Erkennt Windows Store Installationen (`ChatGPT.exe` Host mit `codex.exe` App-Server) sowie native Installationen.
+- **Zombie-Schutz:** Erhält aktive UI-Fenster und bereinigt nur abgetrennte Hintergrundprozesse oberhalb definierter Leerlaufgrenzen.
+
+---
+
+## 10. Konservativer Aufholplaner (Catch-Up Planner)
+
+Wenn der Computer während geplanter Automatisierungszeiten ausgeschaltet oder im Energiesparmodus war, können Läufe verpasst werden. Safe Start bietet einen konservativen Aufholplaner:
+
+```powershell
+safe-start-for-codex catchup-plan
+```
+
+- **Schreibgeschützte Analyse:** Liest Thread-Historien, Recurrence-Muster (DAILY, WEEKLY, MONTHLY) und Zeitstempel.
+- **Keine Zwangsausführung:** Führt keine manuelle "Run now"-Aktion in Codex aus.
+- **Vorlauf-Priorisierung:** Bei aktiviertem Feature werden verpasste seltene Läufe in die Vorlauf-Gruppe einsortiert, sodass Codex sie regulär und ohne Überlastung abarbeitet.
+
+---
+
+## 11. Upstream-Verbesserungsvorschlag & Lösungskonzept
+
+Dieses Tool dient auch als externe Referenz und Lösungsvorschlag für native Optimierungen innerhalb von Codex Desktop:
+
+- [Upstream Issue Draft](docs/UPSTREAM_ISSUE_PROPOSAL.md): Feature-Request mit detaillierter Beschreibung des Startup-Pacings, Rate-Limitings und Zustandsmanagements.
+- [Solution Concept](docs/SOLUTION_CONCEPT.md): Technischer Lösungsentwurf zur nativen Integration des Automations-Gatings direkt in den Codex-Host.
+
+---
+
+## 12. Verwandte Tools & Ökosystem
+
+Safe Start for Codex arbeitet nahtlos im Ökosystem von `dev-bricks`, `ellmos-ai` und `open-bricks`:
+
+| Repository | Organisation | Bereich & Fokus | Ökosystem-Integration |
+|:---|:---|:---|:---|
+| [CareCenter-for-Codex](https://github.com/dev-bricks/CareCenter-for-Codex) | `dev-bricks` | Wartungs-DB & Log-Viewer | Liest Ausführungshistorien, Automations-Logs und Telemetrie aus Codex-Läufen. |
+| [CodeBox](https://github.com/dev-bricks/CodeBox) | `dev-bricks` | Isolierte Python-Ausführung | Sichere Sandbox-Umgebung zum gefahrlosen Testen von Skripten und Automatisierungen. |
+| [companion-for-agy](https://github.com/dev-bricks/companion-for-agy) | `dev-bricks` | Terminal- & UI-Brücke | Begleitprozess und UI-Helfer für Google Antigravity und Agenten-CLI-Sitzungen. |
+| [automation-master](https://github.com/dev-bricks/automation-master) | `dev-bricks` | Multi-Agenten-Orchestrierung | Governance-Ledger, Credit-Budgetierung und Aufgabenplanung für KI-Agenten. |
+| [WikiStub-Seed](https://github.com/dev-bricks/WikiStub-Seed) | `dev-bricks` | Dokumentations-Generator | Statischer Dokumentations-Generator und Markdown-Wissensnetz-Bootstrapper. |
+| [MethodenAnalyser](https://github.com/dev-bricks/MethodenAnalyser) | `dev-bricks` | Workflow- & Strukturanalyse | Werkzeugsatz zur strukturellen Analyse von Multi-Agenten-Abläufen. |
+| [lock-master](https://github.com/ellmos-ai/lock-master) | `ellmos-ai` | Datei- & Workspace-Locking | Ausfallsichere Concurrency-Steuerung gegen gleichzeitige Schreibkollisionen. |
+| [ticket-master](https://github.com/ellmos-ai/ticket-master) | `ellmos-ai` | Strukturierte Aufgabenverteilung | Warteschlangen- und Ticket-Management für agentenübergreifende Aufgaben. |
+| [ellmos-filecommander-mcp](https://github.com/ellmos-ai/ellmos-filecommander-mcp) | `ellmos-ai` | Dateisystem MCP-Server | Detaillierte Dateioperationen, Prozessüberwachung und sicheres Löschen für Agenten. |
+| [ellmos-codecommander-mcp](https://github.com/ellmos-ai/ellmos-codecommander-mcp) | `ellmos-ai` | AST- & Code-Analyse MCP | Code-Refactoring, Import-Diagnose und semantische Strukturprüfungen für LLMs. |
+| [ellmos-controlcenter-mcp](https://github.com/ellmos-ai/ellmos-controlcenter-mcp) | `ellmos-ai` | MCP-Stack Steuerungsebene | Dynamische MCP-Werkzeugerkennung, Bundle-Orchestrierung und Rechtesteuerung. |
+| [open-bricks](https://github.com/open-bricks) | `open-bricks` | Dachorganisation | Koordiniert Open-Source-Entwicklerwerkzeuge und Architektur-Standards. |
+
+---
+
+## 13. Auffindbarkeit
+
+Suchbegriffe, die dieses Projekt eindeutig beschreiben:
 
 ```text
 safe-start-for-codex
@@ -176,41 +320,43 @@ Codex Desktop automation startup gate
 Codex Desktop automation surge prevention
 Windows Codex automation scheduler guard
 local Codex automation catch-up planner
+Codex Desktop recurring automation startup control
 ```
 
-Der exakte Repository-Pfad lautet `dev-bricks/safe-start-for-codex`. Breite Suchen nach "Codex startup" oder "automation gate" kollidieren häufig mit allgemeinen OpenAI-Codex-Tutorials, Sandbox-Artikeln und fremden GitHub-Projekten.
+### Abgrenzung & Disambiguierung
 
-## Entwicklung
+Das kanonische Repository ist `dev-bricks/safe-start-for-codex`. Es ist weder OpenAI Codex selbst noch ein Codex-Fork oder allgemeiner Task-Scheduler. Allgemeine Websuchen nach "Codex Startup" führen häufig zu OpenAI-Tutorials, Sandboxing-Artikeln oder unpassenden Prompt-Repositories.
+
+---
+
+## 14. Entwicklung, Sicherheit & Lizenz
+
+### Entwicklungsumgebung
 
 ```powershell
-python -m pip install -e ".[dev]"
-pytest
-```
+# Klonen und im Entwicklungsmodus mit Abhängigkeiten installieren
+python -m pip install -e ".[dev,tray]"
 
-Kompilieren der Tray-EXE:
+# Testsuite ausführen
+pytest -v
 
-```powershell
+# Linter prüfen
+ruff check .
+
+# Windows Tray-Executable erstellen
 .\build_exe.bat
 ```
 
-## Verwandte Tools & Ökosystem
+### Sicherheitsrichtlinie
 
-- [CareCenter-for-Codex](https://github.com/dev-bricks/CareCenter-for-Codex): Wartungs-Datenbank und Log-Viewer für Codex CLI und Desktop.
-- [CodeBox](https://github.com/dev-bricks/CodeBox): Isolierte Python-Codeausführungsumgebung.
-- [companion-for-agy](https://github.com/dev-bricks/companion-for-agy): Terminal-Wrapper & UI-Helfer für Antigravity.
-- [automation-master](https://github.com/dev-bricks/automation-master): Multi-Agent-Budgetierung, Governance-Ledger & Ausführungs-Orchestrierung.
-- [WikiStub-Seed](https://github.com/dev-bricks/WikiStub-Seed): Seed-Dokumentation & statischer Webseiten-Generator.
-- [MethodenAnalyser](https://github.com/dev-bricks/MethodenAnalyser): Methoden- und Strukturanalyse-Toolkit für Multi-Agenten-Workflows.
-- [ellmos-filecommander-mcp](https://github.com/ellmos-ai/ellmos-filecommander-mcp): Dateisystem- und Prozess-Orchestrierungs-MCP-Server.
-- [ellmos-codecommander-mcp](https://github.com/ellmos-ai/ellmos-codecommander-mcp): Code-Analyse und AST-Verarbeitung.
-- [ellmos-controlcenter-mcp](https://github.com/ellmos-ai/ellmos-controlcenter-mcp): MCP-Stack-Steuerungsebene.
+- **Meldung:** Bitte melden Sie Sicherheitslücken über [GitHub Private Vulnerability Reporting](https://github.com/dev-bricks/safe-start-for-codex/security/advisories/new) oder per E-Mail an `security@ellmos.ai` und `security@open-bricks.org`.
+- **Reaktionszeit:** Eingang wird innerhalb von 48 Stunden bestätigt; technische Triage erfolgt innerhalb von 5 Werktagen.
+- Vollständige Richtlinie: [`SECURITY.md`](SECURITY.md).
 
-## Lizenz
+### Lizenz
 
-MIT-Lizenz. Siehe [LICENSE](LICENSE).
-
-Die direkten Drittanbieter-Abhängigkeiten und ihre Lizenz-Metadaten sind in
-[THIRD_PARTY_LICENSES.txt](THIRD_PARTY_LICENSES.txt) dokumentiert.
+Veröffentlicht unter der MIT-Lizenz. Vollständige Lizenzbedingungen siehe [`LICENSE`](LICENSE).
+Lizenzen direkter Abhängigkeiten sind in [`THIRD_PARTY_LICENSES.txt`](THIRD_PARTY_LICENSES.txt) dokumentiert.
 
 ---
-*Zuletzt geprüft: 2026-08-24 durch den technischen Hygiene- und CI-Matrix-Audit (Pfad A).*
+*Zuletzt geprüft: 2026-09-08 im Rahmen des MARKETING & DESIGN Audits.*

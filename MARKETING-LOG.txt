@@ -1,0 +1,50 @@
+# MARKETING & DISCOVERABILITY LOG: dev-bricks/safe-start-for-codex
+Date: 2026-09-08
+Auditor: Antigravity / Gemini [G 2026-09-08]
+Scope: Pfad B Discoverability, Visual Architecture, Navigation, Governance & Ecosystem Parity
+
+## 1. Executive Summary & Positioning
+- Repository: dev-bricks/safe-start-for-codex
+- Version: 1.1.3
+- Primary Category: Developer Tooling / Desktop Automation Infrastructure
+- Ecosystem: dev-bricks (umbrella: open-bricks)
+- License: MIT (Local-First, Zero-Egress, User-Mode Non-Elevation)
+
+Safe Start for Codex addresses a concrete, painful developer failure mode: Codex Desktop starting up after system sleep or offline periods and immediately triggering dozens of accumulated recurring automations, leading to CPU throttling, API exhaustion, and interface unresponsiveness.
+
+## 2. Target Audience & Personas
+1. Windows Codex Desktop Power Users: Developers running multiple local recurring automations, monitors, scrapers, and maintenance bots.
+2. Multi-Agent System Operators: Engineers running collaborative agent swarms (Claude Code, Codex CLI, Gemini Antigravity, Kimi) who need reliable local startup gating.
+3. System Reliability Engineers (SREs): Developers seeking predictable startup behaviors, zombie-process protection, and automated snapshot backups.
+
+## 3. SEO, Keywords & Discoverability Matrix
+- Core Search Phrases:
+  - safe-start-for-codex
+  - Safe Start for Codex
+  - Codex Desktop automation startup gate
+  - Codex Desktop automation surge prevention
+  - Windows Codex automation scheduler guard
+  - local Codex automation catch-up planner
+  - Codex Desktop recurring automation startup control
+- Disambiguation Vector:
+  - Avoids collision with general OpenAI Codex tutorials, cloud APIs, and prompt repositories.
+  - Machine-readable context explicitly mapped via llms.txt.
+
+## 4. Architectural & Visual Enhancements (Pfad B 2026-09-08)
+- 14-Point Quick Navigation: Implemented with direct anchor links across README.md and README_de.md.
+- Dual Mermaid Diagrams:
+  1. System Architecture flowchart (graph TB) detailing Control Interfaces, Safe Start Core Engine, and Codex Desktop Environment.
+  2. Lifecycle sequence diagram (sequenceDiagram) detailing the full 9-step execution lifecycle (trigger, snapshot, gate, supervisor cleanup, desktop launch, lead batch release, staggered background timers).
+- Governance & Runtime Invariants Matrix: Documented 10 explicit operational guarantees (Local-First, Non-Elevation, Snapshot-Before-Mutation, Selective Restoration, Conservative Catch-Up, Targeted Supervision, Atomic TOML Serialization, Fail-Closed Diagnostics, Dual-Platform Portability, Ecosystem Parity).
+- Extended Sibling Tools Matrix: Cross-linked 12 partner repositories across dev-bricks, ellmos-ai, and open-bricks.
+
+## 5. Security & SLA Hardening
+- Enriched SECURITY.md with explicit response commitments:
+  - 48-hour report acknowledgment
+  - 5-business-day technical triage
+  - GitHub Security Advisories reporting pathway
+
+## 6. Verification & Quality Assurance
+- Pytest test suite: 84 passing tests (100% green).
+- Linter: ruff check passed with 0 errors.
+- CI Workflow: pip caching enabled on setup-python@v5.

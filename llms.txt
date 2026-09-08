@@ -1,4 +1,4 @@
-## Last-checked: 2026-08-24
+## Last-checked: 2026-09-08
 
 # safe-start-for-codex - Startup surge prevention for Codex Desktop automations
 
@@ -6,11 +6,11 @@ Canonical repository: https://github.com/dev-bricks/safe-start-for-codex
 
 > safe-start-for-codex is a Python-based Windows startup gate utility for managing local Codex Desktop automations. It temporarily pauses active automations upon startup, starts Codex Desktop, and then gradually restores the automations in a controlled, rate-limited sequence to avoid CPU/API spikes and startup congestion.
 
-It includes optional background tray execution, startup cleanup of stale processes/lockfiles, conservative read-only catch-up planning for rare schedules that missed runs, atomic JSON state writes for config and catch-up report files, Windows and cross-platform multi-OS CI with concurrency guards and ruff linting, and source-platform smoke tests for macOS/Linux parsing and configuration logic.
+It includes optional background tray execution, startup cleanup of stale processes/lockfiles, conservative read-only catch-up planning for rare schedules that missed runs, atomic JSON state writes for config and catch-up report files, Windows and cross-platform multi-OS CI with concurrency guards, pip caching, and ruff linting, and source-platform smoke tests for macOS/Linux parsing and configuration logic.
 
 Part of the dev-bricks family. Python, MIT.
 
-Verification: 79 pytest tests passed (68 unit/regression/security/metadata tests + 11 source-platform smoke tests) on 2026-08-24. Multi-OS CI matrix across Windows/Linux/macOS with concurrency controls and ruff lint gate verified. Compileall passed. Ruff lint passed. The Windows Store AUMID launch produced the packaged Codex process family, and the cleanup dry-run preserved the live renderer without mutations.
+Verification: 84 pytest tests passed (73 unit/regression/security/metadata tests + 11 source-platform smoke tests) on 2026-09-08. Multi-OS CI matrix across Windows/Linux/macOS with concurrency controls and ruff lint gate verified. Compileall passed. Ruff lint passed. The Windows Store AUMID launch produced the packaged Codex process family, and the cleanup dry-run preserved the live renderer without mutations.
 
 
 ## Docs
@@ -64,7 +64,9 @@ The canonical repository is `dev-bricks/safe-start-for-codex`. It is not OpenAI 
 - [automation-master](https://github.com/dev-bricks/automation-master): Multi-agent credit budgeting, governance ledger & execution orchestration.
 - [WikiStub-Seed](https://github.com/dev-bricks/WikiStub-Seed): Seed documentation & static site generator.
 - [MethodenAnalyser](https://github.com/dev-bricks/MethodenAnalyser): Method and structural analysis toolkit for multi-agent workflows.
+- [lock-master](https://github.com/ellmos-ai/lock-master): Fail-closed distributed concurrency control preventing multi-agent write collisions.
+- [ticket-master](https://github.com/ellmos-ai/ticket-master): Queue and ticket management for cross-agent work distribution and triage.
 - [ellmos-filecommander-mcp](https://github.com/ellmos-ai/ellmos-filecommander-mcp): Filesystem and process orchestration MCP server.
 - [ellmos-codecommander-mcp](https://github.com/ellmos-ai/ellmos-codecommander-mcp): Code analysis and AST processing.
 - [ellmos-controlcenter-mcp](https://github.com/ellmos-ai/ellmos-controlcenter-mcp): MCP stack control plane.
-
+- [open-bricks](https://github.com/open-bricks): Root umbrella organization coordinating open-source developer tooling and standards.

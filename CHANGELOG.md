@@ -4,6 +4,15 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- Discoverability, Visual Architecture, Governance Matrix & Contract Tests (GITHUBBOT_ONE_REPO_MARKETING_AND_DESIGN / Pfad B) on 2026-09-08:
+  - Implemented standardized 14-point Quick Navigation (`🧭 Quick Navigation` / `🧭 Schnellnavigation`) across `README.md` and `README_de.md` with explicit functional anchor links and bilingual language switchers.
+  - Added dual interactive Mermaid diagrams: System Architecture flowchart (`graph TB`) covering Control Interfaces, Gating Core, and Codex Target Environment, and an Execution Lifecycle sequence diagram (`sequenceDiagram`) detailing startup gating, atomic snapshot backups, zombie process supervision, and staggered background releases.
+  - Formulated 10 Core Governance & Runtime Invariants Matrix (Local-First & Zero Egress, Non-Elevation, Snapshot-Before-Mutation, Selective Restoration Guard, Conservative Catch-Up Policy, Targeted Process Supervision, Atomic TOML Serialization, Fail-Closed Diagnostics, Dual-Platform Architecture, Ecosystem Parity).
+  - Expanded Sibling Tools & Ecosystem Cross-Integration Matrix across 12 companion projects (`dev-bricks`, `ellmos-ai`, and `open-bricks`).
+  - Hardened GitHub Actions CI (`.github/workflows/ci.yml`) with automated `pip` caching (`cache: 'pip'`).
+  - Strengthened bilingual `SECURITY.md` with precise 48h acknowledgment and 5-business-day triage SLA commitments.
+  - Expanded automated contract test suite in `tests/test_version_metadata.py` with tests for 14-point navigation anchors, dual Mermaid diagrams, governance invariants table, ecosystem cross-links, and security SLA commitments (84/84 pytest tests passing 100% green).
+  - Synchronized Shields.io badges, `llms.txt`, and local `MARKETING-LOG.txt`. [G 2026-09-08]
 - Technical Hygiene, Multi-OS CI Matrix & Contract Test Suite (GITHUBBOT_ONE_REPO_CLEANER / Pfad A) on 2026-08-24:
   - Hardened GitHub Actions CI workflows (`.github/workflows/ci.yml` and `.github/workflows/source-platform-smoke.yml`) with concurrency groups (`cancel-in-progress: true`), multi-version Python matrix testing (Python 3.11, 3.12, 3.13), and automated `ruff check .` linting gate before test execution.
   - Expanded `pyproject.toml` with PEP 621 classifiers (`Environment :: Console`, `Environment :: MacOS X`, `Environment :: X11 Applications`, `Operating System :: OS Independent`, `Operating System :: POSIX :: Linux`, `Operating System :: MacOS`, `Programming Language :: Python :: 3.13`, `Topic :: Desktop Environment`), `dev` dependencies (`ruff>=0.5.0`), and full `[project.urls]` (`Bug Tracker`, `Parent Organization`, `Umbrella Ecosystem`).
