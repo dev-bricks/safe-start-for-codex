@@ -4,6 +4,12 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- Hardened startup cleanup lockfile supervision in `cleanup_start_blockers`:
+  - Resolved false negative in dry-run mode (`--dry-run`) where stale lockfiles were not reported when zombie main processes were present.
+  - Guarded lockfile unlinking during active cleanup runs to prevent deleting the lockfile when any Codex main process failed to terminate, preventing multi-instance concurrency collisions and data corruption.
+  - Accurately flagged `CleanupResult.stale_lockfile` when all detected main processes are stale zombies.
+  - Added dedicated regression tests for dry-run reporting, successful unlinking, and failure preservation (87/87 pytest tests passing 100% green). [G 2026-09-09]
+
 - Discoverability, Visual Architecture, Governance Matrix & Contract Tests (GITHUBBOT_ONE_REPO_MARKETING_AND_DESIGN / Pfad B) on 2026-09-08:
   - Implemented standardized 14-point Quick Navigation (`🧭 Quick Navigation` / `🧭 Schnellnavigation`) across `README.md` and `README_de.md` with explicit functional anchor links and bilingual language switchers.
   - Added dual interactive Mermaid diagrams: System Architecture flowchart (`graph TB`) covering Control Interfaces, Gating Core, and Codex Target Environment, and an Execution Lifecycle sequence diagram (`sequenceDiagram`) detailing startup gating, atomic snapshot backups, zombie process supervision, and staggered background releases.

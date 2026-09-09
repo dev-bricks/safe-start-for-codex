@@ -47,8 +47,8 @@ def test_llms_txt_integrity() -> None:
     llms_text = (PROJECT_ROOT / "llms.txt").read_text(encoding="utf-8")
     assert "https://github.com/dev-bricks/safe-start-for-codex" in llms_text
     assert "dev-bricks" in llms_text
-    assert "Last-checked: 2026-09-08" in llms_text
-    assert "84 pytest tests passed" in llms_text
+    assert "Last-checked: 2026-09-09" in llms_text
+    assert "87 pytest tests passed" in llms_text
 
 
 def test_cli_subcommands_registered() -> None:

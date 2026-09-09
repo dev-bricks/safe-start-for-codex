@@ -753,3 +753,90 @@ def test_command_restore_latest_case_insensitive_status_and_fallback_path(
 
     content = auto_path.read_text(encoding="utf-8")
     assert 'status = "active"' in content
+
+
+def test_cleanup_lockfile_stale_in_dry_run_with_zombie_mains(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    created_at = (datetime.now() - timedelta(seconds=600)).isoformat(timespec="seconds")
+    exe_path = r"C:\Users\test\AppData\Local\Programs\Codex\Codex.exe"
+    processes = [
+        ProcessInfo(100, "Codex.exe", exe_path, f'"{exe_path}"', created_at=created_at),
+    ]
+    codex_dir = tmp_path / "Codex"
+    codex_dir.mkdir(parents=True)
+    lockfile = codex_dir / "lockfile"
+    lockfile.write_text("locked", encoding="utf-8")
+
+    monkeypatch.setattr(cli, "windows_processes", lambda: processes)
+    monkeypatch.setattr(cli, "find_codex_exe", lambda: Path(exe_path))
+    monkeypatch.setattr(cli, "codex_user_data_dir", lambda: codex_dir)
+    monkeypatch.setattr(cli, "append_log", lambda *args, **kwargs: None)
+
+    result = cleanup_start_blockers(execute=False, run_id="dry-lockfile-zombie")
+
+    assert result.stale_lockfile is True
+    assert result.zombie_pids == [100]
+    assert result.removed_lockfile is False
+    assert lockfile.exists()
+    assert any(f"Would remove stale lockfile: {lockfile}" in msg for msg in result.messages)
+
+
+def test_cleanup_lockfile_removed_when_all_zombies_killed(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    created_at = (datetime.now() - timedelta(seconds=600)).isoformat(timespec="seconds")
+    exe_path = r"C:\Users\test\AppData\Local\Programs\Codex\Codex.exe"
+    processes = [
+        ProcessInfo(100, "Codex.exe", exe_path, f'"{exe_path}"', created_at=created_at),
+    ]
+    codex_dir = tmp_path / "Codex"
+    codex_dir.mkdir(parents=True)
+    lockfile = codex_dir / "lockfile"
+    lockfile.write_text("locked", encoding="utf-8")
+
+    monkeypatch.setattr(cli, "windows_processes", lambda: processes)
+    monkeypatch.setattr(cli, "find_codex_exe", lambda: Path(exe_path))
+    monkeypatch.setattr(cli, "codex_user_data_dir", lambda: codex_dir)
+    monkeypatch.setattr(cli, "kill_process_tree", lambda pid: (True, f"killed {pid}"))
+    monkeypatch.setattr(cli, "append_log", lambda *args, **kwargs: None)
+
+    result = cleanup_start_blockers(execute=True, run_id="exec-lockfile-zombie")
+
+    assert result.stale_lockfile is True
+    assert result.zombie_pids == [100]
+    assert result.killed_pids == [100]
+    assert result.removed_lockfile is True
+    assert not lockfile.exists()
+    assert any(f"Removed stale lockfile: {lockfile}" in msg for msg in result.messages)
+
+
+def test_cleanup_lockfile_preserved_when_zombie_kill_fails(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    created_at = (datetime.now() - timedelta(seconds=600)).isoformat(timespec="seconds")
+    exe_path = r"C:\Users\test\AppData\Local\Programs\Codex\Codex.exe"
+    processes = [
+        ProcessInfo(100, "Codex.exe", exe_path, f'"{exe_path}"', created_at=created_at),
+        ProcessInfo(101, "Codex.exe", exe_path, f'"{exe_path}"', created_at=created_at),
+    ]
+    codex_dir = tmp_path / "Codex"
+    codex_dir.mkdir(parents=True)
+    lockfile = codex_dir / "lockfile"
+    lockfile.write_text("locked", encoding="utf-8")
+
+    def mock_kill(pid: int) -> tuple[bool, str]:
+        if pid == 100:
+            return True, "killed"
+        return False, "Access is denied"
+
+    monkeypatch.setattr(cli, "windows_processes", lambda: processes)
+    monkeypatch.setattr(cli, "find_codex_exe", lambda: Path(exe_path))
+    monkeypatch.setattr(cli, "codex_user_data_dir", lambda: codex_dir)
+    monkeypatch.setattr(cli, "kill_process_tree", mock_kill)
+    monkeypatch.setattr(cli, "append_log", lambda *args, **kwargs: None)
+
+    result = cleanup_start_blockers(execute=True, run_id="exec-lockfile-partial-fail")
+
+    assert result.stale_lockfile is True
+    assert result.zombie_pids == [100, 101]
+    assert result.killed_pids == [100]
+    # Lockfile MUST be preserved because PID 101 could not be terminated!
+    assert result.removed_lockfile is False
+    assert lockfile.exists()
+    assert any(f"Preserved lockfile because not all Codex main processes could be terminated: {lockfile}" in msg for msg in result.messages)
+

@@ -630,7 +630,8 @@ def cleanup_start_blockers(
                 zombie_pids.append(main.pid)
 
     lockfile = codex_user_data_dir() / "lockfile"
-    stale_lockfile = lockfile.exists() and not mains
+    all_mains_are_zombies = bool(mains) and set(process.pid for process in mains) <= set(zombie_pids)
+    stale_lockfile = lockfile.exists() and (not mains or all_mains_are_zombies)
     companion_orphans = [
         process
         for process in all_processes
@@ -665,23 +666,25 @@ def cleanup_start_blockers(
         else:
             result.messages.append(f"Could not terminate Codex main process PID {pid}: {message}")
 
-    no_live_mains = set(process.pid for process in mains) <= set(result.zombie_pids)
-    lockfile_stale_after_kill = (
-        lockfile.exists()
-        and (stale_lockfile or (execute and result.killed_pids and no_live_mains))
+    all_mains_killed = bool(mains) and set(process.pid for process in mains) <= set(result.killed_pids)
+    should_remove_lockfile = lockfile.exists() and (
+        not mains or (execute and all_mains_killed)
     )
-    if lockfile_stale_after_kill:
-        if not execute:
+    if not execute:
+        if stale_lockfile:
             result.messages.append(f"Would remove stale lockfile: {lockfile}")
-        else:
-            try:
-                lockfile.unlink()
-                result.removed_lockfile = True
-                result.messages.append(f"Removed stale lockfile: {lockfile}")
-                append_log(run_id, "startup_cleanup_lockfile_removed", path=str(lockfile))
-            except OSError as exc:
-                result.messages.append(f"Could not remove lockfile: {exc}")
-                append_log(run_id, "startup_cleanup_lockfile_failed", path=str(lockfile), error=str(exc))
+    elif should_remove_lockfile:
+        try:
+            lockfile.unlink()
+            result.removed_lockfile = True
+            result.messages.append(f"Removed stale lockfile: {lockfile}")
+            append_log(run_id, "startup_cleanup_lockfile_removed", path=str(lockfile))
+        except OSError as exc:
+            result.messages.append(f"Could not remove lockfile: {exc}")
+            append_log(run_id, "startup_cleanup_lockfile_failed", path=str(lockfile), error=str(exc))
+    elif lockfile.exists() and mains and any(pid in result.zombie_pids for pid in (p.pid for p in mains)):
+        result.messages.append(f"Preserved lockfile because not all Codex main processes could be terminated: {lockfile}")
+        append_log(run_id, "startup_cleanup_lockfile_preserved", path=str(lockfile))
 
     for orphan in companion_orphans:
         if not execute:
