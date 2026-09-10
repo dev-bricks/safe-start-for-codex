@@ -5,7 +5,7 @@ Scope: Pfad B Discoverability, Visual Architecture, Navigation, Governance & Eco
 
 ## 1. Executive Summary & Positioning
 - Repository: dev-bricks/safe-start-for-codex
-- Version: 1.1.3
+- Version: 1.1.4
 - Primary Category: Developer Tooling / Desktop Automation Infrastructure
 - Ecosystem: dev-bricks (umbrella: open-bricks)
 - License: MIT (Local-First, Zero-Egress, User-Mode Non-Elevation)
@@ -45,6 +45,6 @@ Safe Start for Codex addresses a concrete, painful developer failure mode: Codex
   - GitHub Security Advisories reporting pathway
 
 ## 6. Verification & Quality Assurance
-- Pytest test suite: 84 passing tests (100% green).
+- Pytest test suite: 91 passing tests (100% green).
 - Linter: ruff check passed with 0 errors.
 - CI Workflow: pip caching enabled on setup-python@v5.

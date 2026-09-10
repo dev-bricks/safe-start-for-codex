@@ -2,8 +2,15 @@
 
 All notable changes to this project are documented here.
 
-## [Unreleased]
+## [1.1.4] - 2026-09-10
 
+- Technical Hygiene, CI Compilation Gate, Standardized Pytest Flags & Contract Suite (GITHUBBOT_ONE_REPO_CLEANER / Pfad A) on 2026-09-10:
+  - Bumped version to 1.1.4 across `pyproject.toml`, `src/safe_start_for_codex/__init__.py`, `README.md`, `README_de.md`, `RELEASES.md`, `MARKETING-LOG.txt`, and `llms.txt`.
+  - Comprehensive `.gitignore` hardening against multi-host sync conflicts (`*-conflict-*`, `*.sync-conflict-*`, `*.conflict`, `*-CONFLIT-*`, `*.sync-temp-*`, `*-ASUS-GEI.*`, `*-WORKSTATION-LG.*`, `*-WORKSTATION.*`, `* (kopie)*`, `* (copy)*`), multi-agent locks (`LOCK`, `LOCK.*`, `*.lock`, `LOCK*.txt`, `LOCK.permissions.json`, `uv.lock`), coverage/packaging caches (`coverage/`, `htmlcov/`, `.coverage`, `.coverage.*`, `wheelhouse/`, `.wheel-smoke/`), and temporary editor files (`*.tmp`, `*.bak`, `*.swp`, `*~`, `*.log`).
+  - Standardized pytest execution options in `pyproject.toml` with `addopts = "-ra -v"`.
+  - Hardened GitHub Actions CI workflows (`.github/workflows/ci.yml` and `.github/workflows/source-platform-smoke.yml`) with automated bytecode compilation check (`python -m compileall -q src tests`) and standardized pytest execution (`pytest -ra -v`).
+  - Expanded automated contract test suite in `tests/test_version_metadata.py` with 4 new contract tests (`test_gitignore_hygiene_patterns`, `test_pytest_configuration_and_flags`, `test_ci_workflow_pytest_flags`, `test_changelog_recent_pfad_a_entry`) to 91 passing tests (100% green).
+  - Synchronized `llms.txt` verification timestamp (`2026-09-10`), version (`1.1.4`), and test suite count. [G 2026-09-10]
 - Hardened startup cleanup lockfile supervision in `cleanup_start_blockers`:
   - Resolved false negative in dry-run mode (`--dry-run`) where stale lockfiles were not reported when zombie main processes were present.
   - Guarded lockfile unlinking during active cleanup runs to prevent deleting the lockfile when any Codex main process failed to terminate, preventing multi-instance concurrency collisions and data corruption.

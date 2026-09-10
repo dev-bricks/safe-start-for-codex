@@ -5,10 +5,10 @@ Inoffizielles Windows-Startup-Gate für Codex Desktop-Automatisierungen und gest
 ![Safe Start for Codex Banner](assets/safe_start_banner.png)
 
 <p align="center">
-  <a href="pyproject.toml"><img src="https://img.shields.io/badge/Version-1.1.3-blue.svg" alt="Version"></a>
+  <a href="pyproject.toml"><img src="https://img.shields.io/badge/Version-1.1.4-blue.svg" alt="Version"></a>
   <a href="https://github.com/dev-bricks/safe-start-for-codex/actions/workflows/ci.yml"><img src="https://img.shields.io/badge/CI-GitHub%20Actions-brightgreen.svg" alt="CI Status"></a>
   <a href="https://github.com/dev-bricks/safe-start-for-codex/actions/workflows/source-platform-smoke.yml"><img src="https://img.shields.io/badge/Smoke-macOS%20%7C%20Linux-brightgreen.svg" alt="Plattform Smoke"></a>
-  <a href="tests/"><img src="https://img.shields.io/badge/pytest-84%20bestanden%20%7C%20100%25-brightgreen.svg" alt="Pytest Status"></a>
+  <a href="tests/"><img src="https://img.shields.io/badge/pytest-91%20bestanden%20%7C%20100%25-brightgreen.svg" alt="Pytest Status"></a>
   <img src="https://img.shields.io/badge/python-3.11%20%7C%203.12%20%7C%203.13-blue.svg" alt="Python Versionen">
   <img src="https://img.shields.io/badge/plattform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey.svg" alt="Plattformen">
   <img src="https://img.shields.io/badge/architektur-100%25%20Local--First%20%7C%20Zero--Egress-success.svg" alt="Local-First Architektur">

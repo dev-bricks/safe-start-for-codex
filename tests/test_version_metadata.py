@@ -47,8 +47,8 @@ def test_llms_txt_integrity() -> None:
     llms_text = (PROJECT_ROOT / "llms.txt").read_text(encoding="utf-8")
     assert "https://github.com/dev-bricks/safe-start-for-codex" in llms_text
     assert "dev-bricks" in llms_text
-    assert "Last-checked: 2026-09-09" in llms_text
-    assert "87 pytest tests passed" in llms_text
+    assert "Last-checked: 2026-09-10" in llms_text
+    assert "91 pytest tests passed" in llms_text
 
 
 def test_cli_subcommands_registered() -> None:
@@ -191,3 +191,63 @@ def test_text_files_utf8_clean() -> None:
                     path.read_text(encoding="utf-8")
                 except UnicodeDecodeError as exc:
                     assert False, f"File {path} is not valid UTF-8: {exc}"
+
+
+def test_gitignore_hygiene_patterns() -> None:
+    gitignore = (PROJECT_ROOT / ".gitignore").read_text(encoding="utf-8")
+    expected_patterns = [
+        "*-conflict-*",
+        "*.sync-conflict-*",
+        "*.conflict",
+        "*-CONFLIT-*",
+        "*.sync-temp-*",
+        "*-ASUS-GEI.*",
+        "*-WORKSTATION-LG.*",
+        "*-WORKSTATION.*",
+        "* (kopie)*",
+        "* (copy)*",
+        "LOCK",
+        "LOCK.*",
+        "*.lock",
+        "LOCK*.txt",
+        "LOCK.permissions.json",
+        "uv.lock",
+        "coverage/",
+        "htmlcov/",
+        ".coverage",
+        "wheelhouse/",
+        ".wheel-smoke/",
+        "*.tmp",
+        "*.bak",
+        "*.swp",
+        "*~",
+        "*.log",
+    ]
+    for pat in expected_patterns:
+        assert pat in gitignore, f"Missing gitignore hygiene pattern: {pat}"
+
+
+def test_pytest_configuration_and_flags() -> None:
+    data = tomllib.loads((PROJECT_ROOT / "pyproject.toml").read_text(encoding="utf-8"))
+    pytest_opts = data.get("tool", {}).get("pytest", {}).get("ini_options", {})
+    assert pytest_opts.get("addopts") == "-ra -v", f"Unexpected or missing addopts: {pytest_opts.get('addopts')}"
+    assert pytest_opts.get("testpaths") == ["tests"]
+    assert pytest_opts.get("pythonpath") == ["src"]
+
+
+def test_ci_workflow_pytest_flags() -> None:
+    ci_yml = (PROJECT_ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
+    smoke_yml = (PROJECT_ROOT / ".github" / "workflows" / "source-platform-smoke.yml").read_text(encoding="utf-8")
+
+    assert "pytest -ra -v" in ci_yml
+    assert "python -m compileall -q src tests" in ci_yml
+
+    assert "pytest tests/source_platform_smoke.py -ra -v" in smoke_yml
+    assert "python -m compileall -q src tests" in smoke_yml
+
+
+def test_changelog_recent_pfad_a_entry() -> None:
+    changelog = (PROJECT_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
+    assert "## [1.1.4] - 2026-09-10" in changelog
+    assert "GITHUBBOT_ONE_REPO_CLEANER" in changelog
+    assert "Technical Hygiene" in changelog

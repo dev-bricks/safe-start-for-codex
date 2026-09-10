@@ -1,7 +1,7 @@
 # Safe Start for Codex — Releases
 
-Stand: 2026-08-12
-Aktueller dokumentierter Release: `v1.1.3`
+Stand: 2026-09-10
+Aktueller dokumentierter Release: `v1.1.4`
 Release-Modell: Open Source frei
 
 ## Release-Anker
@@ -17,11 +17,11 @@ Release-Modell: Open Source frei
 ### GitHub
 
 - Source-Stand und Tags werden über das öffentliche GitHub-Repo veröffentlicht.
-- Der aktuelle dokumentierte Release-Stand ist `v1.1.3` vom 2026-06-10.
+- Der aktuelle dokumentierte Release-Stand ist `v1.1.4` vom 2026-09-10.
 - Der jeweils veröffentlichte Source-Stand ist per frischem GitHub-Readback zu
   verifizieren; lokale Ahead-Slices und historische Pins gehören nicht als
   dauerhafte Release-Wahrheit in diese Datei.
-- Ein Live-GitHub-Tag-Readback für `v1.1.3` bleibt erforderlich, bevor der
+- Ein Live-GitHub-Tag-Readback für `v1.1.4` bleibt erforderlich, bevor der
   Tag-Status erneut als verifiziert dokumentiert wird.
 
 ### Lokales Windows-Komfortartefakt
@@ -37,6 +37,7 @@ Release-Modell: Open Source frei
 
 | Version | Datum | Kanal | Hinweis |
 |---|---|---|---|
+| `v1.1.4` | 2026-09-10 | GitHub | Pfad A Technische Hygiene: .gitignore Härtung, Pytest -ra -v Standardisierung, CI-Kompilierungsgates, Vertragstests |
 | `v1.1.3` | 2026-06-10 | GitHub | Source-Platform-Smokes und Portierungsplan ergänzt |
 | `v1.1.2` | 2026-06-05 | GitHub | EXE-Build gegen geerbte `PYTHONPATH`-Einflüsse isoliert |
 | `v1.1.1` | 2026-06-05 | GitHub | Windowed-Tray-Entrypoint und reproduzierbares `build_exe.bat` ergänzt |

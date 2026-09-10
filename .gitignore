@@ -50,12 +50,43 @@ token.json
 *.sqlite
 *.sqlite3
 
-# Sync conflict and backup files
-*-WORKSTATION-LG*
-*-ASUS-GEI*
-*.conflict
+# Sync conflict patterns and multi-host sync artifacts
+*-conflict-*
 *.sync-conflict-*
+*.conflict
+*-CONFLIT-*
+*.sync-temp-*
+*-ASUS-GEI.*
+*-ASUS-GEI*
+*-WORKSTATION-LG.*
+*-WORKSTATION-LG*
+*-WORKSTATION.*
+*-WORKSTATION*
+* (kopie)*
+* (copy)*
+
+# Multi-agent lock coordination
+LOCK
+LOCK.*
+*.lock
+LOCK*.txt
+LOCK.permissions.json
+uv.lock
+
+# Test, coverage and packaging caches
+coverage/
+htmlcov/
+.coverage
+.coverage.*
+wheelhouse/
+.wheel-smoke/
+
+# Temporary editor and backup files
+*.tmp
 *.bak
+*.swp
+*~
+*.log
 
 # Editor and OS files
 .vscode/
