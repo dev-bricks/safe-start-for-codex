@@ -309,6 +309,18 @@ def load_automations() -> list[Automation]:
     return result
 
 
+def resolve_automation_path(path_str: str | Path | None, automation_id: str | None = None) -> Path | None:
+    if path_str:
+        path = Path(path_str)
+        if path.exists():
+            return path
+    if automation_id:
+        fallback = automations_dir() / str(automation_id) / "automation.toml"
+        if fallback.exists():
+            return fallback
+    return None
+
+
 def set_status(path: Path, status: str) -> bool:
     text = read_text(path)
     current = quoted_value(text, "status")
@@ -762,6 +774,8 @@ def rrule_next_after(
         return None
     parts = parse_rrule(rrule)
     frequency = str(parts.get("FREQ") or "").upper()
+    if not frequency or frequency not in {"MINUTELY", "HOURLY", "DAILY", "WEEKLY", "MONTHLY", "YEARLY"}:
+        return None
     interval = max(1, int(parts.get("INTERVAL") or 1))
     minutes = values_as_ints(parts, "BYMINUTE", [0])
     hours = values_as_ints(parts, "BYHOUR", list(range(24)))
@@ -813,7 +827,7 @@ def rrule_next_after(
             continue
         if frequency == "HOURLY" and cursor.hour in hours and cursor.hour % max(interval, 1) == 0:
             return cursor
-        if frequency not in {"HOURLY"} and cursor.hour in hours:
+        if frequency == "MINUTELY" and cursor.hour in hours:
             return cursor
         cursor += timedelta(minutes=1)
     return None
@@ -926,6 +940,7 @@ def rrule_occurrences_between(
     anchor = dtstart or start
     minutes = values_as_ints(parts, "BYMINUTE", [0])
     hours = values_as_ints(parts, "BYHOUR", list(range(24)))
+    days = allowed_days(parts)
     result: list[datetime] = []
 
     if frequency == "HOURLY":
@@ -936,13 +951,13 @@ def rrule_occurrences_between(
             if cursor <= start:
                 cursor += timedelta(hours=1)
             while cursor <= end and len(result) < limit:
-                if cursor.hour in hours:
+                if cursor.weekday() in days and cursor.hour in hours:
                     result.append(cursor)
                 cursor += step
             return result
         cursor = start.replace(second=0, microsecond=0) + timedelta(minutes=1)
         while cursor <= end and len(result) < limit:
-            if cursor.minute in minutes and cursor.hour in hours and cursor.hour % interval == 0:
+            if cursor.weekday() in days and cursor.minute in minutes and cursor.hour in hours and cursor.hour % interval == 0:
                 result.append(cursor)
             cursor += timedelta(minutes=1)
         return result
@@ -1314,13 +1329,21 @@ class SafeStartGate:
     def pause_active(self) -> None:
         active = [item for item in self.items if item.status.upper() == "ACTIVE"]
         for item in active:
+            path = resolve_automation_path(item.path, item.id)
+            if path is None:
+                continue
             item.tool_paused = True
             append_log(self.run_id, "pause", automation_id=item.id, dry_run=self.dry_run)
             if not self.dry_run:
-                set_status(Path(item.path), "PAUSED")
+                try:
+                    set_status(path, "PAUSED")
+                except OSError as exc:
+                    self.emit(f"Failed to pause {item.id}: {exc}")
+                    item.tool_paused = False
+                    continue
             item.status = "PAUSED"
-        self.tool_paused = active
-        self.emit(f"Found {len(self.items)} automations; paused {len(active)} active automations.")
+        self.tool_paused = [item for item in active if item.tool_paused]
+        self.emit(f"Found {len(self.items)} automations; paused {len(self.tool_paused)} active automations.")
 
     def release_item(self, item: Automation) -> None:
         if item.released:
@@ -1333,7 +1356,16 @@ class SafeStartGate:
             next_at=item.next_at,
         )
         if not self.dry_run:
-            set_status(Path(item.path), "ACTIVE")
+            path = resolve_automation_path(item.path, item.id)
+            if path is None:
+                self.emit(f"Skip release for missing automation file: {item.id} ({item.path})")
+                item.released = True
+                return
+            try:
+                set_status(path, "ACTIVE")
+            except OSError as exc:
+                self.emit(f"Failed to set status for {item.id}: {exc}")
+                return
         item.status = "ACTIVE"
         item.released = True
         self.emit(f"Released: {item.id} (next scheduled time: {item.next_at or 'unknown'})")
@@ -1348,6 +1380,9 @@ class SafeStartGate:
             for item in self.tool_paused:
                 if item.original_status.upper() != "ACTIVE":
                     continue
+                path = resolve_automation_path(item.path, item.id)
+                if path is None:
+                    continue
                 append_log(
                     self.run_id,
                     "restore",
@@ -1356,7 +1391,11 @@ class SafeStartGate:
                     dry_run=self.dry_run,
                 )
                 if not self.dry_run:
-                    set_status(Path(item.path), item.original_status)
+                    try:
+                        set_status(path, item.original_status)
+                    except OSError as exc:
+                        self.emit(f"Failed to restore status for {item.id}: {exc}")
+                        continue
                 item.status = item.original_status
                 item.released = True
                 restored += 1
@@ -1703,15 +1742,15 @@ def command_restore_latest(args: argparse.Namespace) -> int:
         if not row.get("tool_paused"):
             continue
         original = str(row.get("original_status") or "")
-        path = Path(row.get("path") or "")
-        if not path.exists() and row.get("id"):
-            fallback_path = automations_dir() / str(row.get("id")) / "automation.toml"
-            if fallback_path.exists():
-                path = fallback_path
-        if original.upper() == "ACTIVE" and path.exists():
+        path = resolve_automation_path(row.get("path"), str(row.get("id") or ""))
+        if original.upper() == "ACTIVE" and path is not None:
             print(f"[restore] {row.get('id')} -> {original}")
             if not args.dry_run:
-                set_status(path, original)
+                try:
+                    set_status(path, original)
+                except OSError as exc:
+                    print(f"[restore] Failed to restore {row.get('id')}: {exc}")
+                    continue
             restored += 1
     print(f"Restored {restored} tool-paused automations from {latest}")
     return 0

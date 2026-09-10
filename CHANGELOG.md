@@ -16,6 +16,12 @@ All notable changes to this project are documented here.
   - Guarded lockfile unlinking during active cleanup runs to prevent deleting the lockfile when any Codex main process failed to terminate, preventing multi-instance concurrency collisions and data corruption.
   - Accurately flagged `CleanupResult.stale_lockfile` when all detected main processes are stale zombies.
   - Added dedicated regression tests for dry-run reporting, successful unlinking, and failure preservation (87/87 pytest tests passing 100% green). [G 2026-09-09]
+- Hardened SafeStartGate Lifecycle & Recurrence Pacing Engine (SOFTWARE_BUGSEARCH Bugsweep) on 2026-09-11:
+  - Made `SafeStartGate.release_item`, `SafeStartGate.restore`, and `SafeStartGate.pause_active` resilient against missing or moved automation files and transient `OSError` file mutations, preventing premature termination of the staggered release loop and avoiding permanent `PAUSED` deadlocks on remaining automations.
+  - Enforced `allowed_days` (e.g. `BYDAY=MO,TU,WE,TH,FR`) in `rrule_occurrences_between` for `HOURLY` recurrences, preventing false weekend occurrences in catch-up report generation and incorrect early release queue prioritization.
+  - Validated standard `FREQ` recurrence tokens in `rrule_next_after`, returning `None` for invalid or unknown recurrence rules and routing malformed tasks to safe fallback rather than synthesizing erroneous future execution timestamps.
+  - Reused unified path resolution helper `resolve_automation_path` across `SafeStartGate` methods and `command_restore_latest`.
+  - Added dedicated regression test suite in `tests/test_cli.py` covering missing file handling, partial failure recovery, RRULE token validation, and weekday-filtered hourly intervals (96/96 pytest tests passing 100% green). [G 2026-09-11]
 
 - Discoverability, Visual Architecture, Governance Matrix & Contract Tests (GITHUBBOT_ONE_REPO_MARKETING_AND_DESIGN / Pfad B) on 2026-09-08:
   - Implemented standardized 14-point Quick Navigation (`🧭 Quick Navigation` / `🧭 Schnellnavigation`) across `README.md` and `README_de.md` with explicit functional anchor links and bilingual language switchers.

@@ -840,3 +840,106 @@ def test_cleanup_lockfile_preserved_when_zombie_kill_fails(tmp_path: Path, monke
     assert lockfile.exists()
     assert any(f"Preserved lockfile because not all Codex main processes could be terminated: {lockfile}" in msg for msg in result.messages)
 
+
+def test_release_item_missing_file_skips_gracefully() -> None:
+    gate = SafeStartGate(dry_run=False)
+    missing_path = Path("C:/nonexistent/missing_dir/automation.toml")
+    item = Automation(
+        id="missing-job",
+        name="Missing Job",
+        path=str(missing_path),
+        original_status="ACTIVE",
+        status="PAUSED",
+        kind="cron",
+        rrule="RRULE:FREQ=DAILY;BYHOUR=9;BYMINUTE=0",
+        created_at=None,
+        updated_at=None,
+        tool_paused=True,
+    )
+    # Must not raise FileNotFoundError, and should mark item released
+    gate.release_item(item)
+    assert item.released is True
+    assert "Skip release for missing automation file" in gate.last_message
+
+
+def test_restore_missing_file_skips_and_restores_remaining(tmp_path: Path) -> None:
+    auto2_path = tmp_path / "job2" / "automation.toml"
+    auto2_path.parent.mkdir(parents=True)
+    auto2_path.write_text('status = "PAUSED"\n', encoding="utf-8")
+
+    item_missing = Automation(
+        id="missing-job",
+        name="Missing Job",
+        path=str(tmp_path / "nonexistent.toml"),
+        original_status="ACTIVE",
+        status="PAUSED",
+        kind="cron",
+        rrule="",
+        created_at=None,
+        updated_at=None,
+        tool_paused=True,
+    )
+    item_valid = Automation(
+        id="job2",
+        name="Job 2",
+        path=str(auto2_path),
+        original_status="ACTIVE",
+        status="PAUSED",
+        kind="cron",
+        rrule="",
+        created_at=None,
+        updated_at=None,
+        tool_paused=True,
+    )
+
+    gate = SafeStartGate(dry_run=False)
+    gate.tool_paused = [item_missing, item_valid]
+
+    # Must not crash with FileNotFoundError on missing-job; must successfully restore job2
+    gate.restore()
+    assert item_valid.status == "ACTIVE"
+    assert item_valid.released is True
+    assert 'status = "ACTIVE"' in auto2_path.read_text(encoding="utf-8")
+    assert gate.restored is True
+
+
+def test_rrule_next_after_invalid_frequency_returns_none() -> None:
+    now = datetime(2026, 9, 11, 10, 0)
+    assert rrule_next_after("FOOBAR", now) is None
+    assert rrule_next_after("INTERVAL=5", now) is None
+    assert rrule_next_after("FREQ=UNKNOWN;INTERVAL=1", now) is None
+
+
+def test_split_release_queue_malformed_rrule_to_fallback() -> None:
+    now = datetime(2026, 9, 11, 10, 0)
+    lead = timedelta(minutes=15)
+    item_bad = Automation(
+        id="bad-rrule",
+        name="Bad RRULE",
+        path="C:/fake/path",
+        original_status="ACTIVE",
+        status="ACTIVE",
+        kind="cron",
+        rrule="INTERVAL=5",  # missing FREQ
+        created_at=None,
+        updated_at=None,
+    )
+    future, fallback = split_release_queue([item_bad], now, lead)
+    assert len(future) == 0
+    assert len(fallback) == 1
+    assert fallback[0].id == "bad-rrule"
+    assert fallback[0].next_at is None
+
+
+def test_rrule_occurrences_between_hourly_respects_byday() -> None:
+    # Rule specifies weekdays only at 09:00
+    rrule = "FREQ=HOURLY;INTERVAL=1;BYDAY=MO,TU,WE,TH,FR;BYHOUR=9;BYMINUTE=0"
+    start = datetime(2026, 6, 5, 0, 0)  # Friday
+    end = datetime(2026, 6, 8, 23, 59)  # Monday
+    occurrences = rrule_occurrences_between(rrule, start, end)
+    # Should only contain Friday 09:00 and Monday 09:00 (2 occurrences), no Sat/Sun
+    assert len(occurrences) == 2
+    assert all(dt.weekday() < 5 for dt in occurrences)
+    assert occurrences[0] == datetime(2026, 6, 5, 9, 0)
+    assert occurrences[1] == datetime(2026, 6, 8, 9, 0)
+
