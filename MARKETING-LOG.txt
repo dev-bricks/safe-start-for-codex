@@ -1,50 +1,127 @@
-# MARKETING & DISCOVERABILITY LOG: dev-bricks/safe-start-for-codex
-Date: 2026-09-08
-Auditor: Antigravity / Gemini [G 2026-09-08]
-Scope: Pfad B Discoverability, Visual Architecture, Navigation, Governance & Ecosystem Parity
+# MARKETING-LOG: safe-start-for-codex
+Date: 2026-09-11
+Operator: Antigravity / Gemini (via GITHUBBOT Pfad B)
+Target Repo: dev-bricks/safe-start-for-codex
+Canonical Path: C:\_Local_DEV\repos\safe-start-for-codex
+Version: 1.1.5
 
-## 1. Executive Summary & Positioning
-- Repository: dev-bricks/safe-start-for-codex
-- Version: 1.1.4
+# Audit & Action Tracking:
+# [2026-09-08 18:50:00 CEST] [GITHUBBOT_ONE_REPO_MARKETING_AND_DESIGN] ACTION: PFAD_B_UPGRADE | REPO: dev-bricks/safe-start-for-codex | SCOPE: Initial Pfad B discoverability baseline, 14-point quick navigation in README.md & README_de.md, dual mermaid diagrams (flowchart & sequence with autonumber), 10 governance invariants, sibling tools ecosystem matrix, and contract tests.
+# [2026-09-10 15:22:00 CEST] [GITHUBBOT_ONE_REPO_CLEANER] ACTION: PFAD_A_HYGIENE | REPO: dev-bricks/safe-start-for-codex | SCOPE: Hardened .gitignore patterns against cloud sync conflicts and lockfiles, CI concurrency guards, and contract testsuite stabilization (version 1.1.4).
+# [2026-09-11 22:50:00 CEST] [GITHUBBOT_ONE_REPO_MARKETING_AND_DESIGN] ACTION: PFAD_B_UPGRADE | REPO: dev-bricks/safe-start-for-codex | SCOPE: 15-Point Quick Navigation standard with 100% bidirectional anchor parity (#13-third-party-licenses--transparency / #13-drittanbieter-lizenzen--transparenz, #14-marketing--target-personas / #14-marketing--zielgruppen, #15-development-security--license / #15-entwicklung-sicherheit--lizenz), canonical invariant identifiers (INV-LOCAL-01 to INV-SLA-10), audited THIRD_PARTY_LICENSES.md (100% permissive open source stack), enriched MARKETING-LOG.txt with 4 personas, competitive matrix, PEP 621 project URLs in pyproject.toml ("Third-Party Licenses", "Marketing Log", "LLM Ready"), version bump to 1.1.5, llms.txt synchronization, and automated contract testsuite extension.
+
+================================================================================
+1. REPOSITORY AUDIT & DISCOVERABILITY BASELINE
+================================================================================
+- Organization: dev-bricks
+- Umbrella Ecosystem: open-bricks
 - Primary Category: Developer Tooling / Desktop Automation Infrastructure
-- Ecosystem: dev-bricks (umbrella: open-bricks)
-- License: MIT (Local-First, Zero-Egress, User-Mode Non-Elevation)
+- Core Positioning: Unofficial Windows startup gate and safety supervisor for Codex Desktop automations, preventing startup surges, CPU throttling, API exhaustion, and UI lockups via atomic snapshotting, pre-boot pause, and staggered background releases.
+- Distinct Value Proposition: Operates 100% offline with zero external runtime dependencies (pure Python standard library core). Provides atomic TOML configuration snapshots, selective restoration (preserving prior paused states), conservative read-only catch-up planning, zombie process supervision for the ChatGPT.exe / codex.exe family, and an optional minimized Windows System Tray application.
+- Sibling Ecosystem Integration: Interoperates directly with dev-bricks developer tooling (CareCenter-for-Codex, CodeBox, companion-for-agy, automation-master, WikiStub-Seed, MethodenAnalyser), ellmos-ai infrastructure (lock-master, ticket-master, ellmos-filecommander-mcp, ellmos-codecommander-mcp, ellmos-controlcenter-mcp), and the open-bricks root ecosystem.
 
-Safe Start for Codex addresses a concrete, painful developer failure mode: Codex Desktop starting up after system sleep or offline periods and immediately triggering dozens of accumulated recurring automations, leading to CPU throttling, API exhaustion, and interface unresponsiveness.
+================================================================================
+2. TARGET PERSONAS & USER JOURNEYS
+================================================================================
+1. Windows Codex Desktop Power Users & Prompt Engineers
+   - Needs: Run multiple recurring local automations (morning digests, repository synchronizations, news aggregators) without freezing Windows or exceeding rate limits every time their workstation boots or wakes up from sleep.
+   - Pain Points: When Codex Desktop launches, all automations scheduled during downtime fire simultaneously, maxing out CPU cores, hammering OpenAI API quotas, and locking up the Electron/Win32 UI.
+   - Safe Start Solution: Automatically pauses active automations before boot, takes an atomic backup snapshot, launches Codex cleanly, immediately releases an urgent lead batch whose schedules lie safely ahead, and releases the remainder gradually in configurable intervals.
 
-## 2. Target Audience & Personas
-1. Windows Codex Desktop Power Users: Developers running multiple local recurring automations, monitors, scrapers, and maintenance bots.
-2. Multi-Agent System Operators: Engineers running collaborative agent swarms (Claude Code, Codex CLI, Gemini Antigravity, Kimi) who need reliable local startup gating.
-3. System Reliability Engineers (SREs): Developers seeking predictable startup behaviors, zombie-process protection, and automated snapshot backups.
+2. Autonomous Multi-Agent Swarm Operators (Claude Code, Codex CLI, Gemini Antigravity, Kimi)
+   - Needs: Orchestrate multi-agent local workflows where autonomous agents schedule background tasks without colliding or creating unbounded background process leaks.
+   - Pain Points: Orphaned background `codex.exe` instances linger silently in the Windows process table, holding file locks on SQLite state databases and preventing scheduled routines from executing.
+   - Safe Start Solution: Built-in process family supervisor identifies stale zombie processes beyond idle thresholds while carefully preserving active UI sessions. Machine-readable context in `llms.txt` enables local LLMs to invoke and inspect gating status natively.
 
-## 3. SEO, Keywords & Discoverability Matrix
-- Core Search Phrases:
-  - safe-start-for-codex
-  - Safe Start for Codex
-  - Codex Desktop automation startup gate
-  - Codex Desktop automation surge prevention
-  - Windows Codex automation scheduler guard
-  - local Codex automation catch-up planner
-  - Codex Desktop recurring automation startup control
-- Disambiguation Vector:
-  - Avoids collision with general OpenAI Codex tutorials, cloud APIs, and prompt repositories.
-  - Machine-readable context explicitly mapped via llms.txt.
+3. DevOps & System Reliability Engineers (SREs)
+   - Needs: Maintain deterministic, auditable startup policies across developer machines, CI runners, and dedicated build workstations.
+   - Pain Points: Manual edits to automation TOML files risk corrupting syntax or leaving automations permanently disabled after unexpected crashes.
+   - Safe Start Solution: Atomic TOML serialization via staging files, automatic snapshot backups before any file modification, and a dedicated `restore-latest` emergency recovery command.
 
-## 4. Architectural & Visual Enhancements (Pfad B 2026-09-08)
-- 14-Point Quick Navigation: Implemented with direct anchor links across README.md and README_de.md.
-- Dual Mermaid Diagrams:
-  1. System Architecture flowchart (graph TB) detailing Control Interfaces, Safe Start Core Engine, and Codex Desktop Environment.
-  2. Lifecycle sequence diagram (sequenceDiagram) detailing the full 9-step execution lifecycle (trigger, snapshot, gate, supervisor cleanup, desktop launch, lead batch release, staggered background timers).
-- Governance & Runtime Invariants Matrix: Documented 10 explicit operational guarantees (Local-First, Non-Elevation, Snapshot-Before-Mutation, Selective Restoration, Conservative Catch-Up, Targeted Supervision, Atomic TOML Serialization, Fail-Closed Diagnostics, Dual-Platform Portability, Ecosystem Parity).
-- Extended Sibling Tools Matrix: Cross-linked 12 partner repositories across dev-bricks, ellmos-ai, and open-bricks.
+4. Enterprise Security & Compliance Auditors
+   - Needs: Ensure local automation tooling adheres to strict zero-egress, unprivileged user mode, and permissive licensing constraints.
+   - Pain Points: Untrusted third-party desktop tools often bundle telemetry, request administrative/UAC escalation, or introduce restrictive copyleft dependencies.
+   - Safe Start Solution: 100% Local-First / Zero-Egress (INV-LOCAL-01), strictly unprivileged execution without UAC (INV-SEC-02), zero external runtime dependencies, 100% permissive open-source license audit (THIRD_PARTY_LICENSES.md), and codified 48-hour security response SLA (INV-SLA-10).
 
-## 5. Security & SLA Hardening
-- Enriched SECURITY.md with explicit response commitments:
-  - 48-hour report acknowledgment
-  - 5-business-day technical triage
-  - GitHub Security Advisories reporting pathway
+================================================================================
+3. HIGH-INTENT SEARCH QUERIES (BILINGUAL EN & DE)
+================================================================================
+English (EN):
+- `safe-start-for-codex`
+- `Safe Start for Codex`
+- `codex desktop automation startup gate`
+- `prevent codex desktop startup surge`
+- `windows codex automation scheduler guard`
+- `staggered release codex automations python`
+- `codex automation catch-up planner offline`
+- `codex zombie process cleanup python`
+- `dev-bricks safe start for codex`
+- `local-first zero-egress codex gate`
 
-## 6. Verification & Quality Assurance
-- Pytest test suite: 91 passing tests (100% green).
-- Linter: ruff check passed with 0 errors.
-- CI Workflow: pip caching enabled on setup-python@v5.
+German (DE):
+- `Safe Start for Codex Windows`
+- `Codex Desktop Automatisierungen Start-Gating`
+- `Codex Startup Lastspitzen verhindern`
+- `Gestaffelte Freigabe Codex Automatisierungen`
+- `Konservativer Aufholplaner Codex Desktop`
+- `Codex Zombie Prozesse bereinigen Windows`
+- `Lokales Startup Gate fuer Codex Automatisierung`
+- `Atomares Backup Codex Automationskonfiguration`
+- `dev-bricks safe-start-for-codex Open-Source`
+- `Zero-Egress Desktop Gate fuer KI Automatisierung`
+
+================================================================================
+4. COMPETITIVE DIFFERENTIATION MATRIX
+================================================================================
+| Dimension / Capability | Safe Start for Codex | Native Unmodified Codex | Windows Task Scheduler | Custom Batch/PowerShell | Heavyweight Enterprise APMs |
+|:---|:---|:---|:---|:---|:---|
+| **Startup Surge Interception** | Automatic pre-boot pause & lead batch release | ❌ Fires all accumulated jobs at once | ❌ No awareness of Codex TOML schemas | ⚠️ Fragile ad-hoc regex parsing | ⚠️ Heavy agent overhead |
+| **Configuration Safety** | Atomic snapshots + staging writes | ❌ Overwrites live config in place | ❌ Does not manage application configs | ❌ High risk of corrupted TOML state | ❌ External proprietary database |
+| **Selective State Restoration** | Restores only session-paused automations | ❌ N/A | ❌ Binary enable/disable only | ⚠️ Flattens previously disabled jobs | ⚠️ Complex rule engine required |
+| **Catch-Up Planning** | Conservative read-only audit (no force-run) | ❌ Haphazard or skipped execution | ❌ "Run task as soon as possible" stampede | ❌ Unaware of recurrence rules | ⚠️ Complex cloud synchronization |
+| **Zombie Process Management** | Safe process family heuristics (ChatGPT/codex) | ❌ Leaves detached zombies on crash | ❌ Kills by PID or image without context | ⚠️ Prone to killing active UI sessions | ⚠️ High privilege agent required |
+| **Network & Privacy** | 100% Local-First / Zero-Egress (INV-LOCAL-01) | Cloud-connected desktop app | Local OS service | Local scripts | ❌ Cloud telemetry & egress |
+| **User Privileges** | Unprivileged User-Mode (`RunAsInvoker`) | Standard user | Requires admin for many tasks | Often requires elevation | ❌ Requires system service daemon |
+| **Dependencies** | Zero external runtime dependencies | Electron / native bundled | Built-in Windows | Built-in shell | Multi-megabyte runtime |
+
+================================================================================
+5. GOVERNANCE & RUNTIME INVARIANTS
+================================================================================
+- INV-LOCAL-01: 100% Local-First & Zero Egress (no network calls, zero telemetry, zero remote tracking).
+- INV-SEC-02: Non-Elevation / RunAsInvoker (runs strictly in standard user mode without UAC elevation).
+- INV-FILE-03: Snapshot-Before-Mutation (creates timestamped backups prior to modifying any configuration).
+- INV-RESTORE-04: Selective Restoration Guard (only re-enables automations paused in current session).
+- INV-CATCH-05: Conservative Catch-Up Policy (strictly read-only analysis; never triggers forced runs).
+- INV-PROC-06: Targeted Process Supervision (restricts termination to ChatGPT.exe/codex.exe beyond age limits).
+- INV-INTEG-07: Atomic TOML Serialization (staging files and atomic renames prevent partial writes).
+- INV-FAIL-08: Fail-Closed Diagnostics (halts on invalid configurations without modifying active files).
+- INV-PLAT-09: Cross-Platform Operating Parity (Windows production execution with Linux/macOS smoke tests).
+- INV-SLA-10: Dual Security Response & Triage SLA (48-hour acknowledgment, 5-business-day triage).
+
+================================================================================
+6. SIBLING TOOLS ECOSYSTEM MAPPING
+================================================================================
+- CareCenter-for-Codex (`dev-bricks`): Execution history, automations logs, and diagnostic telemetry from Codex runs.
+- CodeBox (`dev-bricks`): Isolated Python execution box for testing scripts and automations safely.
+- companion-for-agy (`dev-bricks`): Companion process and UI bridge for Google Antigravity and agent CLI sessions.
+- automation-master (`dev-bricks`): Governance ledger, credit budgeting, and task scheduling across autonomous agents.
+- WikiStub-Seed (`dev-bricks`): Static documentation generator and Markdown knowledge-base bootstrapper.
+- MethodenAnalyser (`dev-bricks`): Structural analysis toolkit for multi-agent workflows and cognitive procedures.
+- lock-master (`ellmos-ai`): Fail-closed distributed concurrency control preventing multi-agent write collisions.
+- ticket-master (`ellmos-ai`): Queue and ticket management for cross-agent work distribution and triage.
+- ellmos-filecommander-mcp (`ellmos-ai`): Filesystem MCP Server for fine-grained file operations and process monitoring.
+- ellmos-codecommander-mcp (`ellmos-ai`): Code refactoring, import diagnostics, and semantic structural edits for agents.
+- ellmos-controlcenter-mcp (`ellmos-ai`): MCP stack control plane, tool discovery, and capability resolution.
+- open-bricks (`open-bricks`): Umbrella root organization coordinating open-source developer tooling and standards.
+
+================================================================================
+7. STRATEGIC ACTION ITEMS & DISCOVERABILITY ROADMAP
+================================================================================
+- [x] Standardize bilingual README navigation with 15-point bidirectional parity.
+- [x] Codify 10 Governance & Runtime Invariants (INV-LOCAL-01 to INV-SLA-10) in READMEs and docs.
+- [x] Create comprehensive THIRD_PARTY_LICENSES.md audit verifying 100% permissive stack.
+- [x] Configure PEP 621 URLs for Third-Party Licenses, Marketing Log, and LLM Ready in pyproject.toml.
+- [x] Synchronize llms.txt discovery index with updated test baseline and invariant contracts.
+- [ ] Implement optional lightweight web dashboard for real-time gating status observation.
+- [ ] Publish pre-compiled standalone Windows EXE binaries in GitHub Releases via automated Actions.
+- [ ] Expand integration test coverage with synthetic Codex automation collections.

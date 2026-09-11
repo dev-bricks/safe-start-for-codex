@@ -106,6 +106,34 @@ def test_pyproject_pep621_classifiers_and_urls() -> None:
     assert "Security" in urls
     assert "Parent Organization" in urls
     assert "Umbrella Ecosystem" in urls
+    assert "Third-Party Licenses" in urls
+    assert "Marketing Log" in urls
+    assert "LLM Ready" in urls
+
+
+def test_third_party_licenses_markdown_contract() -> None:
+    text = (ROOT / "THIRD_PARTY_LICENSES.md").read_text(encoding="utf-8")
+    assert "Third-Party Licenses & Transparency Notice" in text
+    assert "permissive and free open-source licenses" in text.lower()
+    assert "Pillow" in text
+    assert "pystray" in text
+    assert "pytest" in text
+    assert "ruff" in text
+    assert "hatchling" in text
+    assert "pyinstaller" in text
+    for inv_id in [
+        "INV-LOCAL-01",
+        "INV-SEC-02",
+        "INV-FILE-03",
+        "INV-RESTORE-04",
+        "INV-CATCH-05",
+        "INV-PROC-06",
+        "INV-INTEG-07",
+        "INV-FAIL-08",
+        "INV-PLAT-09",
+        "INV-SLA-10",
+    ]:
+        assert inv_id in text, f"Missing invariant {inv_id} in THIRD_PARTY_LICENSES.md"
 
 
 def test_ci_workflows_concurrency_and_lint_gate() -> None:

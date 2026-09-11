@@ -22,6 +22,7 @@ def test_required_documentation_files_exist() -> None:
         "llms.txt",
         "CHANGELOG.md",
         "SECURITY.md",
+        "THIRD_PARTY_LICENSES.md",
         "THIRD_PARTY_LICENSES.txt",
         "MARKETING-LOG.txt",
     ]
@@ -47,8 +48,9 @@ def test_llms_txt_integrity() -> None:
     llms_text = (PROJECT_ROOT / "llms.txt").read_text(encoding="utf-8")
     assert "https://github.com/dev-bricks/safe-start-for-codex" in llms_text
     assert "dev-bricks" in llms_text
-    assert "Last-checked: 2026-09-10" in llms_text
-    assert "91 pytest tests passed" in llms_text
+    assert "Last-checked: 2026-09-11" in llms_text
+    assert "99 pytest tests passed" in llms_text
+    assert "Version 1.1.5 verified" in llms_text
 
 
 def test_cli_subcommands_registered() -> None:
@@ -79,10 +81,24 @@ def test_readme_and_readme_de_parity() -> None:
     readme_de = (PROJECT_ROOT / "README_de.md").read_text(encoding="utf-8")
 
     # Both documents must have matching core sections
-    for sec_en in ["System Architecture", "Discovery Context", "Development", "Related Tools & Ecosystem", "License"]:
+    for sec_en in [
+        "System Architecture",
+        "Governance & Runtime Invariants",
+        "Third-Party Licenses & Transparency",
+        "Marketing & Target Personas",
+        "Development, Security & License",
+        "Related Tools & Ecosystem",
+    ]:
         assert sec_en in readme_en, f"Missing English section {sec_en}"
 
-    for sec_de in ["Systemarchitektur", "Auffindbarkeit", "Entwicklung", "Verwandte Tools & Ökosystem", "Lizenz"]:
+    for sec_de in [
+        "Systemarchitektur",
+        "Governance- & Laufzeitinvarianten",
+        "Drittanbieter-Lizenzen & Transparenz",
+        "Marketing & Zielgruppen",
+        "Entwicklung, Sicherheit & Lizenz",
+        "Verwandte Tools & Ökosystem",
+    ]:
         assert sec_de in readme_de, f"Missing German section {sec_de}"
 
     # Cross links to sister repos
@@ -98,8 +114,8 @@ def test_quick_navigation_anchors_parity() -> None:
     assert "### 🧭 Quick Navigation" in readme_en
     assert "### 🧭 Schnellnavigation" in readme_de
 
-    # Ensure 14 numbered links exist in both
-    for i in range(1, 15):
+    # Ensure 15 numbered links exist in both
+    for i in range(1, 16):
         assert f"{i}. [" in readme_en, f"Missing point {i} in English quick navigation"
         assert f"{i}. [" in readme_de, f"Missing point {i} in German quick navigation"
 
@@ -126,10 +142,24 @@ def test_governance_invariants_table_parity() -> None:
     assert "Governance & Runtime Invariants" in readme_en
     assert "Governance- & Laufzeitinvarianten" in readme_de
 
-    # Check that all 10 invariants are present in the table
-    for inv_num in range(1, 11):
-        assert f"| {inv_num} |" in readme_en, f"Missing invariant {inv_num} in English README"
-        assert f"| {inv_num} |" in readme_de, f"Missing invariant {inv_num} in German README"
+    # Check that all 10 invariants and their canonical IDs are present in both tables
+    canonical_invariants = [
+        "INV-LOCAL-01",
+        "INV-SEC-02",
+        "INV-FILE-03",
+        "INV-RESTORE-04",
+        "INV-CATCH-05",
+        "INV-PROC-06",
+        "INV-INTEG-07",
+        "INV-FAIL-08",
+        "INV-PLAT-09",
+        "INV-SLA-10",
+    ]
+    for inv_num, inv_id in enumerate(canonical_invariants, 1):
+        assert f"| {inv_num} |" in readme_en, f"Missing invariant number {inv_num} in English README"
+        assert f"| {inv_num} |" in readme_de, f"Missing invariant number {inv_num} in German README"
+        assert inv_id in readme_en, f"Missing invariant ID {inv_id} in English README"
+        assert inv_id in readme_de, f"Missing invariant ID {inv_id} in German README"
 
 
 def test_ecosystem_matrix_parity() -> None:
@@ -251,3 +281,49 @@ def test_changelog_recent_pfad_a_entry() -> None:
     assert "## [1.1.4] - 2026-09-10" in changelog
     assert "GITHUBBOT_ONE_REPO_CLEANER" in changelog
     assert "Technical Hygiene" in changelog
+
+
+def test_changelog_recent_pfad_b_entry() -> None:
+    changelog = (PROJECT_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
+    assert "## [1.1.5] - 2026-09-11" in changelog
+    assert "GITHUBBOT_ONE_REPO_MARKETING_AND_DESIGN" in changelog
+    assert "Discoverability" in changelog
+
+
+def test_marketing_log_contract() -> None:
+    log_text = (PROJECT_ROOT / "MARKETING-LOG.txt").read_text(encoding="utf-8")
+    assert "# MARKETING-LOG: safe-start-for-codex" in log_text
+    assert "Target Repo: dev-bricks/safe-start-for-codex" in log_text
+    assert "PFAD_B_UPGRADE" in log_text
+
+    # 4 target personas
+    for persona in [
+        "Windows Codex Desktop Power Users & Prompt Engineers",
+        "Autonomous Multi-Agent Swarm Operators",
+        "DevOps & System Reliability Engineers",
+        "Enterprise Security & Compliance Auditors",
+    ]:
+        assert persona in log_text, f"Missing persona: {persona}"
+
+    # Search phrases
+    assert "HIGH-INTENT SEARCH QUERIES" in log_text
+    assert "safe-start-for-codex" in log_text
+
+    # Competitive matrix
+    assert "COMPETITIVE DIFFERENTIATION MATRIX" in log_text
+    assert "Native Unmodified Codex" in log_text
+
+    # Invariants
+    for inv_id in [
+        "INV-LOCAL-01",
+        "INV-SEC-02",
+        "INV-FILE-03",
+        "INV-RESTORE-04",
+        "INV-CATCH-05",
+        "INV-PROC-06",
+        "INV-INTEG-07",
+        "INV-FAIL-08",
+        "INV-PLAT-09",
+        "INV-SLA-10",
+    ]:
+        assert inv_id in log_text, f"Missing invariant ID {inv_id} in marketing log"

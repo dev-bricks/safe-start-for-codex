@@ -2,6 +2,19 @@
 
 All notable changes to this project are documented here.
 
+## [1.1.5] - 2026-09-11
+
+- Discoverability, 15-Point Quick Navigation, Third-Party License Inventory, Invariant Matrix & Contract Parity (GITHUBBOT_ONE_REPO_MARKETING_AND_DESIGN / Pfad B) on 2026-09-11:
+  - Upgraded to standardized 15-point Quick Navigation (`🧭 Quick Navigation` / `🧭 Schnellnavigation`) across `README.md` and `README_de.md` with 100% bidirectional anchor parity (`#13-third-party-licenses--transparency` / `#13-drittanbieter-lizenzen--transparenz`, `#14-marketing--target-personas` / `#14-marketing--zielgruppen`, `#15-development-security--license` / `#15-entwicklung-sicherheit--lizenz`).
+  - Added dedicated `THIRD_PARTY_LICENSES.md` inventory detailing 100% permissive open-source license status across core, optional, development, and build dependencies with zero copyleft restrictions.
+  - Codified 10 canonical Governance & Runtime Invariants (`INV-LOCAL-01` through `INV-SLA-10`) across documentation, local marketing logs, and automated contract tests.
+  - Enriched `MARKETING-LOG.txt` with 4 comprehensive target personas (Codex Desktop power users, autonomous multi-agent swarm operators, DevOps/SREs, enterprise compliance auditors), bilingual search queries, a 5-way competitive differentiation matrix, and sibling tool mapping.
+  - Extended PEP 621 project URLs in `pyproject.toml` with `"Third-Party Licenses"`, `"Marketing Log"`, and `"LLM Ready"`.
+  - Bumped version to `1.1.5` across `pyproject.toml`, `src/safe_start_for_codex/__init__.py`, `README.md`, `README_de.md`, `RELEASES.md`, `MARKETING-LOG.txt`, and `llms.txt`.
+  - Added modern Shields.io badges for Security SLA (48h/5d triage), Third-Party Licenses (100% audited), and Marketing Log (active).
+  - Synchronized `llms.txt` discovery index with updated version (`1.1.5`), verification date (`2026-09-11`), and documentation pointers.
+  - Expanded automated contract test suite with contract tests for 15-point navigation, invariant IDs, PEP 621 extended URLs, third-party license audit files, and marketing log structure. [G 2026-09-11]
+
 ## [1.1.4] - 2026-09-10
 
 - Technical Hygiene, CI Compilation Gate, Standardized Pytest Flags & Contract Suite (GITHUBBOT_ONE_REPO_CLEANER / Pfad A) on 2026-09-10:

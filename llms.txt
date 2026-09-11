@@ -1,4 +1,4 @@
-## Last-checked: 2026-09-10
+## Last-checked: 2026-09-11
 
 # safe-start-for-codex - Startup surge prevention for Codex Desktop automations
 
@@ -6,17 +6,19 @@ Canonical repository: https://github.com/dev-bricks/safe-start-for-codex
 
 > safe-start-for-codex is a Python-based Windows startup gate utility for managing local Codex Desktop automations. It temporarily pauses active automations upon startup, starts Codex Desktop, and then gradually restores the automations in a controlled, rate-limited sequence to avoid CPU/API spikes and startup congestion.
 
-It includes optional background tray execution, startup cleanup of stale processes/lockfiles, conservative read-only catch-up planning for rare schedules that missed runs, atomic JSON state writes for config and catch-up report files, Windows and cross-platform multi-OS CI with concurrency guards, pip caching, and ruff linting, and source-platform smoke tests for macOS/Linux parsing and configuration logic.
+It includes optional background tray execution, startup cleanup of stale processes/lockfiles, conservative read-only catch-up planning for rare schedules that missed runs, atomic JSON state writes for config and catch-up report files, Windows and cross-platform multi-OS CI with concurrency guards, pip caching, and ruff linting, and source-platform smoke tests for macOS/Linux parsing and configuration logic. Enforces 10 Governance & Runtime Invariants (`INV-LOCAL-01` through `INV-SLA-10`).
 
 Part of the dev-bricks family. Python, MIT.
 
-Verification: 91 pytest tests passed (80 unit/regression/security/metadata tests + 11 source-platform smoke tests) on 2026-09-10. Multi-OS CI matrix across Windows/Linux/macOS with concurrency controls, bytecode compilation gate, and ruff lint gate verified. Compileall passed. Ruff lint passed. Version 1.1.4 verified.
+Verification: 99 pytest tests passed on 2026-09-11. Multi-OS CI matrix across Windows/Linux/macOS with concurrency controls, bytecode compilation gate, and ruff lint gate verified. Compileall passed. Ruff lint passed. Version 1.1.5 verified.
 
 
 ## Docs
 
-- [README.md](https://github.com/dev-bricks/safe-start-for-codex/blob/main/README.md): Primary documentation, installation guide, foreground/tray usage, and options.
-- [README_de.md](https://github.com/dev-bricks/safe-start-for-codex/blob/main/README_de.md): German localization.
+- [README.md](https://github.com/dev-bricks/safe-start-for-codex/blob/main/README.md): Primary documentation, installation guide, foreground/tray usage, 15-point navigation, and invariants matrix.
+- [README_de.md](https://github.com/dev-bricks/safe-start-for-codex/blob/main/README_de.md): German localization with full bidirectional anchor parity.
+- [THIRD_PARTY_LICENSES.md](https://github.com/dev-bricks/safe-start-for-codex/blob/main/THIRD_PARTY_LICENSES.md): Audited dependency license inventory (100% permissive open source stack).
+- [MARKETING-LOG.txt](https://github.com/dev-bricks/safe-start-for-codex/blob/main/MARKETING-LOG.txt): Marketing strategy, target personas, search queries, and competitive matrix.
 - [docs/SOLUTION_CONCEPT.md](https://github.com/dev-bricks/safe-start-for-codex/blob/main/docs/SOLUTION_CONCEPT.md): Technical outline of the gating solution.
 - [docs/UPSTREAM_ISSUE_PROPOSAL.md](https://github.com/dev-bricks/safe-start-for-codex/blob/main/docs/UPSTREAM_ISSUE_PROPOSAL.md): Draft proposal for implementing native startup pacing directly inside Codex Desktop.
 - [LICENSE](https://github.com/dev-bricks/safe-start-for-codex/blob/main/LICENSE): MIT license text.

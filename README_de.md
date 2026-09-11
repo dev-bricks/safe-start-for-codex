@@ -5,14 +5,17 @@ Inoffizielles Windows-Startup-Gate für Codex Desktop-Automatisierungen und gest
 ![Safe Start for Codex Banner](assets/safe_start_banner.png)
 
 <p align="center">
-  <a href="pyproject.toml"><img src="https://img.shields.io/badge/Version-1.1.4-blue.svg" alt="Version"></a>
+  <a href="pyproject.toml"><img src="https://img.shields.io/badge/Version-1.1.5-blue.svg" alt="Version"></a>
   <a href="https://github.com/dev-bricks/safe-start-for-codex/actions/workflows/ci.yml"><img src="https://img.shields.io/badge/CI-GitHub%20Actions-brightgreen.svg" alt="CI Status"></a>
   <a href="https://github.com/dev-bricks/safe-start-for-codex/actions/workflows/source-platform-smoke.yml"><img src="https://img.shields.io/badge/Smoke-macOS%20%7C%20Linux-brightgreen.svg" alt="Plattform Smoke"></a>
-  <a href="tests/"><img src="https://img.shields.io/badge/pytest-91%20bestanden%20%7C%20100%25-brightgreen.svg" alt="Pytest Status"></a>
+  <a href="tests/"><img src="https://img.shields.io/badge/pytest-bestanden%20%7C%20100%25-brightgreen.svg" alt="Pytest Status"></a>
   <img src="https://img.shields.io/badge/python-3.11%20%7C%203.12%20%7C%203.13-blue.svg" alt="Python Versionen">
   <img src="https://img.shields.io/badge/plattform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey.svg" alt="Plattformen">
   <img src="https://img.shields.io/badge/architektur-100%25%20Local--First%20%7C%20Zero--Egress-success.svg" alt="Local-First Architektur">
   <img src="https://img.shields.io/badge/sicherheit-Non--Elevation%20%7C%20User--Mode-informational.svg" alt="Sicherheitsmodus">
+  <a href="SECURITY.md"><img src="https://img.shields.io/badge/sicherheits--SLA-48h%20%7C%205d%20triage-success.svg" alt="Sicherheits SLA"></a>
+  <a href="THIRD_PARTY_LICENSES.md"><img src="https://img.shields.io/badge/drittanbieter--lizenzen-100%25%20gepr%C3%BCft-success.svg" alt="Drittanbieter-Lizenzen"></a>
+  <a href="MARKETING-LOG.txt"><img src="https://img.shields.io/badge/marketing%20log-aktiv-informational.svg" alt="Marketing Log"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/Lizenz-MIT-yellow.svg" alt="Lizenz"></a>
   <a href="https://github.com/dev-bricks"><img src="https://img.shields.io/badge/ecosystem-dev--bricks-blue.svg" alt="dev-bricks"></a>
   <a href="https://github.com/open-bricks"><img src="https://img.shields.io/badge/ecosystem-open--bricks-blue.svg" alt="open-bricks"></a>
@@ -40,8 +43,9 @@ Inoffizielles Windows-Startup-Gate für Codex Desktop-Automatisierungen und gest
 10. [Konservativer Aufholplaner (Catch-Up Planner)](#10-konservativer-aufholplaner-catch-up-planner)
 11. [Upstream-Verbesserungsvorschlag & Lösungskonzept](#11-upstream-verbesserungsvorschlag--lösungskonzept)
 12. [Verwandte Tools & Ökosystem](#12-verwandte-tools--ökosystem)
-13. [Auffindbarkeit](#13-auffindbarkeit)
-14. [Entwicklung, Sicherheit & Lizenz](#14-entwicklung-sicherheit--lizenz)
+13. [Drittanbieter-Lizenzen & Transparenz](#13-drittanbieter-lizenzen--transparenz)
+14. [Marketing & Zielgruppen](#14-marketing--zielgruppen)
+15. [Entwicklung, Sicherheit & Lizenz](#15-entwicklung-sicherheit--lizenz)
 
 ---
 
@@ -164,18 +168,18 @@ sequenceDiagram
 
 Safe Start for Codex erzwingt 10 strikte Architektur- und Laufzeitgarantien:
 
-| # | Invariante | Bereich | Garantie & Überprüfung |
-|---|:---|:---|:---|
-| 1 | **Local-First & Zero Egress** | Netzwerk | 100% offline; keine Netzwerkaufrufe, keine Telemetrie, kein Tracking. Alle Zustände sind lokal. |
-| 2 | **Non-Elevation (User-Mode)** | Sicherheit | Läuft vollständig mit Standard-Benutzerrechten. Erfordert und fordert niemals Administrator-/UAC-Rechte an. |
-| 3 | **Snapshot-Before-Mutation** | Datensicherheit | Erstellt ein atomares Backup in `~/.codex/automation-safe-start/backups/` vor jeder Änderung an `automation.toml`. |
-| 4 | **Selektive Wiederherstellung** | Idempotenz | Reaktiviert nur Automatisierungen, die Safe Start in der jeweiligen Sitzung pausiert hat. Bereits inaktive bleiben unverändert. |
-| 5 | **Konservative Aufholpolitik** | Ablaufplanung | Die Aufholanalyse ist rein schreibgeschützt; sie löst niemals manuelle "Run now"-Aktionen oder Sofortläufe aus. |
-| 6 | **Gezielte Prozessüberwachung** | Betriebssystem | Die Bereinigung beschränkt sich strikt auf die Codex-Prozessfamilie (`ChatGPT.exe`, `codex.exe`) mit Altersgrenzen. |
-| 7 | **Atomare TOML-Serialisierung** | Integrität | Schreibzugriffe nutzen Staging-Dateien und atomare Umbenennungen gegen Datenverlust bei abruptem Abbruch. |
-| 8 | **Fail-Closed Diagnostik** | Zuverlässigkeit | Fehlerhafte Konfigurationen oder Dateizustände brechen kontrolliert ab, ohne Dateien unvollständig zu modifizieren. |
-| 9 | **Duale Plattformarchitektur** | Portabilität | Produktiver Einsatz unter Windows mit plattformübergreifenden Smoke-Tests für Linux und macOS. |
-| 10 | **Ökosystem-Parität** | Governance | Vollständige Metadaten-, Dokumentations- und Vertragstest-Konformität mit `dev-bricks`- und `open-bricks`-Standards. |
+| # | Invariant ID | Garantiename | Bereich | Garantie & Überprüfung |
+|---|:---|:---|:---|:---|
+| 1 | `INV-LOCAL-01` | **Local-First & Zero Egress** | Netzwerk | 100% offline; keine Netzwerkaufrufe, keine Telemetrie, kein Tracking. Alle Zustände sind lokal. |
+| 2 | `INV-SEC-02` | **Non-Elevation (User-Mode)** | Sicherheit | Läuft vollständig mit Standard-Benutzerrechten (`RunAsInvoker`). Erfordert und fordert niemals Administrator-/UAC-Rechte an. |
+| 3 | `INV-FILE-03` | **Snapshot-Before-Mutation** | Datensicherheit | Erstellt ein atomares Backup in `~/.codex/automation-safe-start/backups/` vor jeder Änderung an `automation.toml`. |
+| 4 | `INV-RESTORE-04` | **Selektive Wiederherstellung** | Idempotenz | Reaktiviert nur Automatisierungen, die Safe Start in der jeweiligen Sitzung pausiert hat. Bereits inaktive bleiben unverändert. |
+| 5 | `INV-CATCH-05` | **Konservative Aufholpolitik** | Ablaufplanung | Die Aufholanalyse ist rein schreibgeschützt; sie löst niemals manuelle "Run now"-Aktionen oder Sofortläufe aus. |
+| 6 | `INV-PROC-06` | **Gezielte Prozessüberwachung** | Betriebssystem | Die Bereinigung beschränkt sich strikt auf die Codex-Prozessfamilie (`ChatGPT.exe`, `codex.exe`) mit Altersgrenzen. |
+| 7 | `INV-INTEG-07` | **Atomare TOML-Serialisierung** | Integrität | Schreibzugriffe nutzen Staging-Dateien und atomare Umbenennungen gegen Datenverlust bei abruptem Abbruch. |
+| 8 | `INV-FAIL-08` | **Fail-Closed Diagnostik** | Zuverlässigkeit | Fehlerhafte Konfigurationen oder Dateizustände brechen kontrolliert ab, ohne Dateien unvollständig zu modifizieren. |
+| 9 | `INV-PLAT-09` | **Duale Plattformarchitektur** | Portabilität | Produktiver Einsatz unter Windows mit plattformübergreifenden Smoke-Tests für Linux und macOS. |
+| 10 | `INV-SLA-10` | **Duales Sicherheits-SLA** | Governance | Strikte Verpflichtung zur 48-Stunden-Eingangsbestätigung und 5-Werktage-Triage über offizielle Sicherheitskanäle. |
 
 ---
 
@@ -309,27 +313,51 @@ Safe Start for Codex arbeitet nahtlos im Ökosystem von `dev-bricks`, `ellmos-ai
 
 ---
 
-## 13. Auffindbarkeit
+## 13. Drittanbieter-Lizenzen & Transparenz
 
-Suchbegriffe, die dieses Projekt eindeutig beschreiben:
+Safe Start for Codex verpflichtet sich zu 100% Open-Source-Transparenz:
 
-```text
-safe-start-for-codex
-Safe Start for Codex
-Codex Desktop automation startup gate
-Codex Desktop automation surge prevention
-Windows Codex automation scheduler guard
-local Codex automation catch-up planner
-Codex Desktop recurring automation startup control
-```
-
-### Abgrenzung & Disambiguierung
-
-Das kanonische Repository ist `dev-bricks/safe-start-for-codex`. Es ist weder OpenAI Codex selbst noch ein Codex-Fork oder allgemeiner Task-Scheduler. Allgemeine Websuchen nach "Codex Startup" führen häufig zu OpenAI-Tutorials, Sandboxing-Artikeln oder unpassenden Prompt-Repositories.
+- **Kern-Laufzeit:** Null externe Laufzeitabhängigkeiten. Basiert ausschließlich auf der Python-Standardbibliothek (`dependencies = []`).
+- **Optionale Abhängigkeiten:** Die Windows System-Tray-Unterstützung nutzt [`Pillow`](https://pypi.org/project/pillow/) (MIT-CMU) und [`pystray`](https://pypi.org/project/pystray/) (LGPLv3, dynamisch im User-Space geladen).
+- **Entwicklung & Build:** Standardwerkzeuge umfassen [`pytest`](https://pypi.org/project/pytest/) (MIT), [`ruff`](https://pypi.org/project/ruff/) (MIT/Apache-2.0), [`hatchling`](https://pypi.org/project/hatchling/) (MIT) und [`PyInstaller`](https://pypi.org/project/pyinstaller/) (GPLv2-or-later mit Build-Ausnahmeregelung).
+- **Vollständiges Lizenzaudit:** Die detaillierte Abhängigkeitsmatrix, transitive Pakete und Lizenztexte sind in [`THIRD_PARTY_LICENSES.md`](THIRD_PARTY_LICENSES.md) und [`THIRD_PARTY_LICENSES.txt`](THIRD_PARTY_LICENSES.txt) dokumentiert.
 
 ---
 
-## 14. Entwicklung, Sicherheit & Lizenz
+## 14. Marketing & Zielgruppen
+
+Safe Start for Codex wurde für konkrete, praxisnahe Entwickler-Workflows konzipiert:
+
+### Zielgruppen (Personas)
+1. **Windows Codex Desktop Power-User & Prompt-Engineers:** Führen dutzende wiederkehrende Automatisierungen und Morgen-Briefings aus, ohne dass Windows einfriert, CPU-Spitzen auftreten oder API-Quoten beim Aufwachen des PCs verbraucht werden.
+2. **Autonome Multi-Agenten-Schwarm-Operatoren:** Koordinieren Agenten (Claude Code, Codex CLI, Gemini Antigravity, Kimi), deren Hintergrundprozesse determiniert starten müssen, ohne verwaiste Zombie-Prozesse zu hinterlassen.
+3. **DevOps & System Reliability Engineers (SREs):** Verlangen atomare Konfigurationssicherheit, Snapshot-Backups vor jeder Dateiänderung und berechenbares Boot-Verhalten auf Entwickler-Workstations.
+4. **Unternehmens-Sicherheits- & Compliance-Auditoren:** Verlangen unprivilegierten Benutzer-Modus (`RunAsInvoker`), 100% Local-First / Zero-Egress ohne Telemetrie sowie vollständig geprüfte permissive Lizenzen.
+
+### Relevante Suchbegriffe & Keywords
+- `safe-start-for-codex` / `Safe Start for Codex`
+- `Codex Desktop Automatisierungen Start-Gating`
+- `Codex Startup Lastspitzen verhindern`
+- `Gestaffelte Freigabe Codex Automatisierungen`
+- `Konservativer Aufholplaner Codex Desktop`
+- `Codex Zombie Prozesse bereinigen Windows`
+- `Lokales Startup Gate fuer Codex Automatisierung`
+- `Atomares Backup Codex Automationskonfiguration`
+- `dev-bricks safe start for codex`
+- `Zero-Egress Desktop Gate fuer KI Automatisierung`
+
+### Abgrenzung & Disambiguierung
+Das kanonische Repository ist `dev-bricks/safe-start-for-codex`. Es ist weder OpenAI Codex selbst noch ein Codex-Fork oder allgemeiner Task-Scheduler. Allgemeine Websuchen nach "Codex Startup" führen häufig zu OpenAI-Tutorials, Sandboxing-Artikeln oder unpassenden Prompt-Repositories. Safe Start liefert:
+- **Atomares Pre-Boot Gating:** Pausiert aktive Automatisierungen noch vor dem Laden der Desktop-App.
+- **Dringlichkeits-Vorlauf-Gruppe:** Reaktiviert sofort Aufgaben, deren Zeitplan sicher in der Zukunft liegt.
+- **Gestaffelte Hintergrund-Timer:** Gibt verbleibende Aufgaben schrittweise nach einstellbaren Intervallen frei.
+- **Zero-Egress Sicherheitsgarantie:** Vollständige lokale Privatsphäre ohne externe Netzwerkaufrufe oder Telemetrie.
+
+Weitere Details und Vergleiche sind in [`MARKETING-LOG.txt`](MARKETING-LOG.txt) festgehalten.
+
+---
+
+## 15. Entwicklung, Sicherheit & Lizenz
 
 ### Entwicklungsumgebung
 
@@ -356,7 +384,7 @@ ruff check .
 ### Lizenz
 
 Veröffentlicht unter der MIT-Lizenz. Vollständige Lizenzbedingungen siehe [`LICENSE`](LICENSE).
-Lizenzen direkter Abhängigkeiten sind in [`THIRD_PARTY_LICENSES.txt`](THIRD_PARTY_LICENSES.txt) dokumentiert.
+Lizenzen direkter Abhängigkeiten sind in [`THIRD_PARTY_LICENSES.md`](THIRD_PARTY_LICENSES.md) und [`THIRD_PARTY_LICENSES.txt`](THIRD_PARTY_LICENSES.txt) dokumentiert.
 
 ---
-*Zuletzt geprüft: 2026-09-08 im Rahmen des MARKETING & DESIGN Audits.*
+*Zuletzt geprüft: 2026-09-11 im Rahmen des MARKETING & DESIGN Audits.*

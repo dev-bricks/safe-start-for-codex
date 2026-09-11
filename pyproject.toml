@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "safe-start-for-codex"
-version = "1.1.4"
+version = "1.1.5"
 description = "Unofficial Windows startup gate for Codex Desktop automations and catch-up pacing."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -61,6 +61,9 @@ Changelog = "https://github.com/dev-bricks/safe-start-for-codex/blob/main/CHANGE
 Security = "https://github.com/dev-bricks/safe-start-for-codex/security/advisories"
 "Parent Organization" = "https://github.com/dev-bricks"
 "Umbrella Ecosystem" = "https://github.com/open-bricks"
+"Third-Party Licenses" = "https://github.com/dev-bricks/safe-start-for-codex/blob/main/THIRD_PARTY_LICENSES.md"
+"Marketing Log" = "https://github.com/dev-bricks/safe-start-for-codex/blob/main/MARKETING-LOG.txt"
+"LLM Ready" = "https://github.com/dev-bricks/safe-start-for-codex/blob/main/llms.txt"
 
 
 [tool.hatch.build.targets.wheel]
