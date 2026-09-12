@@ -14,6 +14,12 @@ All notable changes to this project are documented here.
   - Added modern Shields.io badges for Security SLA (48h/5d triage), Third-Party Licenses (100% audited), and Marketing Log (active).
   - Synchronized `llms.txt` discovery index with updated version (`1.1.5`), verification date (`2026-09-11`), and documentation pointers.
   - Expanded automated contract test suite with contract tests for 15-point navigation, invariant IDs, PEP 621 extended URLs, third-party license audit files, and marketing log structure. [G 2026-09-11]
+- SafeStartGate Restore Lifecycle, Snapshot Integrity & Tray Status Synchronization (SOFTWARE_BUGSEARCH Bugsweep) on 2026-09-13:
+  - Fixed false-positive release messaging in `SafeStartGate.status_text()`, ensuring that restored or aborted gates explicitly report `"Original automation state restored..."` instead of claiming all automations have been released.
+  - Guarded `SafeStartGate.restore()` to prevent overwriting `"finished"` execution snapshots when the gate has already completed its scheduled releases normally.
+  - Synchronized Windows taskbar notification tooltip in `command_tray` upon user restore, during setup, and upon background updater termination.
+  - Added robust type validation in `command_status` and `command_restore_latest` against non-dict JSON payloads, preventing unhandled `AttributeError` crashes.
+  - Expanded regression test suite in `tests/test_cli.py` to 102 passing tests (100% green). [G 2026-09-13]
 
 ## [1.1.4] - 2026-09-10
 

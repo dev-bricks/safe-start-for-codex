@@ -1374,7 +1374,7 @@ class SafeStartGate:
         if stop:
             self.stop_event.set()
         with self.lock:
-            if self.restored:
+            if self.restored or self.completed:
                 return
             restored = 0
             for item in self.tool_paused:
@@ -1405,6 +1405,8 @@ class SafeStartGate:
 
     def status_text(self) -> str:
         with self.lock:
+            if self.restored:
+                return f"Original automation state restored. Last status: {self.last_message}"
             paused = len(self.tool_paused)
             released = sum(1 for item in self.tool_paused if item.released)
             remaining = max(paused - released, 0)
@@ -1538,7 +1540,7 @@ def command_start(args: argparse.Namespace) -> int:
         print("\nInterrupted. Restoring original automation state.", flush=True)
         return 130
     finally:
-        if args.restore_on_exit:
+        if args.restore_on_exit and not gate.completed:
             gate.restore("process-exit")
 
 
@@ -1611,6 +1613,10 @@ def command_tray(args: argparse.Namespace) -> int:
 
     def on_restore(_icon: pystray.Icon, _item: object) -> None:
         gate.restore("tray-restore")
+        try:
+            icon.title = "Safe Start for Codex - " + gate.status_text()[:80]
+        except Exception:
+            pass
         notify("Safe Start for Codex", "Original automation state has been restored.")
 
     def on_quit(icon: pystray.Icon, _item: object) -> None:
@@ -1640,8 +1646,16 @@ def command_tray(args: argparse.Namespace) -> int:
                 icon.title = "Safe Start for Codex - " + gate.status_text()[:80]
             except Exception:
                 return
+        try:
+            icon.title = "Safe Start for Codex - " + gate.status_text()[:80]
+        except Exception:
+            pass
 
     def setup(_icon: pystray.Icon) -> None:
+        try:
+            icon.title = "Safe Start for Codex - " + gate.status_text()[:80]
+        except Exception:
+            pass
         threading.Thread(target=worker, name="safe-start-for-codex-worker", daemon=True).start()
         threading.Thread(target=updater, name="safe-start-for-codex-title", daemon=True).start()
         notify("Safe Start for Codex", "Automation gate is running in the tray.")
@@ -1661,6 +1675,9 @@ def command_status(_: argparse.Namespace) -> int:
         data = json.loads(latest.read_text(encoding="utf-8"))
     except (json.JSONDecodeError, OSError) as exc:
         print(f"Snapshot beschaedigt/unlesbar ({latest}): {exc}")
+        return 1
+    if not isinstance(data, dict):
+        print(f"Snapshot beschaedigt/unlesbar ({latest}): kein JSON-Objekt")
         return 1
     print(f"Latest snapshot: {latest}")
     print(f"Run: {data.get('run_id')} | Phase: {data.get('phase')} | Time: {data.get('created_at')}")
@@ -1737,9 +1754,16 @@ def command_restore_latest(args: argparse.Namespace) -> int:
     except (json.JSONDecodeError, OSError) as exc:
         print(f"Snapshot beschaedigt/unlesbar ({latest}): {exc}")
         return 1
+    if not isinstance(data, dict):
+        print(f"Snapshot beschaedigt/unlesbar ({latest}): kein JSON-Objekt")
+        return 1
     restored = 0
-    for row in data.get("items") or []:
-        if not row.get("tool_paused"):
+    items = data.get("items")
+    if not isinstance(items, list):
+        print(f"Snapshot enthaelt keine gueltige Automationsliste ({latest})")
+        return 1
+    for row in items:
+        if not isinstance(row, dict) or not row.get("tool_paused"):
             continue
         original = str(row.get("original_status") or "")
         path = resolve_automation_path(row.get("path"), str(row.get("id") or ""))

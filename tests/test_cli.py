@@ -943,3 +943,73 @@ def test_rrule_occurrences_between_hourly_respects_byday() -> None:
     assert occurrences[0] == datetime(2026, 6, 5, 9, 0)
     assert occurrences[1] == datetime(2026, 6, 8, 9, 0)
 
+
+def test_status_text_reports_restored_state_clearly() -> None:
+    gate = SafeStartGate()
+    gate.tool_paused = [
+        Automation("a", "a", "a.toml", "ACTIVE", "PAUSED", "cron", "", None, None, tool_paused=True),
+        Automation("b", "b", "b.toml", "ACTIVE", "PAUSED", "cron", "", None, None, tool_paused=True),
+    ]
+    gate.last_message = "Restored original state for 2 tool-paused automations."
+    gate.restored = True
+
+    status = gate.status_text()
+    assert "Original automation state restored" in status
+    assert "All 2 gated automations have been released" not in status
+
+
+def test_restore_after_completed_run_does_not_overwrite_finished_snapshot(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    state_dir = tmp_path / "state"
+    state_dir.mkdir()
+    monkeypatch.setattr("safe_start_for_codex.cli.state_dir", lambda: state_dir)
+
+    p1 = tmp_path / "job1.toml"
+    p1.write_text('status = "ACTIVE"\n', encoding="utf-8")
+    auto1 = Automation("job1", "Job 1", str(p1), "ACTIVE", "ACTIVE", "cron", "", None, None, tool_paused=True)
+
+    gate = SafeStartGate(dry_run=False)
+    gate.tool_paused = [auto1]
+    gate.items = [auto1]
+    gate.completed = True
+
+    # Record finished snapshot as gate.run() would
+    from safe_start_for_codex.cli import write_snapshot
+
+    write_snapshot(gate.run_id, gate.items, "finished")
+    latest_path = state_dir / "latest.json"
+    assert latest_path.exists()
+    assert json.loads(latest_path.read_text(encoding="utf-8"))["phase"] == "finished"
+
+    # Process exit restore must be a no-op once completed
+    gate.restore("process-exit")
+    assert json.loads(latest_path.read_text(encoding="utf-8"))["phase"] == "finished"
+
+
+def test_command_status_and_restore_handle_non_dict_json_gracefully(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    state_dir = tmp_path / "state"
+    state_dir.mkdir()
+    monkeypatch.setattr("safe_start_for_codex.cli.state_dir", lambda: state_dir)
+
+    # Test with a JSON array instead of an object
+    (state_dir / "latest.json").write_text("[]", encoding="utf-8")
+
+    from safe_start_for_codex.cli import command_restore_latest, command_status
+
+    rc_status = command_status(argparse.Namespace())
+    assert rc_status == 1
+    out_status = capsys.readouterr().out
+    assert "kein JSON-Objekt" in out_status
+
+    rc_restore = command_restore_latest(argparse.Namespace(dry_run=True))
+    assert rc_restore == 1
+    out_restore = capsys.readouterr().out
+    assert "kein JSON-Objekt" in out_restore
+
+
