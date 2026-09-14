@@ -31,6 +31,7 @@ from safe_start_for_codex.cli import (
     rrule_effective_period_hours,
     rrule_next_after,
     rrule_occurrences_between,
+    read_observed_runs_from_state,
     set_status,
     split_release_queue,
 )
@@ -1011,5 +1012,68 @@ def test_command_status_and_restore_handle_non_dict_json_gracefully(
     assert rc_restore == 1
     out_restore = capsys.readouterr().out
     assert "kein JSON-Objekt" in out_restore
+
+
+def test_read_observed_runs_from_state_falls_back_to_name_column(tmp_path: Path) -> None:
+    import sqlite3
+
+    db_path = tmp_path / "state.sqlite"
+    with sqlite3.connect(db_path) as conn:
+        conn.execute(
+            "CREATE TABLE threads (id TEXT, title TEXT, name TEXT, created_at_ms INTEGER)"
+        )
+        conn.execute(
+            "INSERT INTO threads (id, title, name, created_at_ms) VALUES (?, ?, ?, ?)",
+            ("t1", "", "Nightly Sync Runner", 1789333925000),
+        )
+        conn.execute(
+            "INSERT INTO threads (id, title, name, created_at_ms) VALUES (?, ?, ?, ?)",
+            ("t2", None, "Backup Exporter", 1789333920000),
+        )
+        conn.execute(
+            "INSERT INTO threads (id, title, name, created_at_ms) VALUES (?, ?, ?, ?)",
+            ("t3", "Standard Maintenance", "", 1789333910000),
+        )
+
+    automations = [
+        Automation("sync", "Nightly Sync Runner", "sync.toml", "ACTIVE", "ACTIVE", "cron", "RRULE:FREQ=DAILY", None, None),
+        Automation("backup", "Backup Exporter", "backup.toml", "ACTIVE", "ACTIVE", "cron", "RRULE:FREQ=DAILY", None, None),
+        Automation("maint", "Standard Maintenance", "maint.toml", "ACTIVE", "ACTIVE", "cron", "RRULE:FREQ=DAILY", None, None),
+    ]
+
+    observed, path_str, notes = read_observed_runs_from_state(automations, state_db=db_path)
+    assert path_str == str(db_path)
+    assert len(observed["sync"]) == 1
+    assert observed["sync"][0].thread_id == "t1"
+    assert observed["sync"][0].title == "Nightly Sync Runner"
+    assert len(observed["backup"]) == 1
+    assert observed["backup"][0].thread_id == "t2"
+    assert observed["backup"][0].title == "Backup Exporter"
+    assert len(observed["maint"]) == 1
+    assert observed["maint"][0].thread_id == "t3"
+    assert observed["maint"][0].title == "Standard Maintenance"
+
+
+def test_read_observed_runs_from_state_threads_table_with_only_name_column(tmp_path: Path) -> None:
+    import sqlite3
+
+    db_path = tmp_path / "state_only_name.sqlite"
+    with sqlite3.connect(db_path) as conn:
+        conn.execute(
+            "CREATE TABLE threads (thread_id TEXT, name TEXT, created_at INTEGER)"
+        )
+        conn.execute(
+            "INSERT INTO threads (thread_id, name, created_at) VALUES (?, ?, ?)",
+            ("thread-abc", "Health Probe Automation", 1789333900),
+        )
+
+    automations = [
+        Automation("health", "Health Probe Automation", "health.toml", "ACTIVE", "ACTIVE", "cron", "RRULE:FREQ=DAILY", None, None),
+    ]
+
+    observed, path_str, notes = read_observed_runs_from_state(automations, state_db=db_path)
+    assert len(observed["health"]) == 1
+    assert observed["health"][0].thread_id == "thread-abc"
+    assert observed["health"][0].title == "Health Probe Automation"
 
 

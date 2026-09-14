@@ -1056,14 +1056,15 @@ def read_observed_runs_from_state(
                 notes.append("No threads table found in state DB.")
                 return observed, str(db_path), notes
             id_column = "id" if "id" in columns else "thread_id" if "thread_id" in columns else ""
-            if not id_column or "title" not in columns:
-                notes.append("Threads table does not expose id/title columns.")
+            if not id_column or ("title" not in columns and "name" not in columns):
+                notes.append("Threads table does not expose id/title/name columns.")
                 return observed, str(db_path), notes
             wanted = [
                 column
                 for column in (
                     id_column,
                     "title",
+                    "name",
                     "created_at_ms",
                     "created_at",
                     "updated_at_ms",
@@ -1086,7 +1087,7 @@ def read_observed_runs_from_state(
         for item in automations
     ]
     for row in rows:
-        title = str(row.get("title") or "")
+        title = str(row.get("title") or "").strip() or str(row.get("name") or "").strip()
         haystack = title.casefold()
         if not haystack:
             continue

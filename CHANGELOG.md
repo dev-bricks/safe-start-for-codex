@@ -14,6 +14,11 @@ All notable changes to this project are documented here.
   - Added modern Shields.io badges for Security SLA (48h/5d triage), Third-Party Licenses (100% audited), and Marketing Log (active).
   - Synchronized `llms.txt` discovery index with updated version (`1.1.5`), verification date (`2026-09-11`), and documentation pointers.
   - Expanded automated contract test suite with contract tests for 15-point navigation, invariant IDs, PEP 621 extended URLs, third-party license audit files, and marketing log structure. [G 2026-09-11]
+- Catchup State Analysis & Thread Title/Name Resolution Parity (SOFTWARE_BUGSEARCH Bugsweep) on 2026-09-14:
+  - Fixed false-negative thread run detection in `read_observed_runs_from_state` by supporting the `name` column as fallback when `title` is empty or omitted in Codex Desktop's `state_5.sqlite`.
+  - Allowed SQLite `threads` tables exposing either `title` or `name` (or both) alongside thread ID and timestamp columns, recovering over 340+ previously missed automation runs on production systems.
+  - Prevented erroneous `missed=True` flags in `build_catchup_report` caused by undetected recent thread runs, eliminating unintended startup catch-up releases for already active automations.
+  - Added dedicated regression unit tests in `tests/test_cli.py` covering title-to-name fallback and name-only SQLite schema compatibility (104/104 pytest tests passing 100% green). [G 2026-09-14]
 - SafeStartGate Restore Lifecycle, Snapshot Integrity & Tray Status Synchronization (SOFTWARE_BUGSEARCH Bugsweep) on 2026-09-13:
   - Fixed false-positive release messaging in `SafeStartGate.status_text()`, ensuring that restored or aborted gates explicitly report `"Original automation state restored..."` instead of claiming all automations have been released.
   - Guarded `SafeStartGate.restore()` to prevent overwriting `"finished"` execution snapshots when the gate has already completed its scheduled releases normally.
