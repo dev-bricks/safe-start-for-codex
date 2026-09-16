@@ -1,14 +1,15 @@
 # MARKETING-LOG: safe-start-for-codex
-Date: 2026-09-11
-Operator: Antigravity / Gemini (via GITHUBBOT Pfad B)
+Date: 2026-09-16
+Operator: Antigravity / Gemini (via GITHUBBOT Pfad A)
 Target Repo: dev-bricks/safe-start-for-codex
 Canonical Path: C:\_Local_DEV\repos\safe-start-for-codex
-Version: 1.1.5
+Version: 1.1.6
 
 # Audit & Action Tracking:
 # [2026-09-08 18:50:00 CEST] [GITHUBBOT_ONE_REPO_MARKETING_AND_DESIGN] ACTION: PFAD_B_UPGRADE | REPO: dev-bricks/safe-start-for-codex | SCOPE: Initial Pfad B discoverability baseline, 14-point quick navigation in README.md & README_de.md, dual mermaid diagrams (flowchart & sequence with autonumber), 10 governance invariants, sibling tools ecosystem matrix, and contract tests.
 # [2026-09-10 15:22:00 CEST] [GITHUBBOT_ONE_REPO_CLEANER] ACTION: PFAD_A_HYGIENE | REPO: dev-bricks/safe-start-for-codex | SCOPE: Hardened .gitignore patterns against cloud sync conflicts and lockfiles, CI concurrency guards, and contract testsuite stabilization (version 1.1.4).
 # [2026-09-11 22:50:00 CEST] [GITHUBBOT_ONE_REPO_MARKETING_AND_DESIGN] ACTION: PFAD_B_UPGRADE | REPO: dev-bricks/safe-start-for-codex | SCOPE: 15-Point Quick Navigation standard with 100% bidirectional anchor parity (#13-third-party-licenses--transparency / #13-drittanbieter-lizenzen--transparenz, #14-marketing--target-personas / #14-marketing--zielgruppen, #15-development-security--license / #15-entwicklung-sicherheit--lizenz), canonical invariant identifiers (INV-LOCAL-01 to INV-SLA-10), audited THIRD_PARTY_LICENSES.md (100% permissive open source stack), enriched MARKETING-LOG.txt with 4 personas, competitive matrix, PEP 621 project URLs in pyproject.toml ("Third-Party Licenses", "Marketing Log", "LLM Ready"), version bump to 1.1.5, llms.txt synchronization, and automated contract testsuite extension.
+# [2026-09-16 16:20:00 CEST] [GITHUBBOT_ONE_REPO_CLEANER] ACTION: PFAD_A_HYGIENE | REPO: dev-bricks/safe-start-for-codex | SCOPE: CI workflow hardening (stale.yml, welcome.yml, 15m timeout-minutes across ci.yml & source-platform-smoke.yml), pyproject.toml guardrails (minversion = "7.0", norecursedirs), .gitignore hardening (*conflicted copy*, * (Kopie)*, * (Copy)*, *-ASUS*, *-LAPTOP*, *-Mac Studio*, .hypothesis/, .turbo/, .nyc_output/, *.orig, *.rej), THIRD_PARTY_LICENSES.md re-audit Stand 2026-09-16, version bump to 1.1.6, automated contract test suite extension.
 
 ================================================================================
 1. REPOSITORY AUDIT & DISCOVERABILITY BASELINE

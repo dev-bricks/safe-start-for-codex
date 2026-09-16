@@ -2,6 +2,16 @@
 
 All notable changes to this project are documented here.
 
+## [1.1.6] - 2026-09-16
+
+- Technical Hygiene, CI Workflow Hardening, Pytest Guardrails, Multi-Host Sync Defense & Contract Parity (GITHUBBOT_ONE_REPO_CLEANER / Pfad A) on 2026-09-16:
+  - Bumped version to `1.1.6` across `pyproject.toml`, `src/safe_start_for_codex/__init__.py`, `README.md`, `README_de.md`, `RELEASES.md`, `MARKETING-LOG.txt`, and `llms.txt`.
+  - Hardened GitHub Actions CI workflows: added `timeout-minutes: 15` to `.github/workflows/ci.yml` and `.github/workflows/source-platform-smoke.yml`; deployed automated `.github/workflows/stale.yml` (cron `30 1 * * *`, actions/stale@v9, `timeout-minutes: 10`, `cancel-in-progress: true`, least-privilege `issues: write`, `pull-requests: write`) and `.github/workflows/welcome.yml` (actions/first-interaction@v3, `timeout-minutes: 5`, `cancel-in-progress: true`, least-privilege `issues: write`, `pull-requests: write`).
+  - Hardened `.gitignore` with comprehensive multi-host conflict patterns (`*conflicted copy*`, `* (Kopie)*`, `* (Copy)*`, `*-ASUS*`, `*-LAPTOP*`, `*-Mac Studio*`), multi-agent lock protection (`!package-lock.json`), and build/testing cache boundaries (`.hypothesis/`, `.turbo/`, `.nyc_output/`, `*.orig`, `*.rej`).
+  - Standardized pytest configuration guardrails in `pyproject.toml` with `minversion = "7.0"` and `norecursedirs = [".git", ".pytest_cache", "__pycache__", "build", "dist"]`.
+  - Re-audited `THIRD_PARTY_LICENSES.md` (Stand 2026-09-16, version 1.1.6) with zero runtime dependencies, RunAsInvoker unprivileged execution, zero copyleft, and full 10 governance invariant compliance (`INV-LOCAL-01` to `INV-SLA-10`).
+  - Expanded automated contract test suite in `tests/test_version_metadata.py` and `tests/test_security_license_contract.py` with contract tests for CI workflow timeouts, stale/welcome automation, multi-host gitignore defense, and pytest configuration guardrails. [G 2026-09-16]
+
 ## [1.1.5] - 2026-09-11
 
 - Discoverability, 15-Point Quick Navigation, Third-Party License Inventory, Invariant Matrix & Contract Parity (GITHUBBOT_ONE_REPO_MARKETING_AND_DESIGN / Pfad B) on 2026-09-11:

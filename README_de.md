@@ -5,7 +5,7 @@ Inoffizielles Windows-Startup-Gate für Codex Desktop-Automatisierungen und gest
 ![Safe Start for Codex Banner](assets/safe_start_banner.png)
 
 <p align="center">
-  <a href="pyproject.toml"><img src="https://img.shields.io/badge/Version-1.1.5-blue.svg" alt="Version"></a>
+  <a href="pyproject.toml"><img src="https://img.shields.io/badge/Version-1.1.6-blue.svg" alt="Version"></a>
   <a href="https://github.com/dev-bricks/safe-start-for-codex/actions/workflows/ci.yml"><img src="https://img.shields.io/badge/CI-GitHub%20Actions-brightgreen.svg" alt="CI Status"></a>
   <a href="https://github.com/dev-bricks/safe-start-for-codex/actions/workflows/source-platform-smoke.yml"><img src="https://img.shields.io/badge/Smoke-macOS%20%7C%20Linux-brightgreen.svg" alt="Plattform Smoke"></a>
   <a href="tests/"><img src="https://img.shields.io/badge/pytest-bestanden%20%7C%20100%25-brightgreen.svg" alt="Pytest Status"></a>

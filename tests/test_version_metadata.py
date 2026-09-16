@@ -48,9 +48,9 @@ def test_llms_txt_integrity() -> None:
     llms_text = (PROJECT_ROOT / "llms.txt").read_text(encoding="utf-8")
     assert "https://github.com/dev-bricks/safe-start-for-codex" in llms_text
     assert "dev-bricks" in llms_text
-    assert "Last-checked: 2026-09-11" in llms_text
-    assert "99 pytest tests passed" in llms_text
-    assert "Version 1.1.5 verified" in llms_text
+    assert "Last-checked: 2026-09-16" in llms_text
+    assert "106 pytest tests passed" in llms_text
+    assert "Version 1.1.6 verified" in llms_text
 
 
 def test_cli_subcommands_registered() -> None:
@@ -232,19 +232,32 @@ def test_gitignore_hygiene_patterns() -> None:
         "*-CONFLIT-*",
         "*.sync-temp-*",
         "*-ASUS-GEI.*",
+        "*-ASUS-GEI*",
+        "*-ASUS*",
         "*-WORKSTATION-LG.*",
+        "*-WORKSTATION-LG*",
         "*-WORKSTATION.*",
+        "*-WORKSTATION*",
+        "*-LAPTOP*",
+        "*-Mac Studio*",
         "* (kopie)*",
+        "* (Kopie)*",
         "* (copy)*",
+        "* (Copy)*",
+        "*conflicted copy*",
         "LOCK",
         "LOCK.*",
         "*.lock",
         "LOCK*.txt",
         "LOCK.permissions.json",
         "uv.lock",
+        "!package-lock.json",
         "coverage/",
         "htmlcov/",
         ".coverage",
+        ".hypothesis/",
+        ".turbo/",
+        ".nyc_output/",
         "wheelhouse/",
         ".wheel-smoke/",
         "*.tmp",
@@ -252,6 +265,8 @@ def test_gitignore_hygiene_patterns() -> None:
         "*.swp",
         "*~",
         "*.log",
+        "*.orig",
+        "*.rej",
     ]
     for pat in expected_patterns:
         assert pat in gitignore, f"Missing gitignore hygiene pattern: {pat}"
@@ -263,6 +278,8 @@ def test_pytest_configuration_and_flags() -> None:
     assert pytest_opts.get("addopts") == "-ra -v", f"Unexpected or missing addopts: {pytest_opts.get('addopts')}"
     assert pytest_opts.get("testpaths") == ["tests"]
     assert pytest_opts.get("pythonpath") == ["src"]
+    assert pytest_opts.get("minversion") == "7.0"
+    assert pytest_opts.get("norecursedirs") == [".git", ".pytest_cache", "__pycache__", "build", "dist"]
 
 
 def test_ci_workflow_pytest_flags() -> None:
@@ -278,9 +295,10 @@ def test_ci_workflow_pytest_flags() -> None:
 
 def test_changelog_recent_pfad_a_entry() -> None:
     changelog = (PROJECT_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
-    assert "## [1.1.4] - 2026-09-10" in changelog
+    assert "## [1.1.6] - 2026-09-16" in changelog
     assert "GITHUBBOT_ONE_REPO_CLEANER" in changelog
     assert "Technical Hygiene" in changelog
+    assert "CI Workflow Hardening" in changelog
 
 
 def test_changelog_recent_pfad_b_entry() -> None:
@@ -327,3 +345,24 @@ def test_marketing_log_contract() -> None:
         "INV-SLA-10",
     ]:
         assert inv_id in log_text, f"Missing invariant ID {inv_id} in marketing log"
+
+
+def test_ci_workflow_timeouts_and_automation_presence() -> None:
+    ci_yml = (PROJECT_ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
+    smoke_yml = (PROJECT_ROOT / ".github" / "workflows" / "source-platform-smoke.yml").read_text(encoding="utf-8")
+    stale_yml = (PROJECT_ROOT / ".github" / "workflows" / "stale.yml").read_text(encoding="utf-8")
+    welcome_yml = (PROJECT_ROOT / ".github" / "workflows" / "welcome.yml").read_text(encoding="utf-8")
+
+    assert "timeout-minutes: 15" in ci_yml
+    assert "timeout-minutes: 15" in smoke_yml
+    assert "timeout-minutes: 10" in stale_yml
+    assert "timeout-minutes: 5" in welcome_yml
+    assert "actions/stale@v9" in stale_yml
+    assert "actions/first-interaction@v3" in welcome_yml
+
+
+def test_releases_markdown_contract() -> None:
+    releases_text = (PROJECT_ROOT / "RELEASES.md").read_text(encoding="utf-8")
+    assert "Stand: 2026-09-16" in releases_text
+    assert "v1.1.6" in releases_text
+    assert "Pfad A Technische Hygiene" in releases_text

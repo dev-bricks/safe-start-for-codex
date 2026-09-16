@@ -139,12 +139,24 @@ def test_third_party_licenses_markdown_contract() -> None:
 def test_ci_workflows_concurrency_and_lint_gate() -> None:
     ci_yml = (ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
     smoke_yml = (ROOT / ".github" / "workflows" / "source-platform-smoke.yml").read_text(encoding="utf-8")
+    stale_yml = (ROOT / ".github" / "workflows" / "stale.yml").read_text(encoding="utf-8")
+    welcome_yml = (ROOT / ".github" / "workflows" / "welcome.yml").read_text(encoding="utf-8")
 
     assert "concurrency:" in ci_yml
     assert "cancel-in-progress: true" in ci_yml
+    assert "timeout-minutes: 15" in ci_yml
     assert "ruff check ." in ci_yml
     assert '"3.13"' in ci_yml
 
     assert "concurrency:" in smoke_yml
     assert "cancel-in-progress: true" in smoke_yml
+    assert "timeout-minutes: 15" in smoke_yml
     assert '"3.13"' in smoke_yml
+
+    assert "timeout-minutes: 10" in stale_yml
+    assert "cancel-in-progress: true" in stale_yml
+    assert "actions/stale@v9" in stale_yml
+
+    assert "timeout-minutes: 5" in welcome_yml
+    assert "cancel-in-progress: true" in welcome_yml
+    assert "actions/first-interaction@v3" in welcome_yml
