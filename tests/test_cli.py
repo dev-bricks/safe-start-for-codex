@@ -24,6 +24,7 @@ from safe_start_for_codex.cli import (
     command_config_init,
     default_config_path,
     matches_codex_executable,
+    is_companion_orphan,
     load_automations,
     main,
     read_gate_config,
@@ -1075,5 +1076,70 @@ def test_read_observed_runs_from_state_threads_table_with_only_name_column(tmp_p
     assert len(observed["health"]) == 1
     assert observed["health"][0].thread_id == "thread-abc"
     assert observed["health"][0].title == "Health Probe Automation"
+
+
+def test_matches_codex_executable_quoted_command_line(monkeypatch, tmp_path: Path) -> None:
+    fake_exe = tmp_path / "Programs" / "Codex" / "Codex.exe"
+    fake_exe.parent.mkdir(parents=True, exist_ok=True)
+    fake_exe.write_text("fake", encoding="utf-8")
+    monkeypatch.setenv("LOCALAPPDATA", str(tmp_path))
+
+    proc = ProcessInfo(
+        pid=200,
+        name="Codex.exe",
+        executable="",
+        command_line=f'"{fake_exe}" --type=renderer',
+    )
+    assert matches_codex_executable(proc) is True
+
+
+def test_cleanup_preserves_active_desktop_session_with_sandboxed_renderer(monkeypatch, tmp_path: Path) -> None:
+    fake_exe = tmp_path / "Programs" / "Codex" / "Codex.exe"
+    fake_exe.parent.mkdir(parents=True, exist_ok=True)
+    fake_exe.write_text("fake", encoding="utf-8")
+    monkeypatch.setenv("LOCALAPPDATA", str(tmp_path))
+
+    created_at = (datetime.now() - timedelta(minutes=5)).isoformat(timespec="seconds")
+    processes = [
+        ProcessInfo(
+            pid=100,
+            name="Codex.exe",
+            executable=str(fake_exe),
+            command_line=f'"{fake_exe}"',
+            created_at=created_at,
+        ),
+        ProcessInfo(
+            pid=101,
+            name="Codex.exe",
+            executable="",
+            command_line=f'"{fake_exe}" --type=renderer --enable-features=WebBluetooth',
+            parent_pid=100,
+            created_at=created_at,
+        ),
+    ]
+    monkeypatch.setattr(cli, "windows_processes", lambda: processes)
+    monkeypatch.setattr(cli, "append_log", lambda *args, **kwargs: None)
+
+    result = cleanup_start_blockers(
+        execute=False,
+        run_id="desktop-active-sandbox",
+        zombie_min_age_seconds=120,
+    )
+
+    assert result.renderer_present is True
+    assert result.zombie_pids == []
+
+
+def test_companion_orphan_forward_slash_handling() -> None:
+    created_at = (datetime.now() - timedelta(minutes=10)).isoformat(timespec="seconds")
+    proc = ProcessInfo(
+        pid=300,
+        name="node.exe",
+        executable="C:/Program Files/nodejs/node.exe",
+        command_line='node "C:/Users/User/AppData/Roaming/npm/node_modules/@openai/codex/bin/codex.js" app-server',
+        created_at=created_at,
+    )
+    assert is_companion_orphan(proc) is True
+
 
 

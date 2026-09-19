@@ -498,20 +498,37 @@ def find_codex_exe() -> Path | None:
     return None
 
 
+def _matches_target_executable(target: str, value: str) -> bool:
+    if not target or not value:
+        return False
+    normalized = _normalise_path(value)
+    if normalized == target:
+        return True
+    unquoted = normalized.lstrip('"')
+    if unquoted == target:
+        return True
+    if unquoted.startswith(target + " ") or unquoted.startswith(target + '"'):
+        after_target = unquoted[len(target):]
+        if after_target.startswith('"'):
+            after_target = after_target.lstrip('"')
+            return not after_target or after_target.startswith(" ")
+        return True
+    return False
+
+
 def matches_codex_executable(process: ProcessInfo) -> bool:
     exe_path = find_codex_exe()
     target = _normalise_path(str(exe_path or ""))
-    executable = _normalise_path(process.executable)
-    if target and executable == target:
+    if target and (
+        _matches_target_executable(target, process.executable)
+        or _matches_target_executable(target, process.command_line)
+    ):
         return True
 
-    if _matches_store_process_path(executable):
+    if _matches_store_process_path(process.executable):
         return True
 
-    command_line = _normalise_path(process.command_line)
-    if target and (command_line == target or command_line.startswith(target + " ")):
-        return True
-    return _matches_store_process_path(command_line)
+    return _matches_store_process_path(process.command_line)
 
 
 def find_codex_processes_by_executable(processes: Iterable[ProcessInfo]) -> list[ProcessInfo]:
@@ -570,8 +587,8 @@ EMBEDDED_CODEX_MARKER = r"\appdata\local\openai\codex\bin"
 
 
 def is_companion_orphan(process: ProcessInfo, *, min_age_seconds: int = 300) -> bool:
-    command_line = process.command_line.lower()
-    executable = (process.executable or "").lower()
+    command_line = _normalise_path(process.command_line)
+    executable = _normalise_path(process.executable or "")
     full = f"{executable} {command_line}"
 
     if "app-server" not in command_line:
@@ -579,8 +596,8 @@ def is_companion_orphan(process: ProcessInfo, *, min_age_seconds: int = 300) -> 
     if "--analytics-default-enabled" in command_line:
         return False
 
-    is_npm = NPM_CODEX_MARKER.lower() in full
-    is_embedded = EMBEDDED_CODEX_MARKER.lower() in full and "--listen stdio://" in command_line
+    is_npm = _normalise_path(NPM_CODEX_MARKER) in full
+    is_embedded = _normalise_path(EMBEDDED_CODEX_MARKER) in full and "--listen stdio://" in command_line
     if not (is_npm or is_embedded):
         return False
 

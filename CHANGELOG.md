@@ -4,6 +4,12 @@ All notable changes to this project are documented here.
 
 ## [1.1.6] - 2026-09-16
 
+- Process Discovery, Zombie Detection & Companion Path Resolution Parity (SOFTWARE_BUGSEARCH Bugsweep) on 2026-09-19:
+  - Fixed false-negative process matching in `matches_codex_executable` when desktop Codex command lines are quoted (e.g. `"<path>\Codex.exe" --type=renderer`), ensuring sandboxed child processes (renderers, GPU, utilities) with restricted tokens and empty `ExecutablePath` are properly recognized.
+  - Prevented false-positive zombie detection in `cleanup_start_blockers` that misclassified live Codex user sessions older than 120 seconds as zombies without active renderers and terminated running instances.
+  - Normalized path separators in `is_companion_orphan` so that Node.js / npm companion processes reporting forward slashes (`/npm/node_modules/@openai/codex`) are accurately detected.
+  - Added dedicated regression unit tests in `tests/test_cli.py` covering quoted executable matching, active session preservation with sandboxed renderers, and companion orphan slash normalization (109/109 pytest tests passing 100% green). [G 2026-09-19]
+
 - Technical Hygiene, CI Workflow Hardening, Pytest Guardrails, Multi-Host Sync Defense & Contract Parity (GITHUBBOT_ONE_REPO_CLEANER / Pfad A) on 2026-09-16:
   - Bumped version to `1.1.6` across `pyproject.toml`, `src/safe_start_for_codex/__init__.py`, `README.md`, `README_de.md`, `RELEASES.md`, `MARKETING-LOG.txt`, and `llms.txt`.
   - Hardened GitHub Actions CI workflows: added `timeout-minutes: 15` to `.github/workflows/ci.yml` and `.github/workflows/source-platform-smoke.yml`; deployed automated `.github/workflows/stale.yml` (cron `30 1 * * *`, actions/stale@v9, `timeout-minutes: 10`, `cancel-in-progress: true`, least-privilege `issues: write`, `pull-requests: write`) and `.github/workflows/welcome.yml` (actions/first-interaction@v3, `timeout-minutes: 5`, `cancel-in-progress: true`, least-privilege `issues: write`, `pull-requests: write`).
