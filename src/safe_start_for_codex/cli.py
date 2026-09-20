@@ -797,20 +797,45 @@ def rrule_next_after(
     minutes = values_as_ints(parts, "BYMINUTE", [0])
     hours = values_as_ints(parts, "BYHOUR", list(range(24)))
     days = allowed_days(parts)
-    anchor = dtstart or after
+    anchor = _align_datetime(dtstart, after) if dtstart is not None else after
 
-    if frequency == "HOURLY" and (interval > 24 or 24 % interval != 0):
-        step = timedelta(hours=interval)
-        target_minute = sorted(minutes)[0] if minutes else 0
-        candidate = after.replace(second=0, microsecond=0) + step
-        candidate = candidate.replace(minute=target_minute, second=0, microsecond=0)
-        if candidate <= after:
-            candidate += timedelta(hours=1)
-        deadline = after + timedelta(days=max(14, interval * 2 // 24 + 14))
+    if frequency == "MINUTELY":
+        anchor_min_base = anchor.replace(second=0, microsecond=0)
+        after_min_base = after.replace(second=0, microsecond=0)
+        if after_min_base <= anchor_min_base:
+            candidate = anchor_min_base
+        else:
+            diff_min = int((after_min_base - anchor_min_base).total_seconds() // 60)
+            k = max(0, diff_min // interval)
+            candidate = anchor_min_base + timedelta(minutes=k * interval)
+        step = timedelta(minutes=interval)
+        deadline = after + timedelta(days=14)
         while candidate <= deadline:
-            if candidate.weekday() in days and candidate.hour in hours:
-                return candidate
+            if candidate > after:
+                if candidate.weekday() in days and candidate.hour in hours:
+                    if "BYMINUTE" not in parts or candidate.minute in minutes:
+                        return candidate
             candidate += step
+        return None
+
+    if frequency == "HOURLY":
+        anchor_hour_base = anchor.replace(second=0, microsecond=0)
+        after_hour_base = after.replace(second=0, microsecond=0)
+        if after_hour_base <= anchor_hour_base:
+            k = 0
+        else:
+            diff_hours = int((after_hour_base - anchor_hour_base).total_seconds() // 3600)
+            k = max(0, diff_hours // interval)
+        step = timedelta(hours=interval)
+        candidate_hour = anchor_hour_base + timedelta(hours=k * interval)
+        deadline = after + timedelta(days=max(14, interval * 2 // 24 + 14))
+        while candidate_hour <= deadline:
+            if candidate_hour.weekday() in days and candidate_hour.hour in hours:
+                for minute in sorted(minutes):
+                    candidate = candidate_hour.replace(minute=minute, second=0, microsecond=0)
+                    if candidate > after:
+                        return candidate
+            candidate_hour += step
         return None
 
     if frequency in {"DAILY", "WEEKLY", "MONTHLY", "YEARLY"}:
@@ -836,17 +861,6 @@ def rrule_next_after(
             cursor_day += timedelta(days=1)
         return None
 
-    cursor = after.replace(second=0, microsecond=0) + timedelta(minutes=1)
-    deadline = after + timedelta(days=14)
-    while cursor <= deadline:
-        if cursor.weekday() not in days or cursor.minute not in minutes:
-            cursor += timedelta(minutes=1)
-            continue
-        if frequency == "HOURLY" and cursor.hour in hours and cursor.hour % max(interval, 1) == 0:
-            return cursor
-        if frequency == "MINUTELY" and cursor.hour in hours:
-            return cursor
-        cursor += timedelta(minutes=1)
     return None
 
 
@@ -954,29 +968,50 @@ def rrule_occurrences_between(
     parts = parse_rrule(rrule)
     frequency = str(parts.get("FREQ") or "").upper()
     interval = max(int(parts.get("INTERVAL") or 1), 1)
-    anchor = dtstart or start
+    anchor = _align_datetime(dtstart, start) if dtstart is not None else start
     minutes = values_as_ints(parts, "BYMINUTE", [0])
     hours = values_as_ints(parts, "BYHOUR", list(range(24)))
     days = allowed_days(parts)
     result: list[datetime] = []
 
+    if frequency == "MINUTELY":
+        anchor_min_base = anchor.replace(second=0, microsecond=0)
+        start_min_base = start.replace(second=0, microsecond=0)
+        if start_min_base <= anchor_min_base:
+            candidate = anchor_min_base
+        else:
+            diff_min = int((start_min_base - anchor_min_base).total_seconds() // 60)
+            k = max(0, diff_min // interval)
+            candidate = anchor_min_base + timedelta(minutes=k * interval)
+        step = timedelta(minutes=interval)
+        while candidate <= end and len(result) < limit:
+            if candidate > start:
+                if candidate.weekday() in days and candidate.hour in hours:
+                    if "BYMINUTE" not in parts or candidate.minute in minutes:
+                        result.append(candidate)
+            candidate += step
+        return result
+
     if frequency == "HOURLY":
-        if interval > 24 or 24 % interval != 0:
-            step = timedelta(hours=interval)
-            target_minute = sorted(minutes)[0] if minutes else 0
-            cursor = (start.replace(second=0, microsecond=0) + step).replace(minute=target_minute, second=0, microsecond=0)
-            if cursor <= start:
-                cursor += timedelta(hours=1)
-            while cursor <= end and len(result) < limit:
-                if cursor.weekday() in days and cursor.hour in hours:
-                    result.append(cursor)
-                cursor += step
-            return result
-        cursor = start.replace(second=0, microsecond=0) + timedelta(minutes=1)
-        while cursor <= end and len(result) < limit:
-            if cursor.weekday() in days and cursor.minute in minutes and cursor.hour in hours and cursor.hour % interval == 0:
-                result.append(cursor)
-            cursor += timedelta(minutes=1)
+        anchor_hour_base = anchor.replace(second=0, microsecond=0)
+        start_hour_base = start.replace(second=0, microsecond=0)
+        if start_hour_base <= anchor_hour_base:
+            k = 0
+        else:
+            diff_hours = int((start_hour_base - anchor_hour_base).total_seconds() // 3600)
+            k = max(0, diff_hours // interval)
+        step = timedelta(hours=interval)
+        candidate_hour = anchor_hour_base + timedelta(hours=k * interval)
+        deadline = end + timedelta(hours=interval)
+        while candidate_hour <= deadline and len(result) < limit:
+            if candidate_hour.weekday() in days and candidate_hour.hour in hours:
+                for minute in sorted(minutes):
+                    candidate = candidate_hour.replace(minute=minute, second=0, microsecond=0)
+                    if start < candidate <= end:
+                        result.append(candidate)
+                        if len(result) >= limit:
+                            break
+            candidate_hour += step
         return result
 
     if frequency not in {"DAILY", "WEEKLY", "MONTHLY", "YEARLY"}:

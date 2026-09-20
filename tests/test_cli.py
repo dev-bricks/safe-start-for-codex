@@ -1142,4 +1142,58 @@ def test_companion_orphan_forward_slash_handling() -> None:
     assert is_companion_orphan(proc) is True
 
 
+def test_rrule_next_after_minutely_without_byminute() -> None:
+    dtstart = datetime(2026, 9, 20, 10, 0)
+    after = datetime(2026, 9, 20, 10, 5)
+    next_at = rrule_next_after("RRULE:FREQ=MINUTELY;INTERVAL=15", after, dtstart=dtstart)
+    assert next_at == datetime(2026, 9, 20, 10, 15)
 
+
+def test_rrule_occurrences_between_minutely() -> None:
+    dtstart = datetime(2026, 9, 20, 10, 0)
+    start = datetime(2026, 9, 20, 10, 0)
+    end = datetime(2026, 9, 20, 11, 0)
+    occurrences = rrule_occurrences_between(
+        "RRULE:FREQ=MINUTELY;INTERVAL=15",
+        start,
+        end,
+        dtstart=dtstart,
+    )
+    assert occurrences == [
+        datetime(2026, 9, 20, 10, 15),
+        datetime(2026, 9, 20, 10, 30),
+        datetime(2026, 9, 20, 10, 45),
+        datetime(2026, 9, 20, 11, 0),
+    ]
+
+
+def test_rrule_next_after_hourly_preserves_anchor_grid() -> None:
+    dtstart = datetime(2026, 9, 20, 10, 0)
+    after = datetime(2026, 9, 20, 15, 0)
+    next_at = rrule_next_after("RRULE:FREQ=HOURLY;INTERVAL=25;BYMINUTE=0", after, dtstart=dtstart)
+    # 10:00 + 25h = 11:00 on the next day, regardless of when `after` is sampled
+    assert next_at == datetime(2026, 9, 21, 11, 0)
+
+
+def test_rrule_next_after_hourly_odd_anchor_interval_2() -> None:
+    dtstart = datetime(2026, 9, 20, 1, 0)
+    after = datetime(2026, 9, 20, 2, 0)
+    next_at = rrule_next_after("RRULE:FREQ=HOURLY;INTERVAL=2;BYMINUTE=0", after, dtstart=dtstart)
+    # Anchor is 01:00 with interval 2, so occurrences are 01:00, 03:00, 05:00...
+    assert next_at == datetime(2026, 9, 20, 3, 0)
+
+
+def test_rrule_occurrences_between_hourly_preserves_anchor_grid() -> None:
+    dtstart = datetime(2026, 9, 20, 10, 0)
+    start = datetime(2026, 9, 20, 15, 0)
+    end = datetime(2026, 9, 22, 18, 0)
+    occurrences = rrule_occurrences_between(
+        "RRULE:FREQ=HOURLY;INTERVAL=25;BYMINUTE=0",
+        start,
+        end,
+        dtstart=dtstart,
+    )
+    assert occurrences == [
+        datetime(2026, 9, 21, 11, 0),
+        datetime(2026, 9, 22, 12, 0),
+    ]
