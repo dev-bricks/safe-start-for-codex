@@ -1,0 +1,360 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2400 680" width="2400" height="680">
+  <defs>
+    <!-- Background Gradients -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#060911" />
+      <stop offset="35%" stop-color="#0a101f" />
+      <stop offset="65%" stop-color="#080d1a" />
+      <stop offset="100%" stop-color="#04060a" />
+    </linearGradient>
+
+    <!-- Ambient Center Glow behind Sleeve & Typography -->
+    <radialGradient id="ambientCenterGlow" cx="46%" cy="47%" r="48%">
+      <stop offset="0%" stop-color="#0284c7" stop-opacity="0.22" />
+      <stop offset="45%" stop-color="#0369a1" stop-opacity="0.08" />
+      <stop offset="100%" stop-color="#0284c7" stop-opacity="0" />
+    </radialGradient>
+
+    <radialGradient id="foilAmbientGlow" cx="89%" cy="48%" r="22%">
+      <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.14" />
+      <stop offset="50%" stop-color="#0284c7" stop-opacity="0.04" />
+      <stop offset="100%" stop-color="#38bdf8" stop-opacity="0" />
+    </radialGradient>
+
+    <!-- Sleeve Material Shader: Crystal clear latex with glowing rims -->
+    <linearGradient id="sleeveBodyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.36" />
+      <stop offset="10%" stop-color="#7dd3fc" stop-opacity="0.14" />
+      <stop offset="26%" stop-color="#ffffff" stop-opacity="0.05" />
+      <stop offset="50%" stop-color="#38bdf8" stop-opacity="0.02" />
+      <stop offset="74%" stop-color="#ffffff" stop-opacity="0.04" />
+      <stop offset="90%" stop-color="#7dd3fc" stop-opacity="0.12" />
+      <stop offset="100%" stop-color="#0284c7" stop-opacity="0.30" />
+    </linearGradient>
+
+    <linearGradient id="sleeveStrokeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#7dd3fc" stop-opacity="0.95" />
+      <stop offset="30%" stop-color="#38bdf8" stop-opacity="0.75" />
+      <stop offset="70%" stop-color="#38bdf8" stop-opacity="0.65" />
+      <stop offset="100%" stop-color="#0284c7" stop-opacity="0.85" />
+    </linearGradient>
+
+    <linearGradient id="topHighlightGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.15" />
+      <stop offset="12%" stop-color="#ffffff" stop-opacity="0.95" />
+      <stop offset="85%" stop-color="#ffffff" stop-opacity="0.90" />
+      <stop offset="100%" stop-color="#7dd3fc" stop-opacity="0.35" />
+    </linearGradient>
+
+    <linearGradient id="botHighlightGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.2" />
+      <stop offset="15%" stop-color="#38bdf8" stop-opacity="0.8" />
+      <stop offset="85%" stop-color="#38bdf8" stop-opacity="0.7" />
+      <stop offset="100%" stop-color="#0284c7" stop-opacity="0.2" />
+    </linearGradient>
+
+    <!-- Rolled Rim Torus Shading -->
+    <linearGradient id="rimTorusGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.7" />
+      <stop offset="22%" stop-color="#ffffff" stop-opacity="0.95" />
+      <stop offset="48%" stop-color="#7dd3fc" stop-opacity="0.85" />
+      <stop offset="78%" stop-color="#0284c7" stop-opacity="0.9" />
+      <stop offset="100%" stop-color="#075985" stop-opacity="0.95" />
+    </linearGradient>
+
+    <linearGradient id="rimRollInner" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#082f49" stop-opacity="0.9" />
+      <stop offset="100%" stop-color="#0284c7" stop-opacity="0.2" />
+    </linearGradient>
+
+    <!-- Foil Packet Gradients -->
+    <linearGradient id="foilMetallic" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" />
+      <stop offset="22%" stop-color="#334155" />
+      <stop offset="42%" stop-color="#64748b" />
+      <stop offset="52%" stop-color="#94a3b8" />
+      <stop offset="62%" stop-color="#475569" />
+      <stop offset="82%" stop-color="#1e293b" />
+      <stop offset="100%" stop-color="#0b1120" />
+    </linearGradient>
+
+    <linearGradient id="foilCrimpH" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.28" />
+      <stop offset="45%" stop-color="#000000" stop-opacity="0.45" />
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.12" />
+    </linearGradient>
+
+    <linearGradient id="embossHighlight" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.9" />
+      <stop offset="40%" stop-color="#38bdf8" stop-opacity="0.4" />
+      <stop offset="100%" stop-color="#0284c7" stop-opacity="0" />
+    </linearGradient>
+
+    <linearGradient id="embossShadow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#000000" stop-opacity="0" />
+      <stop offset="60%" stop-color="#020617" stop-opacity="0.5" />
+      <stop offset="100%" stop-color="#000000" stop-opacity="0.85" />
+    </linearGradient>
+
+    <radialGradient id="foilBulge" cx="45%" cy="45%" r="50%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.18" />
+      <stop offset="60%" stop-color="#38bdf8" stop-opacity="0.06" />
+      <stop offset="100%" stop-color="#000000" stop-opacity="0.25" />
+    </radialGradient>
+
+    <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="50%" stop-color="#0284c7" />
+      <stop offset="100%" stop-color="#0369a1" />
+    </linearGradient>
+
+    <!-- Filters -->
+    <filter id="softGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="12" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+
+    <filter id="subtleBlur" x="-10%" y="-10%" width="120%" height="120%">
+      <feGaussianBlur stdDeviation="4" />
+    </filter>
+
+    <filter id="textDropShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="16" flood-color="#000000" flood-opacity="0.9" />
+      <feDropShadow dx="0" dy="0" stdDeviation="30" flood-color="#0284c7" flood-opacity="0.32" />
+    </filter>
+
+    <filter id="foilShadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="20" stdDeviation="28" flood-color="#000000" flood-opacity="0.8" />
+      <feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="#0284c7" flood-opacity="0.3" />
+    </filter>
+
+    <!-- Sleeve Clip Path for internal sheen bands -->
+    <clipPath id="sleeveClip">
+      <path d="M 338 195
+    C 750 191, 1450 191, 1860 195
+    C 1895 199, 1912 270, 1925 282
+    C 1952 282, 1982 294, 1982 315
+    C 1982 336, 1952 348, 1925 348
+    C 1912 360, 1895 431, 1860 435
+    C 1450 439, 750 439, 338 435
+    Z" />
+    </clipPath>
+  </defs>
+
+  <!-- ============================================================ -->
+  <!-- 1. Background                                                -->
+  <!-- ============================================================ -->
+  <rect width="2400" height="680" fill="url(#bgGrad)" />
+
+  <!-- Ambient Light Fields -->
+  <ellipse cx="1095" cy="315" rx="960" ry="260" fill="url(#ambientCenterGlow)" />
+  <circle cx="2140" cy="325" r="340" fill="url(#foilAmbientGlow)" />
+
+  <!-- Subtle clean technical grid accents (very soft, non-distracting) -->
+  <g stroke="#38bdf8" stroke-width="1" opacity="0.04">
+    <line x1="120" y1="100" x2="2280" y2="100" />
+    <line x1="120" y1="580" x2="2280" y2="580" />
+    <line x1="260" y1="50" x2="260" y2="630" stroke-dasharray="6 10" />
+    <line x1="2020" y1="50" x2="2020" y2="630" stroke-dasharray="6 10" />
+  </g>
+
+  <!-- ============================================================ -->
+  <!-- 2. Typography ("Safe Start for Codex")                        -->
+  <!-- Shines with high contrast cleanly through the translucent     -->
+  <!-- protective sleeve                                            -->
+  <!-- ============================================================ -->
+  <!-- Soft Backlight behind typography -->
+  <ellipse cx="1095" cy="334" rx="640" ry="110" fill="#0284c7" opacity="0.14" filter="url(#subtleBlur)" />
+
+  <!-- Main Wordmark -->
+  <g filter="url(#textDropShadow)">
+    <text x="1095" y="352" text-anchor="middle"
+          font-family="system-ui, -apple-system, 'Segoe UI', Roboto, 'Inter', Helvetica, Arial, sans-serif"
+          font-size="112" font-weight="900" letter-spacing="-1px">
+      <tspan fill="#ffffff">Safe Start </tspan>
+      <tspan fill="#94a3b8" font-size="94" font-weight="400">for </tspan>
+      <tspan fill="#38bdf8" font-weight="900">Codex</tspan>
+    </text>
+  </g>
+
+  <!-- Tagline below the sleeve (Clean symmetrical layout, zero clipping) -->
+  <g opacity="0.95">
+    <!-- Sleek pill backdrop -->
+    <rect x="685" y="474" width="820" height="46" rx="23"
+          fill="#0c1322" fill-opacity="0.85" stroke="#334155" stroke-width="1.2" stroke-opacity="0.6" />
+    <!-- Tagline Text -->
+    <text x="1095" y="505" text-anchor="middle"
+          font-family="system-ui, -apple-system, 'Segoe UI', Roboto, 'Inter', Helvetica, Arial, sans-serif"
+          font-size="23" font-weight="700" fill="#94a3b8" letter-spacing="3.2px">
+      STARTUP GATE FOR CODEX DESKTOP AUTOMATIONS
+    </text>
+  </g>
+
+  <!-- ============================================================ -->
+  <!-- 3. Protective Sleeve (Translucent, Condom-shaped Sheath)     -->
+  <!-- ============================================================ -->
+  <g>
+    <!-- Sleeve Translucent Body -->
+    <path d="M 338 195
+    C 750 191, 1450 191, 1860 195
+    C 1895 199, 1912 270, 1925 282
+    C 1952 282, 1982 294, 1982 315
+    C 1982 336, 1952 348, 1925 348
+    C 1912 360, 1895 431, 1860 435
+    C 1450 439, 750 439, 338 435
+    Z"
+          fill="url(#sleeveBodyGrad)"
+          stroke="url(#sleeveStrokeGrad)"
+          stroke-width="3.5" />
+
+    <!-- Internal Diagonal Sheen Bands (Cylindrical Glass/Latex gloss reflection) -->
+    <g clip-path="url(#sleeveClip)">
+      <!-- Sheen Ribbon 1 (Left-Center) -->
+      <polygon points="560,180 700,180 580,450 440,450"
+               fill="#ffffff" opacity="0.05" />
+      <polygon points="625,180 670,180 525,450 480,450"
+               fill="#ffffff" opacity="0.09" />
+
+      <!-- Sheen Ribbon 2 (Center-Right) -->
+      <polygon points="1280,180 1440,180 1300,450 1140,450"
+               fill="#ffffff" opacity="0.04" />
+      <polygon points="1355,180 1400,180 1245,450 1200,450"
+               fill="#ffffff" opacity="0.08" />
+
+      <!-- Sheen Ribbon 3 (Near Right Shoulder) -->
+      <polygon points="1740,180 1840,180 1720,450 1620,450"
+               fill="#ffffff" opacity="0.05" />
+
+      <!-- Soft horizontal horizon reflection in upper quadrant -->
+      <ellipse cx="1100" cy="240" rx="750" ry="30" fill="#38bdf8" opacity="0.05" />
+    </g>
+
+    <!-- Top Primary Specular Highlight Stripe (Glanzlicht oben) -->
+    <!-- Ambient cyan glow underneath highlight -->
+    <path d="M 370 203 C 800 199, 1450 199, 1850 203"
+          stroke="#38bdf8" stroke-width="14" stroke-linecap="round" fill="none" opacity="0.28" filter="url(#subtleBlur)" />
+    <!-- Crisp white highlight line -->
+    <path d="M 370 203 C 800 199, 1450 199, 1850 203"
+          stroke="url(#topHighlightGrad)" stroke-width="4.5" stroke-linecap="round" fill="none" opacity="0.95" />
+
+    <!-- Top Secondary Reflection Streak -->
+    <path d="M 420 219 C 850 215, 1400 215, 1800 219"
+          stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" fill="none" opacity="0.38" />
+
+    <!-- Bottom Primary Specular Line (Lichtkante unten) -->
+    <path d="M 370 427 C 800 431, 1450 431, 1850 427"
+          stroke="url(#botHighlightGrad)" stroke-width="3.5" stroke-linecap="round" fill="none" opacity="0.75" />
+
+    <!-- Reservoir Tip Details & Specular Highlights -->
+    <!-- Shoulder contour rim highlights -->
+    <path d="M 1860 199 C 1895 203, 1912 270, 1925 282"
+          stroke="#7dd3fc" stroke-width="3.5" stroke-linecap="round" fill="none" opacity="0.8" />
+    <path d="M 1860 431 C 1895 427, 1912 360, 1925 348"
+          stroke="#0284c7" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.6" />
+
+    <!-- Reservoir Bulb specular crest -->
+    <path d="M 1931 284 C 1955 283, 1980 298, 1980 315"
+          stroke="#ffffff" stroke-width="4" stroke-linecap="round" fill="none" opacity="0.95" />
+    <path d="M 1935 346 C 1955 347, 1980 332, 1980 315"
+          stroke="#38bdf8" stroke-width="2.8" stroke-linecap="round" fill="none" opacity="0.7" />
+
+    <!-- Specular Point on Reservoir Tip -->
+    <circle cx="1970" cy="303" r="4" fill="#ffffff" opacity="0.95" />
+    <circle cx="1970" cy="303" r="10" fill="#38bdf8" opacity="0.4" filter="url(#subtleBlur)" />
+  </g>
+
+  <!-- ============================================================ -->
+  <!-- 4. Rolled Rim on the Left ("abgerundetes, gerolltes Ende")   -->
+  <!-- ============================================================ -->
+  <g>
+    <!-- Deep shadow under rolled rim -->
+    <ellipse cx="328" cy="315" rx="24.0" ry="131.0"
+             fill="#0284c7" opacity="0.3" filter="url(#subtleBlur)" />
+
+    <!-- Rolled Rim Torus Outer Body (Naturally flared capsule) -->
+    <rect x="298.0" y="190.0" width="44" height="250"
+          rx="22.0" ry="22.0"
+          fill="url(#rimTorusGrad)"
+          stroke="#38bdf8" stroke-width="2.8" stroke-opacity="0.9" />
+
+    <!-- Inner Crease / Aperture (where sleeve emerges from rolled ring) -->
+    <rect x="325" y="204.0" width="10" height="222"
+          rx="5" ry="5"
+          fill="url(#rimRollInner)" />
+
+    <!-- Concentric Rolled Latex Layers (Spiral roll creases) -->
+    <path d="M 317 218.0 C 308 270, 308 360, 317 412.0"
+          stroke="#0284c7" stroke-width="2.2" stroke-linecap="round" fill="none" opacity="0.6" />
+    <path d="M 326 228.0 C 320 280, 320 350, 326 402.0"
+          stroke="#38bdf8" stroke-width="1.8" stroke-linecap="round" fill="none" opacity="0.5" />
+
+    <!-- Outer Crest Specular Highlight (Crisp White roll reflection) -->
+    <path d="M 307 222.0 C 301 270, 301 360, 307 408.0"
+          stroke="#ffffff" stroke-width="5" stroke-linecap="round" fill="none" opacity="0.95" />
+
+    <!-- Top & Bottom Rounded Cap Specular Highlights -->
+    <path d="M 308 204.0 C 312 193.0, 328 193.0, 332 202.0"
+          stroke="#ffffff" stroke-width="3.5" stroke-linecap="round" fill="none" opacity="0.9" />
+    <path d="M 308 426.0 C 312 437.0, 328 437.0, 332 428.0"
+          stroke="#7dd3fc" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.8" />
+  </g>
+
+  <!-- ============================================================ -->
+  <!-- 5. Foil Wrapper Accent (Right: "Kleine Folienpackung")       -->
+  <!-- ============================================================ -->
+  <g transform="translate(2140, 325) rotate(10.5)" filter="url(#foilShadow)">
+    <!-- Foil Wrapper Outer Serrated Shape -->
+    <path d="M -105.0 -105.0
+    L -98.44 -100.50 L -91.88 -105.00 L -85.31 -100.50 L -78.75 -105.00 L -72.19 -100.50 L -65.62 -105.00 L -59.06 -100.50 L -52.50 -105.00 L -45.94 -100.50 L -39.38 -105.00 L -32.81 -100.50 L -26.25 -105.00 L -19.69 -100.50 L -13.12 -105.00 L -6.56 -100.50 L 0.00 -105.00 L 6.56 -100.50 L 13.12 -105.00 L 19.69 -100.50 L 26.25 -105.00 L 32.81 -100.50 L 39.38 -105.00 L 45.94 -100.50 L 52.50 -105.00 L 59.06 -100.50 L 65.62 -105.00 L 72.19 -100.50 L 78.75 -105.00 L 85.31 -100.50 L 91.88 -105.00 L 98.44 -100.50 L 105.00 -105.00
+    L 105.0 -14
+    L 97.0 0
+    L 105.0 14
+    L 105.0 105.0
+    L 98.44 100.50 L 91.88 105.00 L 85.31 100.50 L 78.75 105.00 L 72.19 100.50 L 65.62 105.00 L 59.06 100.50 L 52.50 105.00 L 45.94 100.50 L 39.38 105.00 L 32.81 100.50 L 26.25 105.00 L 19.69 100.50 L 13.12 105.00 L 6.56 100.50 L 0.00 105.00 L -6.56 100.50 L -13.12 105.00 L -19.69 100.50 L -26.25 105.00 L -32.81 100.50 L -39.38 105.00 L -45.94 100.50 L -52.50 105.00 L -59.06 100.50 L -65.62 105.00 L -72.19 100.50 L -78.75 105.00 L -85.31 100.50 L -91.88 105.00 L -98.44 100.50 L -105.00 105.00
+    L -105.0 14
+    L -97.0 0
+    L -105.0 -14
+    Z" fill="url(#foilMetallic)" stroke="#64748b" stroke-width="1.5" />
+
+    <!-- Heat-Sealed Crimped Margins (Top & Bottom sealing bands) -->
+    <rect x="-100.0" y="-103.0" width="200" height="26"
+          fill="url(#foilCrimpH)" opacity="0.55" />
+    <rect x="-100.0" y="77.0" width="200" height="26"
+          fill="url(#foilCrimpH)" opacity="0.55" />
+
+    <!-- Fine Vertical Crimping Lines on top & bottom heat seals -->
+    <g stroke="#ffffff" stroke-width="1.2" opacity="0.28">
+      <line x1="-91.0" y1="-101.0" x2="-91.0" y2="-79.0" /><line x1="-79.5" y1="-101.0" x2="-79.5" y2="-79.0" /><line x1="-68.0" y1="-101.0" x2="-68.0" y2="-79.0" /><line x1="-56.5" y1="-101.0" x2="-56.5" y2="-79.0" /><line x1="-45.0" y1="-101.0" x2="-45.0" y2="-79.0" /><line x1="-33.5" y1="-101.0" x2="-33.5" y2="-79.0" /><line x1="-22.0" y1="-101.0" x2="-22.0" y2="-79.0" /><line x1="-10.5" y1="-101.0" x2="-10.5" y2="-79.0" /><line x1="1.0" y1="-101.0" x2="1.0" y2="-79.0" /><line x1="12.5" y1="-101.0" x2="12.5" y2="-79.0" /><line x1="24.0" y1="-101.0" x2="24.0" y2="-79.0" /><line x1="35.5" y1="-101.0" x2="35.5" y2="-79.0" /><line x1="47.0" y1="-101.0" x2="47.0" y2="-79.0" /><line x1="58.5" y1="-101.0" x2="58.5" y2="-79.0" /><line x1="70.0" y1="-101.0" x2="70.0" y2="-79.0" /><line x1="81.5" y1="-101.0" x2="81.5" y2="-79.0" />
+      <line x1="-91.0" y1="79.0" x2="-91.0" y2="101.0" /><line x1="-79.5" y1="79.0" x2="-79.5" y2="101.0" /><line x1="-68.0" y1="79.0" x2="-68.0" y2="101.0" /><line x1="-56.5" y1="79.0" x2="-56.5" y2="101.0" /><line x1="-45.0" y1="79.0" x2="-45.0" y2="101.0" /><line x1="-33.5" y1="79.0" x2="-33.5" y2="101.0" /><line x1="-22.0" y1="79.0" x2="-22.0" y2="101.0" /><line x1="-10.5" y1="79.0" x2="-10.5" y2="101.0" /><line x1="1.0" y1="79.0" x2="1.0" y2="101.0" /><line x1="12.5" y1="79.0" x2="12.5" y2="101.0" /><line x1="24.0" y1="79.0" x2="24.0" y2="101.0" /><line x1="35.5" y1="79.0" x2="35.5" y2="101.0" /><line x1="47.0" y1="79.0" x2="47.0" y2="101.0" /><line x1="58.5" y1="79.0" x2="58.5" y2="101.0" /><line x1="70.0" y1="79.0" x2="70.0" y2="101.0" /><line x1="81.5" y1="79.0" x2="81.5" y2="101.0" />
+    </g>
+
+    <!-- Diagonal Metallic Specular Glare across wrapper -->
+    <polygon points="-83.0,-75.0 -30.0,-75.0 83.0,75.0 30.0,75.0"
+             fill="#ffffff" opacity="0.14" />
+
+    <!-- Circular Embossed Impression (The ring inside the unopened wrapper) -->
+    <!-- Circular bulging dome shading -->
+    <circle cx="0" cy="0" r="54" fill="url(#foilBulge)" />
+    <!-- Embossed ring: Top-Left Highlight Arc -->
+    <path d="M -38 -38 A 54 54 0 0 1 38 -38 A 54 54 0 0 1 54 0"
+          fill="none" stroke="url(#embossHighlight)" stroke-width="5.5" stroke-linecap="round" opacity="0.85" />
+    <!-- Embossed ring: Bottom-Right Shadow Arc -->
+    <path d="M 54 0 A 54 54 0 0 1 38 38 A 54 54 0 0 1 -38 38 A 54 54 0 0 1 -54 0"
+          fill="none" stroke="url(#embossShadow)" stroke-width="5" stroke-linecap="round" opacity="0.85" />
+
+    <!-- Secondary inner ring ridge -->
+    <circle cx="0" cy="0" r="48" fill="none" stroke="#000000" stroke-width="2.5" opacity="0.4" />
+
+    <!-- Simple Minimalist Shield Icon with Droplet in Center -->
+    <!-- Outer Shield with Glow -->
+    <path d="M 0 -26 C 16 -26, 26 -17, 26 2 C 26 20, 0 34, 0 34 C 0 34, -26 20, -26 2 C -26 -17, -16 -26, 0 -26 Z"
+          fill="url(#shieldGrad)" stroke="#ffffff" stroke-width="2.2" stroke-opacity="0.9" />
+
+    <!-- Inner Droplet Symbol -->
+    <path d="M 0 -15 C 6 -15, 11 -8, 11 2 C 11 9, 0 18, 0 18 C 0 18, -11 9, -11 2 C -11 -8, -6 -15, 0 -15 Z"
+          fill="#ffffff" opacity="0.95" />
+    <path d="M 0 -15 C 4 -15, 7 -9, 7 0 C 7 6, 0 13, 0 13 C 0 13, -7 6, -7 0 C -7 -9, -4 -15, 0 -15 Z"
+          fill="#38bdf8" opacity="0.9" />
+  </g>
+
+</svg>
