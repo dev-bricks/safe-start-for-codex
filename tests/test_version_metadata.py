@@ -19,6 +19,7 @@ def test_required_documentation_files_exist() -> None:
         "README.md",
         "README_de.md",
         "LICENSE",
+        "NOTICE",
         "llms.txt",
         "CHANGELOG.md",
         "SECURITY.md",
@@ -48,9 +49,11 @@ def test_llms_txt_integrity() -> None:
     llms_text = (PROJECT_ROOT / "llms.txt").read_text(encoding="utf-8")
     assert "https://github.com/dev-bricks/safe-start-for-codex" in llms_text
     assert "dev-bricks" in llms_text
-    assert "Last-checked: 2026-09-16" in llms_text
-    assert "106 pytest tests passed" in llms_text
+    assert "Last-checked: 2026-09-21" in llms_text
+    assert "114+ pytest tests passed" in llms_text
     assert "Version 1.1.6 verified" in llms_text
+    assert "NOTICE" in llms_text
+    assert "521 BGB" in llms_text
 
 
 def test_cli_subcommands_registered() -> None:
@@ -80,24 +83,48 @@ def test_readme_and_readme_de_parity() -> None:
     readme_en = (PROJECT_ROOT / "README.md").read_text(encoding="utf-8")
     readme_de = (PROJECT_ROOT / "README_de.md").read_text(encoding="utf-8")
 
-    # Both documents must have matching core sections
+    # Both documents must have matching 18 core sections
     for sec_en in [
-        "System Architecture",
-        "Governance & Runtime Invariants",
-        "Third-Party Licenses & Transparency",
-        "Marketing & Target Personas",
-        "Development, Security & License",
-        "Related Tools & Ecosystem",
+        "Why & Problem Statement",
+        "Architecture & System Flow",
+        "Complete Lifecycle Sequence",
+        "Key Capabilities, Governance & Runtime Invariants",
+        "Target Personas & Discoverability",
+        "Comparative Matrix & Alternatives",
+        "Sibling Ecosystem & Partner Tools",
+        "Features & Capabilities",
+        "Visual Architecture & Branding",
+        "Requirements & Platform Matrix",
+        "Installation & Quick Start",
+        "CLI Usage & Subcommands",
+        "Configuration & Tuning",
+        "Conservative Catch-Up Planner & Upstream Proposal",
+        "Windows Tray Mode & Process Supervision",
+        "Third-Party Licenses & Level 1 SBOM",
+        "Development, Quality Assurance & License",
+        "Statutory Notice (§ 521 BGB) & Liability Disclaimer",
     ]:
         assert sec_en in readme_en, f"Missing English section {sec_en}"
 
     for sec_de in [
-        "Systemarchitektur",
-        "Governance- & Laufzeitinvarianten",
-        "Drittanbieter-Lizenzen & Transparenz",
-        "Marketing & Zielgruppen",
-        "Entwicklung, Sicherheit & Lizenz",
-        "Verwandte Tools & Ökosystem",
+        "Warum & Problemstellung",
+        "Architektur & Systemfluss",
+        "Vollständiger Lebenszyklus-Ablauf",
+        "Kernfähigkeiten, Governance- & Laufzeitinvarianten",
+        "Zielgruppen & Auffindbarkeit",
+        "Vergleichsmatrix & Alternativen",
+        "Geschwisterwerkzeuge & Partner-Ökosystem",
+        "Funktionsumfang & Kernfähigkeiten",
+        "Visuelle Architektur & Branding",
+        "Systemanforderungen & Plattformmatrix",
+        "Installation & Schnelleinrichtung",
+        "CLI-Nutzung & Befehlsreferenz",
+        "Konfiguration & Feineinstellung",
+        "Konservativer Aufholplaner & Upstream-Vorschlag",
+        "Windows Tray-Modus & Prozessüberwachung",
+        "Drittanbieter-Lizenzen & Level-1-SBOM",
+        "Entwicklung, Qualitätssicherung & Lizenz",
+        "Gesetzlicher Hinweis (§ 521 BGB) & Haftungsausschluss",
     ]:
         assert sec_de in readme_de, f"Missing German section {sec_de}"
 
@@ -114,10 +141,13 @@ def test_quick_navigation_anchors_parity() -> None:
     assert "### 🧭 Quick Navigation" in readme_en
     assert "### 🧭 Schnellnavigation" in readme_de
 
-    # Ensure 15 numbered links exist in both
-    for i in range(1, 16):
+    # Ensure 18 numbered links exist in both
+    for i in range(1, 19):
         assert f"{i}. [" in readme_en, f"Missing point {i} in English quick navigation"
         assert f"{i}. [" in readme_de, f"Missing point {i} in German quick navigation"
+        anchor = f'<a id="sec-{i:02d}"></a>'
+        assert anchor in readme_en, f"Missing anchor {anchor} in English README"
+        assert anchor in readme_de, f"Missing anchor {anchor} in German README"
 
 
 def test_mermaid_diagrams_parity() -> None:
@@ -303,9 +333,66 @@ def test_changelog_recent_pfad_a_entry() -> None:
 
 def test_changelog_recent_pfad_b_entry() -> None:
     changelog = (PROJECT_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
-    assert "## [1.1.5] - 2026-09-11" in changelog
     assert "GITHUBBOT_ONE_REPO_MARKETING_AND_DESIGN" in changelog
     assert "Discoverability" in changelog
+    assert "2026-09-21" in changelog
+    assert "18-Point Bilingual Dual-Anchor Navigation" in changelog
+
+
+def test_comparative_matrix_parity() -> None:
+    readme_en = (PROJECT_ROOT / "README.md").read_text(encoding="utf-8")
+    readme_de = (PROJECT_ROOT / "README_de.md").read_text(encoding="utf-8")
+    assert "Comparative Matrix & Alternatives" in readme_en
+    assert "Vergleichsmatrix & Alternativen" in readme_de
+    for col in [
+        "Native Unmodified Codex",
+        "Windows Task Scheduler",
+        "Custom Batch / PowerShell",
+        "Heavy Enterprise APM",
+        "Safe Start for Codex",
+    ]:
+        assert col in readme_en, f"Missing {col} in English comparative matrix"
+    for col_de in [
+        "Natives Unmodifiziertes Codex",
+        "Windows Aufgabenplanung",
+        "Eigene Batch- / PowerShell",
+        "Schwere Enterprise-APM",
+        "Safe Start for Codex",
+    ]:
+        assert col_de in readme_de, f"Missing {col_de} in German comparative matrix"
+
+
+def test_personas_contract() -> None:
+    readme_en = (PROJECT_ROOT / "README.md").read_text(encoding="utf-8")
+    readme_de = (PROJECT_ROOT / "README_de.md").read_text(encoding="utf-8")
+    for p in ["[PERSONA-01]", "[PERSONA-02]", "[PERSONA-03]", "[PERSONA-04]"]:
+        assert p in readme_en, f"Missing {p} in English README"
+        assert p in readme_de, f"Missing {p} in German README"
+
+
+def test_statutory_notice_521_bgb() -> None:
+    readme_en = (PROJECT_ROOT / "README.md").read_text(encoding="utf-8")
+    readme_de = (PROJECT_ROOT / "README_de.md").read_text(encoding="utf-8")
+    assert "521 BGB" in readme_en
+    assert "521 BGB" in readme_de
+    assert "Gefälligkeitsverhältnis" in readme_de
+    assert "48-hour response SLA" in readme_en
+    assert "48-Stunden-Reaktions-SLA" in readme_de
+
+
+def test_notice_file_contract() -> None:
+    notice = (PROJECT_ROOT / "NOTICE").read_text(encoding="utf-8")
+    assert "Lukas Geiger" in notice
+    assert "dev-bricks" in notice
+    assert "open-bricks" in notice
+
+
+def test_pep621_license_files_and_notice() -> None:
+    data = tomllib.loads((PROJECT_ROOT / "pyproject.toml").read_text(encoding="utf-8"))
+    project = data.get("project", {})
+    assert "NOTICE" in project.get("license-files", [])
+    assert "Notice" in project.get("urls", {})
+    assert len(project.get("keywords", [])) == 20
 
 
 def test_marketing_log_contract() -> None:

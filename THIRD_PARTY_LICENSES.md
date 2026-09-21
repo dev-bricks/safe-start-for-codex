@@ -1,8 +1,9 @@
 # Third-Party Licenses & Transparency Notice
 
 > **Project:** `dev-bricks/safe-start-for-codex`<br>
-> **Audited:** 2026-09-16<br>
+> **Audited:** 2026-09-21<br>
 > **Repository License:** [MIT License](LICENSE)<br>
+> **Attribution Notice:** [NOTICE](NOTICE)<br>
 > **Architecture & Privacy:** 100% Local-First, Zero-Egress, Unprivileged User-Mode (`RunAsInvoker`), Pure Python Standard Library Core
 
 ---
@@ -78,3 +79,22 @@ The core runtime of `safe-start-for-codex` has **zero external runtime dependenc
 - The optional `tray` extra installs `pystray` and `Pillow`. On macOS and Linux, `pystray` may declare platform-specific transitive packages (`pyobjc` / `python-xlib`).
 - The optional `build` extra uses PyInstaller. PyInstaller's license includes a special exception explicitly authorizing the distribution of standalone binaries built by the tool under terms of the developer's choice.
 - Binary release workflows inspect the bundled artifact set and ensure corresponding license notices are packaged.
+
+---
+
+## Invariant Cross-Reference Matrix
+
+The 10 architectural and governance invariants are enforced across the codebase and validated by automated test suites:
+
+| Invariant Code | Guarantee Name | Category | Primary Code Enforcing Invariant | Test Suite Verification |
+|:---|:---|:---|:---|:---|
+| **INV-LOCAL-01** | Local-First & Zero Egress | Network Privacy | Pure standard library CLI; no networking libraries; host-local `~/.codex/` paths | `tests/test_security_license_contract.py::test_no_hardcoded_user_paths_or_plaintext_secrets` |
+| **INV-SEC-02** | Non-Elevation (RunAsInvoker) | Security Privilege | Standard user mode execution without UAC elevation or kernel driver requirement | `tests/test_security_license_contract.py::test_security_policy_bilingual_and_contacts` |
+| **INV-FILE-03** | Snapshot-Before-Mutation | Data Safety | `SafeStartGate.create_snapshot()` in `safe_start_for_codex/gate.py` | `tests/test_cli.py::test_command_backup_missing_automations_dir` |
+| **INV-RESTORE-04** | Selective Restoration Guard | Idempotency | `SafeStartGate.restore()` in `safe_start_for_codex/gate.py` | `tests/test_cli.py::test_restore_missing_file_skips_and_restores_remaining` |
+| **INV-CATCH-05** | Conservative Catch-Up Policy | Scheduling Safety | `CatchUpPlanner.build_catchup_report()` in `safe_start_for_codex/catchup.py` (read-only) | `tests/test_cli.py::test_build_catchup_report_flags_missing_rare_automation` |
+| **INV-PROC-06** | Targeted Process Supervision | OS Process Hygiene | `cleanup_start_blockers()` in `safe_start_for_codex/process.py` with age and UI checks | `tests/test_cli.py::test_cleanup_preserves_active_desktop_session_with_sandboxed_renderer` |
+| **INV-INTEG-07** | Atomic TOML Serialization | Data Integrity | `atomic_write_text()` via staging file and atomic rename | `tests/test_cli.py::test_set_status_rewrites_status_and_updated_at` |
+| **INV-FAIL-08** | Fail-Closed Diagnostics | System Reliability | Explicit logging and exit code on invalid configs without file mutation | `tests/test_cli.py::test_tray_worker_logs_system_exit_when_automations_dir_missing` |
+| **INV-PLAT-09** | Cross-Platform Operating Parity | OS Portability | Multi-OS source parsing smoke tests in `tests/source_platform_smoke.py` | `tests/test_version_metadata.py::test_ci_workflow_pytest_flags` |
+| **INV-SLA-10** | Dual Security Response SLA | Governance & Triage | 48-hour response, 5-business-day triage codified in `SECURITY.md` | `tests/test_version_metadata.py::test_security_sla_and_contacts` |

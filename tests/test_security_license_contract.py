@@ -25,7 +25,9 @@ def test_dependency_versions_no_vulnerable_floors() -> None:
 def test_third_party_license_inventory_metadata() -> None:
     text = (ROOT / "THIRD_PARTY_LICENSES.txt").read_text(encoding="utf-8")
     assert "Last checked: 2026-08-24" in text
+    assert "Audited: 2026-09-21" in text
     assert "Safe Start for Codex is licensed under the MIT License" in text
+    assert "NOTICE" in text
     assert "Transitive Build & Test Inventory" in text
     for pkg in [
         "hatchling",
@@ -109,12 +111,15 @@ def test_pyproject_pep621_classifiers_and_urls() -> None:
     assert "Third-Party Licenses" in urls
     assert "Marketing Log" in urls
     assert "LLM Ready" in urls
+    assert "Notice" in urls
 
 
 def test_third_party_licenses_markdown_contract() -> None:
     text = (ROOT / "THIRD_PARTY_LICENSES.md").read_text(encoding="utf-8")
     assert "Third-Party Licenses & Transparency Notice" in text
     assert "permissive and free open-source licenses" in text.lower()
+    assert "Invariant Cross-Reference Matrix" in text
+    assert "NOTICE" in text
     assert "Pillow" in text
     assert "pystray" in text
     assert "pytest" in text

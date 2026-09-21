@@ -1,6 +1,7 @@
 # Third-Party Licenses
 
 Last checked: 2026-08-24 against PyPI project metadata.
+Audited: 2026-09-21 against Level 1 SBOM and runtime invariants.
 
 Scope: direct dependencies declared in `pyproject.toml` as well as transitive
 runtime and build helper packages. This file is a direct dependency inventory,
@@ -9,7 +10,7 @@ shipped inside bundled wheels or executables.
 
 ## Project License
 
-Safe Start for Codex is licensed under the MIT License. See `LICENSE`.
+Safe Start for Codex is licensed under the MIT License. See `LICENSE` and `NOTICE`.
 
 ## Core Runtime
 

@@ -2,6 +2,20 @@
 
 All notable changes to this project are documented here.
 
+## Unreleased
+
+- Discoverability, 18-Point Bilingual Dual-Anchor Navigation, Level 1 SBOM Invariant Matrix & Contract Parity (GITHUBBOT_ONE_REPO_MARKETING_AND_DESIGN / Pfad B) on 2026-09-21:
+  - Saturated GitHub topics to 20/20 maximum: `automation`, `codex`, `openai`, `startup`, `windows`, `safe-start`, `codex-cli`, `developer-tools`, `system-tray`, `desktop-app`, `dev-bricks`, `open-bricks`, `local-first`, `zero-egress`, `offline-first`, `process-hygiene`, `python`, `process-supervision`, `scheduler`, `rate-limiting`.
+  - Added canonical root `NOTICE` attribution file (Lukas Geiger, dev-bricks, open-bricks) referenced across `pyproject.toml`, `THIRD_PARTY_LICENSES.md`, `THIRD_PARTY_LICENSES.txt`, and documentation badges.
+  - Standardized PEP 621 metadata in `pyproject.toml` with `license-files = ["LICENSE", "NOTICE", "THIRD_PARTY_LICENSES.md"]`, full 20-topic `keywords` array, and canonical `Notice` URL in `[project.urls]`.
+  - Upgraded documentation across `README.md` and `README_de.md` to standardized 18-point quick navigation with 100% bidirectional reciprocal dual HTML anchors (`<a id="sec-01"></a><a id="..."></a><a id="..."></a>`).
+  - Added Section 6: 10-Dimension 5-Way Comparative Matrix evaluating Safe Start for Codex against native Codex, Windows Task Scheduler, custom scripts, and heavy enterprise APMs across all 10 governance invariants (`INV-LOCAL-01` to `INV-SLA-10`).
+  - Formalized 4 target personas `[PERSONA-01]` through `[PERSONA-04]` and curated bilingual search queries in Section 5.
+  - Added Section 18: Statutory Notice (§ 521 BGB Gefälligkeitsrecht) clarifying free open-source liability limitations, fair-use trademark disclaimer for OpenAI/Codex, and binding 48-hour response SLA / 5-business-day triage commitment.
+  - Enriched `THIRD_PARTY_LICENSES.md` with Level 1 SBOM audit recency (2026-09-21) and Section 6 Invariant Cross-Reference Matrix mapping `INV-LOCAL-01`..`INV-SLA-10` to enforcing modules and contract test suites.
+  - Synchronized `llms.txt` discovery index and Shields.io badge row with Attribution NOTICE, Level 1 SBOM audit date, and 18-point dual-anchor navigation parity.
+  - Enriched local `MARKETING-LOG.txt` with Stand 2026-09-21 marketing and design audit entry. [G 2026-09-21]
+
 ## [1.1.6] - 2026-09-16
 
 - Process Discovery, Zombie Detection & Companion Path Resolution Parity (SOFTWARE_BUGSEARCH Bugsweep) on 2026-09-19:

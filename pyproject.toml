@@ -9,10 +9,32 @@ description = "Unofficial Windows startup gate for Codex Desktop automations and
 readme = "README.md"
 requires-python = ">=3.11"
 license = { file = "LICENSE" }
+license-files = ["LICENSE", "NOTICE", "THIRD_PARTY_LICENSES.md"]
 authors = [
   { name = "Lukas Geiger" }
 ]
-keywords = ["codex", "openai", "codex-desktop", "automation", "automation-gate", "windows", "startup", "catch-up"]
+keywords = [
+  "automation",
+  "codex",
+  "codex-cli",
+  "desktop-app",
+  "dev-bricks",
+  "developer-tools",
+  "local-first",
+  "offline-first",
+  "open-bricks",
+  "openai",
+  "process-hygiene",
+  "process-supervision",
+  "python",
+  "rate-limiting",
+  "safe-start",
+  "scheduler",
+  "startup",
+  "system-tray",
+  "windows",
+  "zero-egress",
+]
 classifiers = [
   "Development Status :: 4 - Beta",
   "Environment :: Console",
@@ -62,6 +84,7 @@ Security = "https://github.com/dev-bricks/safe-start-for-codex/security/advisori
 "Parent Organization" = "https://github.com/dev-bricks"
 "Umbrella Ecosystem" = "https://github.com/open-bricks"
 "Third-Party Licenses" = "https://github.com/dev-bricks/safe-start-for-codex/blob/main/THIRD_PARTY_LICENSES.md"
+Notice = "https://github.com/dev-bricks/safe-start-for-codex/blob/main/NOTICE"
 "Marketing Log" = "https://github.com/dev-bricks/safe-start-for-codex/blob/main/MARKETING-LOG.txt"
 "LLM Ready" = "https://github.com/dev-bricks/safe-start-for-codex/blob/main/llms.txt"
 
