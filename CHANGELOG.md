@@ -4,6 +4,15 @@ All notable changes to this project are documented here.
 
 ## Unreleased
 
+- Synthetic Codex Automation Collection Integration & Stress Testing Suite (SOFTWARE_ENTWICKLUNG) on 2026-09-22:
+  - Added dedicated integration test suite in `tests/test_synthetic_collections.py` verifying Safe Start for Codex gating behavior on large, heterogeneous automation collections (124/124 tests passing).
+  - Validated loading, metadata fidelity, and unique path resolution for 55 multi-frequency synthetic automations across all 6 RRULE intervals (MINUTELY, HOURLY, DAILY, WEEKLY, MONTHLY, YEARLY) with mixed lifecycle statuses (ACTIVE, PAUSED, DISABLED).
+  - Verified batch queue splitting (`split_release_queue`) and pacing dynamics on 38 active jobs, ensuring deterministic partitioning into future-safe and fallback queues based on lead intervals.
+  - Implemented end-to-end `SafeStartGate` lifecycle simulation verifying atomic pause snapshotting, staged release, and selective restoration preserving pre-existing PAUSED and DISABLED states (`INV-RESTORE-04`, `INV-FILE-03`).
+  - Added integration tests for SQLite-based catch-up report generation (`build_catchup_report`), validating overdue detection for rare tasks (>24h period) and per-start limits without triggering external execution (`INV-CATCH-05`, `INV-LOCAL-01`).
+  - Hardened resilience and fail-closed safety (`INV-FAIL-08`) against malformed, unparseable, and empty RRULE strings as well as international Unicode folder names and German umlauts.
+  - Initialized project-level `AUFGABEN.txt` and completed open roadmap item in `MARKETING-LOG.txt`. [G 2026-09-22]
+
 - Discoverability, 18-Point Bilingual Dual-Anchor Navigation, Level 1 SBOM Invariant Matrix & Contract Parity (GITHUBBOT_ONE_REPO_MARKETING_AND_DESIGN / Pfad B) on 2026-09-21:
   - Saturated GitHub topics to 20/20 maximum: `automation`, `codex`, `openai`, `startup`, `windows`, `safe-start`, `codex-cli`, `developer-tools`, `system-tray`, `desktop-app`, `dev-bricks`, `open-bricks`, `local-first`, `zero-egress`, `offline-first`, `process-hygiene`, `python`, `process-supervision`, `scheduler`, `rate-limiting`.
   - Added canonical root `NOTICE` attribution file (Lukas Geiger, dev-bricks, open-bricks) referenced across `pyproject.toml`, `THIRD_PARTY_LICENSES.md`, `THIRD_PARTY_LICENSES.txt`, and documentation badges.

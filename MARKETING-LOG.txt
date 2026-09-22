@@ -126,4 +126,5 @@ German (DE):
 - [x] Synchronize llms.txt discovery index with updated test baseline and invariant contracts.
 - [ ] Implement optional lightweight web dashboard for real-time gating status observation.
 - [ ] Publish pre-compiled standalone Windows EXE binaries in GitHub Releases via automated Actions.
-- [ ] Expand integration test coverage with synthetic Codex automation collections.
+- [x] Expand integration test coverage with synthetic Codex automation collections (55 multi-schedule jobs, batch splitting, gating lifecycle simulation, SQLite history catch-up, and degraded collection resilience verified in tests/test_synthetic_collections.py).
+
