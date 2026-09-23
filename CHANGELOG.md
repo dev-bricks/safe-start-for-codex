@@ -4,6 +4,12 @@ All notable changes to this project are documented here.
 
 ## Unreleased
 
+- RRULE Whitespace & Case Resilience and Negative Monthday Recurrence Support (SOFTWARE_BUGSEARCH Bugsweep) on 2026-09-23:
+  - Hardened `parse_rrule` against leading/trailing whitespace and spaces surrounding delimiters (`;`, `=`), ensuring RRULE properties like `INTERVAL` and recurrence values are reliably parsed into integers instead of silently defaulting.
+  - Added case-insensitive handling for `rrule:` prefix with optional whitespace in `parse_rrule`.
+  - Added RFC 5545 negative `BYMONTHDAY` support (`-1`, `-2`, etc.) in `_matches_frequency_day` for monthly recurrence calculations, accurately calculating dates relative to the end of the month (e.g. Sept 30, Oct 31, Feb 28/29).
+  - Added regression unit tests in `tests/test_cli.py` covering whitespace/case resilience in `parse_rrule` and negative `BYMONTHDAY` resolution in `rrule_next_after` (126/126 tests passing 100% green). [G 2026-09-23]
+
 - Synthetic Codex Automation Collection Integration & Stress Testing Suite (SOFTWARE_ENTWICKLUNG) on 2026-09-22:
   - Added dedicated integration test suite in `tests/test_synthetic_collections.py` verifying Safe Start for Codex gating behavior on large, heterogeneous automation collections (124/124 tests passing).
   - Validated loading, metadata fidelity, and unique path resolution for 55 multi-frequency synthetic automations across all 6 RRULE intervals (MINUTELY, HOURLY, DAILY, WEEKLY, MONTHLY, YEARLY) with mixed lifecycle statuses (ACTIVE, PAUSED, DISABLED).

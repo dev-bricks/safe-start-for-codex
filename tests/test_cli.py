@@ -1197,3 +1197,30 @@ def test_rrule_occurrences_between_hourly_preserves_anchor_grid() -> None:
         datetime(2026, 9, 21, 11, 0),
         datetime(2026, 9, 22, 12, 0),
     ]
+
+
+def test_parse_rrule_whitespace_and_case_resilience() -> None:
+    from safe_start_for_codex.cli import parse_rrule
+
+    # Leading/trailing spaces, space after semicolon, and spaces around equals
+    parts = parse_rrule("FREQ=DAILY; INTERVAL=2; BYHOUR=12")
+    assert parts["FREQ"] == "DAILY"
+    assert parts["INTERVAL"] == 2
+    assert parts["BYHOUR"] == "12"
+
+    parts2 = parse_rrule("  rrule:FREQ = HOURLY ; INTERVAL = 3 ; BYMINUTE = 15, 30  ")
+    assert parts2["FREQ"] == "HOURLY"
+    assert parts2["INTERVAL"] == 3
+    assert parts2["BYMINUTE"] == ["15", "30"]
+
+
+def test_rrule_monthly_negative_bymonthday_last_day_of_month() -> None:
+    after = datetime(2026, 9, 20, 10, 0)
+    # BYMONTHDAY=-1 specifies the last day of the month (Sept 30)
+    rule = "RRULE:FREQ=MONTHLY;BYMONTHDAY=-1;BYHOUR=12;BYMINUTE=0"
+    nxt = rrule_next_after(rule, after)
+    assert nxt == datetime(2026, 9, 30, 12, 0)
+
+    # Next after Sept 30 should be Oct 31
+    nxt2 = rrule_next_after(rule, datetime(2026, 9, 30, 12, 0))
+    assert nxt2 == datetime(2026, 10, 31, 12, 0)

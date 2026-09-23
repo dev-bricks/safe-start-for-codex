@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import calendar
 import contextlib
 import json
 import os
@@ -739,13 +740,15 @@ def cleanup_start_blockers(
 
 
 def parse_rrule(rrule: str) -> dict[str, list[str] | str | int]:
-    value = rrule.removeprefix("RRULE:")
+    value = re.sub(r"^\s*RRULE:\s*", "", rrule, flags=re.IGNORECASE).strip()
     parts: dict[str, list[str] | str | int] = {}
     for chunk in value.split(";"):
+        chunk = chunk.strip()
         if "=" not in chunk:
             continue
         key, raw = chunk.split("=", 1)
-        key = key.upper()
+        key = key.strip().upper()
+        raw = raw.strip()
         if key == "INTERVAL":
             try:
                 parts[key] = int(raw)
@@ -754,7 +757,7 @@ def parse_rrule(rrule: str) -> dict[str, list[str] | str | int]:
         elif "," in raw:
             parts[key] = [item.strip().upper() for item in raw.split(",") if item.strip()]
         else:
-            parts[key] = raw.strip().upper()
+            parts[key] = raw.upper()
     return parts
 
 
@@ -938,12 +941,22 @@ def _matches_frequency_day(
         return weeks_diff >= 0 and (weeks_diff % interval) == 0
     if frequency == "MONTHLY":
         months = (current.year - start.year) * 12 + current.month - start.month
-        return (
+        if not (
             months >= 0
             and months % interval == 0
             and current.month in _allowed_months(parts)
-            and current.day in _allowed_monthdays(parts, default_day=start.day)
-        )
+        ):
+            return False
+        days_in_month = calendar.monthrange(current.year, current.month)[1]
+        allowed_days_set: set[int] = set()
+        for d in values_as_ints(parts, "BYMONTHDAY", [start.day]):
+            if d < 0:
+                resolved = days_in_month + 1 + d
+                if 1 <= resolved <= days_in_month:
+                    allowed_days_set.add(resolved)
+            else:
+                allowed_days_set.add(d)
+        return current.day in allowed_days_set
     if frequency == "YEARLY":
         years = current.year - start.year
         return (
