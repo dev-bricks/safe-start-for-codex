@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import json
 import os
+import signal
 import subprocess
 import sys
 from collections.abc import Callable
@@ -79,6 +80,22 @@ class ZombieKillerLaunchResult:
     def to_text(self) -> str:
         lines = [f"Status: {self.status}", "Command: " + " ".join(self.command), self.message,
                   f"State dir: {self.state_dir}"]
+        if self.pid is not None:
+            lines.append(f"PID: {self.pid}")
+        return "\n".join(lines)
+
+
+@dataclass(slots=True)
+class ZombieKillerStopResult:
+    status: str
+    message: str
+    pid: int | None = None
+
+    def to_dict(self) -> dict[str, object]:
+        return asdict(self)
+
+    def to_text(self) -> str:
+        lines = [f"Status: {self.status}", self.message]
         if self.pid is not None:
             lines.append(f"PID: {self.pid}")
         return "\n".join(lines)
@@ -266,16 +283,30 @@ def _zombie_killer_env() -> dict[str, str]:
     return env
 
 
+def _watch_pid_file(state_dir: Path) -> Path:
+    return state_dir / "watch.pid"
+
+
 def launch_zombie_killer_watch(
     *,
     interval_seconds: int = DEFAULT_WATCH_INTERVAL_SECONDS,
     min_age_seconds: int = DEFAULT_MIN_AGE_SECONDS,
     popen: Callable[..., subprocess.Popen[str]] | None = None,
 ) -> ZombieKillerLaunchResult:
-    """Start `python -m zombie_killer_tray watch` as its own subprocess.
+    """Start `python -m zombie_killer_tray watch` as its own, long-lived
+    subprocess.
 
     Refuses cleanly on any non-Windows platform (zombie-killer-tray is
     Win32-only) rather than attempting a doomed subprocess spawn.
+
+    NO `--parent-pid`: review finding (T-20260926-212716751) -- zombie-
+    killer-tray kills the watch process as soon as whatever PID was passed
+    via `--parent-pid` exits. A one-shot CLI call like `zombie-killer-watch`
+    exits right after this function returns, so passing its own (thus
+    already-doomed) PID there killed the watcher within ~1s of starting it,
+    before it could do any real work. The watcher's lifecycle is instead
+    tracked via its own PID file, independent of whoever launched it (see
+    `stop_zombie_killer_watch`).
     """
     state_dir = zombie_killer_state_dir()
     if not _is_windows():
@@ -290,7 +321,6 @@ def launch_zombie_killer_watch(
         "watch", "--yes",
         "--interval", str(interval_seconds),
         "--min-age", str(min_age_seconds),
-        "--parent-pid", str(os.getpid()),
     ]
     env = _zombie_killer_env()
     run = popen or subprocess.Popen
@@ -306,12 +336,15 @@ def launch_zombie_killer_watch(
             last_error = str(exc)
             continue
         pid = getattr(process, "pid", None)
+        pid_int = int(pid) if isinstance(pid, int) else None
+        if pid_int is not None:
+            _watch_pid_file(state_dir).write_text(str(pid_int), encoding="utf-8")
         return ZombieKillerLaunchResult(
             status="ok",
             command=command,
-            message="zombie-killer-tray was started as its own watch subprocess.",
+            message="zombie-killer-tray was started as its own, long-lived watch subprocess.",
             state_dir=str(state_dir),
-            pid=int(pid) if isinstance(pid, int) else None,
+            pid=pid_int,
         )
 
     return ZombieKillerLaunchResult(
@@ -320,6 +353,49 @@ def launch_zombie_killer_watch(
         message=last_error or "No Python command found for zombie-killer-tray.",
         state_dir=str(state_dir),
     )
+
+
+def _is_our_watch_process(pid: int) -> bool | None:
+    """True/False if verifiable, None if psutil is unavailable (best-effort:
+    zombie-killer-tray always pulls psutil in as its own dependency, so this
+    is only missing if the extra itself was never installed)."""
+    try:
+        import psutil
+    except ImportError:
+        return None
+    try:
+        return "zombie_killer_tray" in " ".join(psutil.Process(pid).cmdline())
+    except psutil.Error:
+        return False
+
+
+def stop_zombie_killer_watch() -> ZombieKillerStopResult:
+    """Stop the watch subprocess started by `launch_zombie_killer_watch`,
+    identified via its PID file rather than any parent/child relationship."""
+    pid_file = _watch_pid_file(zombie_killer_state_dir())
+    if not pid_file.exists():
+        return ZombieKillerStopResult(status="not-running", message="No PID file found.")
+    try:
+        pid = int(pid_file.read_text(encoding="utf-8").strip())
+    except (OSError, ValueError):
+        pid_file.unlink(missing_ok=True)
+        return ZombieKillerStopResult(status="not-running", message="PID file unreadable; removed.")
+
+    verified = _is_our_watch_process(pid)
+    if verified is False:
+        pid_file.unlink(missing_ok=True)
+        return ZombieKillerStopResult(
+            status="not-found", message="PID no longer belongs to zombie-killer-tray.", pid=pid
+        )
+
+    try:
+        os.kill(pid, signal.SIGTERM)
+    except OSError:
+        pid_file.unlink(missing_ok=True)
+        return ZombieKillerStopResult(status="already-stopped", message="Process was not running.", pid=pid)
+
+    pid_file.unlink(missing_ok=True)
+    return ZombieKillerStopResult(status="ok", message="zombie-killer-tray was stopped.", pid=pid)
 
 
 def _last_cycle_event(state_dir: Path) -> dict[str, object] | None:

@@ -97,6 +97,12 @@ Notice = "https://github.com/dev-bricks/safe-start-for-codex/blob/main/NOTICE"
 "LLM Ready" = "https://github.com/dev-bricks/safe-start-for-codex/blob/main/llms.txt"
 
 
+[tool.hatch.metadata]
+# T-20260926-212716751: the optional `zombie-killer` extra declares a direct
+# `git+https://...` reference (zombie-killer-tray), which hatchling refuses
+# to build without this explicit opt-in (broke `pip install -e .` in CI).
+allow-direct-references = true
+
 [tool.hatch.build.targets.wheel]
 packages = ["src/safe_start_for_codex"]
 

@@ -1770,6 +1770,17 @@ def command_zombie_killer_watch(args: argparse.Namespace) -> int:
     return 0 if result.status == "ok" else 1
 
 
+def command_zombie_killer_stop(args: argparse.Namespace) -> int:
+    from .zombie_killer_integration import stop_zombie_killer_watch
+
+    result = stop_zombie_killer_watch()
+    if args.json:
+        print(json.dumps(result.to_dict(), ensure_ascii=False, indent=2))
+    else:
+        print(result.to_text())
+    return 0 if result.status in ("ok", "not-running") else 1
+
+
 def command_status(_: argparse.Namespace) -> int:
     latest = state_dir() / "latest.json"
     if not latest.exists():
@@ -1990,6 +2001,13 @@ def build_parser() -> argparse.ArgumentParser:
     zombie_killer_watch.add_argument("--min-age", type=int, default=None)
     zombie_killer_watch.add_argument("--json", action="store_true")
     zombie_killer_watch.set_defaults(func=command_zombie_killer_watch)
+
+    zombie_killer_stop = sub.add_parser(
+        "zombie-killer-stop",
+        help="Stop a zombie-killer-tray watch subprocess started via zombie-killer-watch.",
+    )
+    zombie_killer_stop.add_argument("--json", action="store_true")
+    zombie_killer_stop.set_defaults(func=command_zombie_killer_stop)
     return parser
 
 
