@@ -1730,6 +1730,46 @@ def command_tray(args: argparse.Namespace) -> int:
     return 0
 
 
+def command_zombie_killer_report(args: argparse.Namespace) -> int:
+    from .zombie_killer_integration import build_zombie_killer_status
+
+    status = build_zombie_killer_status()
+    if args.json:
+        print(json.dumps(status.to_dict(), ensure_ascii=False, indent=2))
+    else:
+        print(status.to_text())
+    return 0
+
+
+def command_zombie_killer_install(args: argparse.Namespace) -> int:
+    from .zombie_killer_integration import install_zombie_killer_package
+
+    result = install_zombie_killer_package(target=args.target)
+    if args.json:
+        print(json.dumps(result.to_dict(), ensure_ascii=False, indent=2))
+    else:
+        print(result.to_text())
+    return 0 if result.status == "ok" else 1
+
+
+def command_zombie_killer_watch(args: argparse.Namespace) -> int:
+    from .zombie_killer_integration import (
+        DEFAULT_MIN_AGE_SECONDS,
+        DEFAULT_WATCH_INTERVAL_SECONDS,
+        launch_zombie_killer_watch,
+    )
+
+    result = launch_zombie_killer_watch(
+        interval_seconds=args.interval or DEFAULT_WATCH_INTERVAL_SECONDS,
+        min_age_seconds=args.min_age or DEFAULT_MIN_AGE_SECONDS,
+    )
+    if args.json:
+        print(json.dumps(result.to_dict(), ensure_ascii=False, indent=2))
+    else:
+        print(result.to_text())
+    return 0 if result.status == "ok" else 1
+
+
 def command_status(_: argparse.Namespace) -> int:
     latest = state_dir() / "latest.json"
     if not latest.exists():
@@ -1923,6 +1963,33 @@ def build_parser() -> argparse.ArgumentParser:
 
     backup = sub.add_parser("backup", help="Create a manual backup of automation TOML files.")
     backup.set_defaults(func=command_backup)
+
+    zombie_killer_report = sub.add_parser(
+        "zombie-killer-report",
+        help="Check zombie-killer-tray status (last cleanup cycle). Optional, Windows-only integration.",
+    )
+    zombie_killer_report.add_argument("--json", action="store_true")
+    zombie_killer_report.set_defaults(func=command_zombie_killer_report)
+
+    zombie_killer_install = sub.add_parser(
+        "zombie-killer-install",
+        help="Install or upgrade zombie-killer-tray.",
+    )
+    zombie_killer_install.add_argument(
+        "--target", default=None,
+        help="Optional pip target. Default: local sibling checkout, else the commit-pinned GitHub source.",
+    )
+    zombie_killer_install.add_argument("--json", action="store_true")
+    zombie_killer_install.set_defaults(func=command_zombie_killer_install)
+
+    zombie_killer_watch = sub.add_parser(
+        "zombie-killer-watch",
+        help="Launch zombie-killer-tray as its own watch subprocess (orphaned MCP/language-server processes). Windows-only.",
+    )
+    zombie_killer_watch.add_argument("--interval", type=int, default=None)
+    zombie_killer_watch.add_argument("--min-age", type=int, default=None)
+    zombie_killer_watch.add_argument("--json", action="store_true")
+    zombie_killer_watch.set_defaults(func=command_zombie_killer_watch)
     return parser
 
 

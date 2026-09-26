@@ -69,6 +69,14 @@ dev = [
 build = [
   "pyinstaller>=6.0"
 ]
+# T-20260926-212716751: optional, Windows-only companion tool (conservative
+# cleanup of orphaned MCP/language-server processes). Never installed
+# implicitly -- only pulled in if a caller explicitly requests this extra.
+# The environment marker also protects `pip install .[zombie-killer]` on a
+# non-Windows machine from failing on zombie-killer-tray's own Win32 deps.
+zombie-killer = [
+  "zombie-killer-tray @ git+https://github.com/dev-bricks/zombie-killer-tray.git@6c8eb2cc8773e662c65e7a5c39d060b974805c3d ; sys_platform == 'win32'"
+]
 
 [project.scripts]
 safe-start-for-codex = "safe_start_for_codex.cli:main"

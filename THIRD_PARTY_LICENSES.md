@@ -57,6 +57,7 @@ The core runtime of `safe-start-for-codex` has **zero external runtime dependenc
 | **pytest** | `>=9.1.1` | Automated test runner, contract verification suites, mock fixtures | [MIT](https://github.com/pytest-dev/pytest/blob/main/LICENSE) | [pytest-dev/pytest](https://github.com/pytest-dev/pytest) |
 | **ruff** | `>=0.5.0` | High-performance Python linter and code formatting enforcement | [MIT / Apache-2.0](https://github.com/astral-sh/ruff/blob/main/LICENSE-MIT) | [astral-sh/ruff](https://github.com/astral-sh/ruff) |
 | **PyInstaller** | `>=6.0` | Optional standalone Windows executable builder (`build_exe.bat`) | [GPLv2-or-later with Special Exception](https://github.com/pyinstaller/pyinstaller/blob/develop/COPYING.txt) | [pyinstaller/pyinstaller](https://github.com/pyinstaller/pyinstaller) |
+| **zombie-killer-tray** | commit `6c8eb2c` | Optional, Windows-only companion for orphaned MCP/language-server process cleanup, launched as its own subprocess | [MIT](https://github.com/dev-bricks/zombie-killer-tray/blob/main/LICENSE) | [dev-bricks/zombie-killer-tray](https://github.com/dev-bricks/zombie-killer-tray) |
 
 ---
 
