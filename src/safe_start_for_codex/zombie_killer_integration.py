@@ -26,13 +26,11 @@ from pathlib import Path
 
 from .cli import codex_home, no_window_kwargs
 
-# T-20260926-212716751: zombie-killer-tray#4 (src/-Paketierung) is pushed but
-# not yet merged -- this pin points at the branch head. Move it to the merge
-# commit once #4 lands (same verification step as any other pinned dep here).
+# T-20260926-212716751: zombie-killer-tray#4 (src/-Paketierung) merged as 039b4f2.
 ZOMBIE_KILLER_PACKAGE_SPEC = (
     "zombie-killer-tray @ "
     "git+https://github.com/dev-bricks/zombie-killer-tray.git"
-    "@6c8eb2cc8773e662c65e7a5c39d060b974805c3d"
+    "@039b4f2c7acd69063b39d6168c757b0b2fca2438"
 )
 ZOMBIE_KILLER_SOURCE_ENV = "SAFE_START_ZOMBIE_KILLER_SOURCE"
 DEFAULT_WATCH_INTERVAL_SECONDS = 600

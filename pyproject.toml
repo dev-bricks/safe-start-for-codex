@@ -75,7 +75,7 @@ build = [
 # The environment marker also protects `pip install .[zombie-killer]` on a
 # non-Windows machine from failing on zombie-killer-tray's own Win32 deps.
 zombie-killer = [
-  "zombie-killer-tray @ git+https://github.com/dev-bricks/zombie-killer-tray.git@6c8eb2cc8773e662c65e7a5c39d060b974805c3d ; sys_platform == 'win32'"
+  "zombie-killer-tray @ git+https://github.com/dev-bricks/zombie-killer-tray.git@039b4f2c7acd69063b39d6168c757b0b2fca2438 ; sys_platform == 'win32'"
 ]
 
 [project.scripts]
