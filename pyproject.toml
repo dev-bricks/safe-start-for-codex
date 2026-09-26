@@ -72,10 +72,18 @@ build = [
 # T-20260926-212716751: optional, Windows-only companion tool (conservative
 # cleanup of orphaned MCP/language-server processes). Never installed
 # implicitly -- only pulled in if a caller explicitly requests this extra.
-# The environment marker also protects `pip install .[zombie-killer]` on a
-# non-Windows machine from failing on zombie-killer-tray's own Win32 deps.
+# Two environment markers, combined: `sys_platform` protects `pip install
+# .[zombie-killer]` on a non-Windows machine from failing on
+# zombie-killer-tray's own Win32 deps; `python_version` does the same for
+# Python 3.11 (this project's own floor is >=3.11, but zombie-killer-tray
+# itself requires >=3.12 -- review finding: without this marker, the CI
+# matrix's 3.11 leg would try and fail to install it).
 zombie-killer = [
-  "zombie-killer-tray @ git+https://github.com/dev-bricks/zombie-killer-tray.git@039b4f2c7acd69063b39d6168c757b0b2fca2438 ; sys_platform == 'win32'"
+  "zombie-killer-tray @ git+https://github.com/dev-bricks/zombie-killer-tray.git@039b4f2c7acd69063b39d6168c757b0b2fca2438 ; sys_platform == 'win32' and python_version >= '3.12'",
+  # Declared explicitly (not just hoped-for transitively via
+  # zombie-killer-tray) -- stop_zombie_killer_watch()/launch's double-start
+  # guard fail-closed without it, so it must not be an implicit assumption.
+  "psutil>=7.2,<8 ; sys_platform == 'win32' and python_version >= '3.12'",
 ]
 
 [project.scripts]

@@ -58,6 +58,7 @@ The core runtime of `safe-start-for-codex` has **zero external runtime dependenc
 | **ruff** | `>=0.5.0` | High-performance Python linter and code formatting enforcement | [MIT / Apache-2.0](https://github.com/astral-sh/ruff/blob/main/LICENSE-MIT) | [astral-sh/ruff](https://github.com/astral-sh/ruff) |
 | **PyInstaller** | `>=6.0` | Optional standalone Windows executable builder (`build_exe.bat`) | [GPLv2-or-later with Special Exception](https://github.com/pyinstaller/pyinstaller/blob/develop/COPYING.txt) | [pyinstaller/pyinstaller](https://github.com/pyinstaller/pyinstaller) |
 | **zombie-killer-tray** | commit `039b4f2` | Optional, Windows-only companion for orphaned MCP/language-server process cleanup, launched as its own subprocess | [MIT](https://github.com/dev-bricks/zombie-killer-tray/blob/main/LICENSE) | [dev-bricks/zombie-killer-tray](https://github.com/dev-bricks/zombie-killer-tray) |
+| **psutil** | `>=7.2,<8` | Watcher PID/create_time verification (Windows + Python>=3.12 only) | [BSD-3-Clause](https://github.com/giampaolo/psutil/blob/master/LICENSE) | [giampaolo/psutil](https://github.com/giampaolo/psutil) |
 
 ---
 
