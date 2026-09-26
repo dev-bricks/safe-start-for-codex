@@ -61,10 +61,14 @@ token.json
 *-ASUS*
 *-WORKSTATION-LG.*
 *-WORKSTATION-LG*
+*_WORKSTATION-LG*
 *-WORKSTATION.*
 *-WORKSTATION*
+*_WORKSTATION*
 *-LAPTOP*
 *-Mac Studio*
+*-MacBook*
+*-IDEAPAD*
 * (kopie)*
 * (Kopie)*
 * (copy)*
@@ -76,7 +80,11 @@ LOCK
 LOCK.*
 *.lock
 LOCK*.txt
+LOCK.user.*
+LOCK.until.*
+LOCK.condition.*
 LOCK.permissions.json
+.automation-lock
 uv.lock
 !package-lock.json
 
@@ -88,6 +96,9 @@ htmlcov/
 .hypothesis/
 .turbo/
 .nyc_output/
+.pytest_temp/
+.pytest_tmp*/
+.tox/
 wheelhouse/
 .wheel-smoke/
 
@@ -95,6 +106,7 @@ wheelhouse/
 *.tmp
 *.bak
 *.swp
+*.swo
 *~
 *.log
 *.orig
@@ -105,6 +117,7 @@ wheelhouse/
 .idea/
 .claude/
 desktop.ini
+Desktop.ini
 Thumbs.db
 .DS_Store
 

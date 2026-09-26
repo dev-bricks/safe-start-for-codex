@@ -4,6 +4,15 @@ All notable changes to this project are documented here.
 
 ## Unreleased
 
+- Repository Hygiene, CI Lifecycle Workflows, Lock Defense, PEP 621 Metadata & Contract Test Expansion (GITHUBBOT_ONE_REPO_CLEANER / Pfad A) on 2026-09-26:
+  - Preserved strict version freeze discipline per T-20260920-167562623 (version 1.1.6 unchanged across all runtime manifests).
+  - Deployed full CI/CD lifecycle workflow provisioning & hardening: added `.github/workflows/auto-assign.yml` (timeout-minutes: 5, concurrency cancel-in-progress: true, least-privilege `issues: write`, `pull-requests: write`, actions/github-script@v7) and `.github/workflows/label-sync.yml` (timeout-minutes: 5, concurrency cancel-in-progress: true, least-privilege `issues: write`, EndBug/label-sync@v2); added canonical `.github/labels.yml` with 11 standard governance labels per GOVERNANCE.md §4.2.
+  - Hardened `.gitignore` with multi-host cloud-sync patterns (`*-MacBook*`, `*-IDEAPAD*`, `*_WORKSTATION*`, `*_WORKSTATION-LG*`, `*-WORKSTATION-LG.*`), canonical locks (`LOCK.user.*`, `LOCK.until.*`, `LOCK.condition.*`, `.automation-lock`), test/coverage cache boundaries (`.pytest_temp/`, `.pytest_tmp*/`, `.tox/`), and OS/editor artifacts (`Desktop.ini`, `*.swo`).
+  - Standardized PEP 621 metadata in `pyproject.toml`: included `THIRD_PARTY_LICENSES.txt` in `license-files` alongside `LICENSE`, `NOTICE`, and `THIRD_PARTY_LICENSES.md`; hardened `[tool.pytest.ini_options]` with extended `norecursedirs` protecting against cache contamination.
+  - Conducted Level 1 SBOM re-audit in `THIRD_PARTY_LICENSES.md` and `THIRD_PARTY_LICENSES.txt` (Stand 2026-09-26): confirmed unprivileged `RunAsInvoker` user-mode non-elevation, Zero-Egress isolation, zero copyleft constraints, and compliance with all 10 Governance and Runtime Invariants (`INV-LOCAL-01` through `INV-SLA-10`).
+  - Synchronized documentation parity: updated Last-Checked audit badge to 2026-09-26 in `README.md` and `README_de.md` (all 18 quick-navigation bilateral dual anchors and dual mermaid diagrams intact); updated `llms.txt` discovery index and test suite counts.
+  - Expanded automated contract test suite in `tests/test_version_metadata.py` and `tests/test_security_license_contract.py` verifying auto-assign and label-sync workflow attributes, labels.yml standard labels, expanded gitignore patterns, PEP 621 license files, and Level 1 SBOM recency. [G 2026-09-26]
+
 - RRULE Whitespace & Case Resilience and Negative Monthday Recurrence Support (SOFTWARE_BUGSEARCH Bugsweep) on 2026-09-23:
   - Hardened `parse_rrule` against leading/trailing whitespace and spaces surrounding delimiters (`;`, `=`), ensuring RRULE properties like `INTERVAL` and recurrence values are reliably parsed into integers instead of silently defaulting.
   - Added case-insensitive handling for `rrule:` prefix with optional whitespace in `parse_rrule`.

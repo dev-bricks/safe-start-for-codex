@@ -9,7 +9,7 @@ description = "Unofficial Windows startup gate for Codex Desktop automations and
 readme = "README.md"
 requires-python = ">=3.11"
 license = { file = "LICENSE" }
-license-files = ["LICENSE", "NOTICE", "THIRD_PARTY_LICENSES.md"]
+license-files = ["LICENSE", "NOTICE", "THIRD_PARTY_LICENSES.md", "THIRD_PARTY_LICENSES.txt"]
 authors = [
   { name = "Lukas Geiger" }
 ]
@@ -97,7 +97,7 @@ minversion = "7.0"
 testpaths = ["tests"]
 pythonpath = ["src"]
 python_files = ["test_*.py", "*_test.py", "*_smoke.py"]
-norecursedirs = [".git", ".pytest_cache", "__pycache__", "build", "dist"]
+norecursedirs = [".git", ".pytest_cache", "__pycache__", "build", "dist", ".pytest_temp", ".hypothesis", ".turbo", ".tox"]
 addopts = "-ra -v"
 
 [tool.ruff]

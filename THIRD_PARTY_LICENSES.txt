@@ -1,7 +1,7 @@
 # Third-Party Licenses
 
 Last checked: 2026-08-24 against PyPI project metadata.
-Audited: 2026-09-21 against Level 1 SBOM and runtime invariants.
+Audited: 2026-09-26 against Level 1 SBOM and runtime invariants.
 
 Scope: direct dependencies declared in `pyproject.toml` as well as transitive
 runtime and build helper packages. This file is a direct dependency inventory,

@@ -18,7 +18,7 @@ Inoffizielles Windows-Startup-Gate für Codex Desktop-Automatisierungen und gest
   <img src="https://img.shields.io/badge/sicherheit-Non--Elevation%20%7C%20User--Mode-informational.svg" alt="Sicherheitsmodus">
   <a href="SECURITY.md"><img src="https://img.shields.io/badge/sicherheits--SLA-48h%20%7C%205d%20triage-success.svg" alt="Sicherheits SLA"></a>
   <a href="THIRD_PARTY_LICENSES.md"><img src="https://img.shields.io/badge/drittanbieter--lizenzen-100%25%20gepr%C3%BCft-success.svg" alt="Drittanbieter-Lizenzen"></a>
-  <a href="CHANGELOG.md"><img src="https://img.shields.io/badge/Last--Checked-2026--09--21-informational.svg" alt="Audit-Aktualit%C3%A4t"></a>
+  <a href="CHANGELOG.md"><img src="https://img.shields.io/badge/Last--Checked-2026--09--26-informational.svg" alt="Audit-Aktualit%C3%A4t"></a>
   <a href="MARKETING-LOG.txt"><img src="https://img.shields.io/badge/marketing%20log-aktiv-informational.svg" alt="Marketing Log"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/Lizenz-MIT-yellow.svg" alt="Lizenz"></a>
   <a href="https://github.com/dev-bricks"><img src="https://img.shields.io/badge/ecosystem-dev--bricks-blue.svg" alt="dev-bricks"></a>
@@ -492,4 +492,4 @@ Soweit gesetzlich zulässig, gilt:
 4. **Sicherheits-SLA:** Sicherheitsrelevante Schwachstellen sind vertraulich über `security@open-bricks.org`, `security@dev-bricks.org` oder GitHub Security Advisories zu melden. Die Maintainer sichern eine verbindliche **48-Stunden-Reaktions-SLA** und eine **5-Werktage-Triage** zu (`INV-SLA-10`).
 
 ---
-*Zuletzt geprüft: 2026-09-21 durch MARKETING- & DESIGN-Audit.*
+*Zuletzt geprüft: 2026-09-26 durch Pfad-A-REPOSITORY-CLEANER-Audit.*

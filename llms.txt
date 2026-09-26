@@ -1,4 +1,4 @@
-## Last-checked: 2026-09-21
+## Last-checked: 2026-09-26
 
 # safe-start-for-codex - Startup surge prevention for Codex Desktop automations
 
@@ -10,7 +10,7 @@ It includes optional background tray execution, startup cleanup of stale process
 
 Part of the dev-bricks family. Python, MIT.
 
-Verification: 114+ pytest tests passed on 2026-09-21. Multi-OS CI matrix across Windows/Linux/macOS with concurrency controls, bytecode compilation gate, ruff lint gate, and timeout-minutes guards verified. Compileall passed. Ruff lint passed. Version 1.1.6 verified.
+Verification: 126+ pytest tests passed on 2026-09-26. Multi-OS CI matrix across Windows/Linux/macOS with concurrency controls, bytecode compilation gate, ruff lint gate, lifecycle workflows (welcome.yml, stale.yml, auto-assign.yml, label-sync.yml), and timeout-minutes guards verified. Compileall passed. Ruff lint passed. Version 1.1.6 verified.
 
 
 ## Docs

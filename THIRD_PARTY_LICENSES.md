@@ -1,7 +1,7 @@
 # Third-Party Licenses & Transparency Notice
 
 > **Project:** `dev-bricks/safe-start-for-codex`<br>
-> **Audited:** 2026-09-21<br>
+> **Audited:** 2026-09-26<br>
 > **Repository License:** [MIT License](LICENSE)<br>
 > **Attribution Notice:** [NOTICE](NOTICE)<br>
 > **Architecture & Privacy:** 100% Local-First, Zero-Egress, Unprivileged User-Mode (`RunAsInvoker`), Pure Python Standard Library Core

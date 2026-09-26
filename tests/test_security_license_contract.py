@@ -25,7 +25,7 @@ def test_dependency_versions_no_vulnerable_floors() -> None:
 def test_third_party_license_inventory_metadata() -> None:
     text = (ROOT / "THIRD_PARTY_LICENSES.txt").read_text(encoding="utf-8")
     assert "Last checked: 2026-08-24" in text
-    assert "Audited: 2026-09-21" in text
+    assert "Audited: 2026-09-26" in text
     assert "Safe Start for Codex is licensed under the MIT License" in text
     assert "NOTICE" in text
     assert "Transitive Build & Test Inventory" in text
@@ -165,3 +165,13 @@ def test_ci_workflows_concurrency_and_lint_gate() -> None:
     assert "timeout-minutes: 5" in welcome_yml
     assert "cancel-in-progress: true" in welcome_yml
     assert "actions/first-interaction@v3" in welcome_yml
+
+    auto_assign_yml = (ROOT / ".github" / "workflows" / "auto-assign.yml").read_text(encoding="utf-8")
+    assert "timeout-minutes: 5" in auto_assign_yml
+    assert "cancel-in-progress: true" in auto_assign_yml
+    assert "actions/github-script@v7" in auto_assign_yml
+
+    label_sync_yml = (ROOT / ".github" / "workflows" / "label-sync.yml").read_text(encoding="utf-8")
+    assert "timeout-minutes: 5" in label_sync_yml
+    assert "cancel-in-progress: true" in label_sync_yml
+    assert "EndBug/label-sync@v2" in label_sync_yml

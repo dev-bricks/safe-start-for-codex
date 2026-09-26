@@ -18,7 +18,7 @@ Unofficial Windows startup gate for Codex Desktop automations and catch-up pacin
   <img src="https://img.shields.io/badge/security-Non--Elevation%20%7C%20User--Mode-informational.svg" alt="Security Mode">
   <a href="SECURITY.md"><img src="https://img.shields.io/badge/security%20SLA-48h%20%7C%205d%20triage-success.svg" alt="Security SLA"></a>
   <a href="THIRD_PARTY_LICENSES.md"><img src="https://img.shields.io/badge/third--party%20licenses-100%25%20audited-success.svg" alt="Third-Party Licenses"></a>
-  <a href="CHANGELOG.md"><img src="https://img.shields.io/badge/Last--Checked-2026--09--21-informational.svg" alt="Audit Recency"></a>
+  <a href="CHANGELOG.md"><img src="https://img.shields.io/badge/Last--Checked-2026--09--26-informational.svg" alt="Audit Recency"></a>
   <a href="MARKETING-LOG.txt"><img src="https://img.shields.io/badge/marketing%20log-active-informational.svg" alt="Marketing Log"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License"></a>
   <a href="https://github.com/dev-bricks"><img src="https://img.shields.io/badge/ecosystem-dev--bricks-blue.svg" alt="dev-bricks"></a>
@@ -492,4 +492,4 @@ To the maximum extent permitted by applicable law:
 4. **Security Reporting Commitment:** Security vulnerabilities should be reported privately via `security@open-bricks.org`, `security@dev-bricks.org`, or GitHub Security Advisories. The maintainers commit to a binding **48-hour response SLA** and **5-business-day triage window** (`INV-SLA-10`).
 
 ---
-*Last checked: 2026-09-21 by MARKETING & DESIGN audit.*
+*Last checked: 2026-09-26 by Pfad A REPOSITORY CLEANER audit.*

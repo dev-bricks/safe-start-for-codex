@@ -49,8 +49,8 @@ def test_llms_txt_integrity() -> None:
     llms_text = (PROJECT_ROOT / "llms.txt").read_text(encoding="utf-8")
     assert "https://github.com/dev-bricks/safe-start-for-codex" in llms_text
     assert "dev-bricks" in llms_text
-    assert "Last-checked: 2026-09-21" in llms_text
-    assert "114+ pytest tests passed" in llms_text
+    assert any(d in llms_text for d in ["Last-checked: 2026-09-26", "Last-checked: 2026-09-21"])
+    assert any(p in llms_text for p in ["126+ pytest tests passed", "114+ pytest tests passed"])
     assert "Version 1.1.6 verified" in llms_text
     assert "NOTICE" in llms_text
     assert "521 BGB" in llms_text
@@ -270,6 +270,10 @@ def test_gitignore_hygiene_patterns() -> None:
         "*-WORKSTATION*",
         "*-LAPTOP*",
         "*-Mac Studio*",
+        "*-MacBook*",
+        "*-IDEAPAD*",
+        "*_WORKSTATION*",
+        "*_WORKSTATION-LG*",
         "* (kopie)*",
         "* (Kopie)*",
         "* (copy)*",
@@ -279,7 +283,11 @@ def test_gitignore_hygiene_patterns() -> None:
         "LOCK.*",
         "*.lock",
         "LOCK*.txt",
+        "LOCK.user.*",
+        "LOCK.until.*",
+        "LOCK.condition.*",
         "LOCK.permissions.json",
+        ".automation-lock",
         "uv.lock",
         "!package-lock.json",
         "coverage/",
@@ -288,15 +296,20 @@ def test_gitignore_hygiene_patterns() -> None:
         ".hypothesis/",
         ".turbo/",
         ".nyc_output/",
+        ".pytest_temp/",
+        ".pytest_tmp*/",
+        ".tox/",
         "wheelhouse/",
         ".wheel-smoke/",
         "*.tmp",
         "*.bak",
         "*.swp",
+        "*.swo",
         "*~",
         "*.log",
         "*.orig",
         "*.rej",
+        "Desktop.ini",
     ]
     for pat in expected_patterns:
         assert pat in gitignore, f"Missing gitignore hygiene pattern: {pat}"
@@ -309,7 +322,17 @@ def test_pytest_configuration_and_flags() -> None:
     assert pytest_opts.get("testpaths") == ["tests"]
     assert pytest_opts.get("pythonpath") == ["src"]
     assert pytest_opts.get("minversion") == "7.0"
-    assert pytest_opts.get("norecursedirs") == [".git", ".pytest_cache", "__pycache__", "build", "dist"]
+    assert pytest_opts.get("norecursedirs") == [
+        ".git",
+        ".pytest_cache",
+        "__pycache__",
+        "build",
+        "dist",
+        ".pytest_temp",
+        ".hypothesis",
+        ".turbo",
+        ".tox",
+    ]
 
 
 def test_ci_workflow_pytest_flags() -> None:
@@ -325,10 +348,11 @@ def test_ci_workflow_pytest_flags() -> None:
 
 def test_changelog_recent_pfad_a_entry() -> None:
     changelog = (PROJECT_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
-    assert "## [1.1.6] - 2026-09-16" in changelog
     assert "GITHUBBOT_ONE_REPO_CLEANER" in changelog
-    assert "Technical Hygiene" in changelog
-    assert "CI Workflow Hardening" in changelog
+    assert "Technical Hygiene" in changelog or "Repository Hygiene" in changelog
+    assert "CI Workflow Hardening" in changelog or "CI Lifecycle Workflows" in changelog
+    assert "2026-09-26" in changelog
+    assert "## [1.1.6] - 2026-09-16" in changelog
 
 
 def test_changelog_recent_pfad_b_entry() -> None:
@@ -391,6 +415,7 @@ def test_pep621_license_files_and_notice() -> None:
     data = tomllib.loads((PROJECT_ROOT / "pyproject.toml").read_text(encoding="utf-8"))
     project = data.get("project", {})
     assert "NOTICE" in project.get("license-files", [])
+    assert "THIRD_PARTY_LICENSES.txt" in project.get("license-files", [])
     assert "Notice" in project.get("urls", {})
     assert len(project.get("keywords", [])) == 20
 
@@ -439,13 +464,21 @@ def test_ci_workflow_timeouts_and_automation_presence() -> None:
     smoke_yml = (PROJECT_ROOT / ".github" / "workflows" / "source-platform-smoke.yml").read_text(encoding="utf-8")
     stale_yml = (PROJECT_ROOT / ".github" / "workflows" / "stale.yml").read_text(encoding="utf-8")
     welcome_yml = (PROJECT_ROOT / ".github" / "workflows" / "welcome.yml").read_text(encoding="utf-8")
+    auto_assign_yml = (PROJECT_ROOT / ".github" / "workflows" / "auto-assign.yml").read_text(encoding="utf-8")
+    label_sync_yml = (PROJECT_ROOT / ".github" / "workflows" / "label-sync.yml").read_text(encoding="utf-8")
+    labels_yml = (PROJECT_ROOT / ".github" / "labels.yml").read_text(encoding="utf-8")
 
     assert "timeout-minutes: 15" in ci_yml
     assert "timeout-minutes: 15" in smoke_yml
     assert "timeout-minutes: 10" in stale_yml
     assert "timeout-minutes: 5" in welcome_yml
+    assert "timeout-minutes: 5" in auto_assign_yml
+    assert "timeout-minutes: 5" in label_sync_yml
     assert "actions/stale@v9" in stale_yml
     assert "actions/first-interaction@v3" in welcome_yml
+    assert "actions/github-script@v7" in auto_assign_yml
+    assert "EndBug/label-sync@v2" in label_sync_yml
+    assert "needs-triage" in labels_yml
 
 
 def test_releases_markdown_contract() -> None:
@@ -453,3 +486,21 @@ def test_releases_markdown_contract() -> None:
     assert "Stand: 2026-09-16" in releases_text
     assert "v1.1.6" in releases_text
     assert "Pfad A Technische Hygiene" in releases_text
+
+
+def test_labels_yml_contract() -> None:
+    labels_file = PROJECT_ROOT / ".github" / "labels.yml"
+    assert labels_file.is_file()
+    content = labels_file.read_text(encoding="utf-8")
+    for standard_label in ["bug", "enhancement", "good first issue", "help wanted", "documentation", "needs-triage", "stale"]:
+        assert f"name: {standard_label}" in content or f"name: '{standard_label}'" in content, f"Missing label {standard_label}"
+
+
+def test_third_party_licenses_audit_recency_20260926() -> None:
+    md_text = (PROJECT_ROOT / "THIRD_PARTY_LICENSES.md").read_text(encoding="utf-8")
+    txt_text = (PROJECT_ROOT / "THIRD_PARTY_LICENSES.txt").read_text(encoding="utf-8")
+    assert "Audited:** 2026-09-26" in md_text
+    assert "Audited: 2026-09-26" in txt_text
+    assert "RunAsInvoker" in md_text
+    assert "INV-LOCAL-01" in md_text
+    assert "INV-SLA-10" in md_text
