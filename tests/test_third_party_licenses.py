@@ -37,6 +37,8 @@ def test_third_party_license_inventory_covers_direct_dependencies() -> None:
         "pystray",
         "pytest",
         "ruff",
+        "zombie-killer-tray",
+        "psutil",
     }
     for package_name in _declared_direct_dependencies():
         assert package_name in text
