@@ -4,6 +4,12 @@ All notable changes to this project are documented here.
 
 ## Unreleased
 
+- RRULE Monthly/Yearly BYDAY Positional Ordinals & TOML Parsing/Update Resilience (SOFTWARE_BUGSEARCH Bugsweep) on 2026-09-28:
+  - Fixed functional flaw in `_matches_frequency_day`: Monthly recurrence schedules utilizing `BYDAY` (e.g. `BYDAY=1MO`, `BYDAY=-1FR`, `BYDAY=MO`) without explicit `BYMONTHDAY` were erroneously defaulting to `start.day` as the required day-of-month, preventing execution except on rare months where the target weekday coincided with the event's creation day.
+  - Implemented `_parse_byday_token` and `_resolve_monthly_byday` supporting RFC 5545 ordinal prefixes (`+1`, `+2`, `-1`, `-2`, etc.) and resolving exact calendar days within any month/year for both `MONTHLY` and `YEARLY` recurrence rules.
+  - Hardened `quoted_value`, `int_value`, and `set_status` in `src/safe_start_for_codex/cli.py` against single-quoted strings (`status = 'ACTIVE'`) and trailing inline comments (`# ...`), preventing `load_automations` from skipping active automations and preventing `set_status` from corrupting `automation.toml` with duplicate status keys.
+  - Added hermetic regression test suite in `tests/test_bugsweep_rrule_monthly_byday_and_toml_resilience_20260928.py` (6 tests, 135/135 tests passing 100% green). [G 2026-09-28]
+
 - Repository Hygiene, CI Lifecycle Workflows, Lock Defense, PEP 621 Metadata & Contract Test Expansion (GITHUBBOT_ONE_REPO_CLEANER / Pfad A) on 2026-09-26:
   - Preserved strict version freeze discipline per T-20260920-167562623 (version 1.1.6 unchanged across all runtime manifests).
   - Deployed full CI/CD lifecycle workflow provisioning & hardening: added `.github/workflows/auto-assign.yml` (timeout-minutes: 5, concurrency cancel-in-progress: true, least-privilege `issues: write`, `pull-requests: write`, actions/github-script@v7) and `.github/workflows/label-sync.yml` (timeout-minutes: 5, concurrency cancel-in-progress: true, least-privilege `issues: write`, EndBug/label-sync@v2); added canonical `.github/labels.yml` with 11 standard governance labels per GOVERNANCE.md §4.2.

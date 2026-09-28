@@ -96,12 +96,12 @@ def _atomic_write_text(path: Path, text: str, *, newline: str | None = None) -> 
 
 
 def quoted_value(text: str, key: str) -> str:
-    match = re.search(rf'^{re.escape(key)}\s*=\s*"(.*?)"\s*$', text, re.MULTILINE)
+    match = re.search(rf"^{re.escape(key)}\s*=\s*[\"'](.*?)[\"'](?:\s*#.*)?$", text, re.MULTILINE)
     return match.group(1) if match else ""
 
 
 def int_value(text: str, key: str) -> int | None:
-    match = re.search(rf"^{re.escape(key)}\s*=\s*(\d+)\s*$", text, re.MULTILINE)
+    match = re.search(rf"^{re.escape(key)}\s*=\s*(\d+)(?:\s*#.*)?$", text, re.MULTILINE)
     return int(match.group(1)) if match else None
 
 
@@ -328,9 +328,9 @@ def set_status(path: Path, status: str) -> bool:
     if current == status:
         return False
 
-    if re.search(r'^status\s*=\s*".*?"\s*$', text, re.MULTILINE):
+    if re.search(r"^status\s*=\s*[\"'].*?[\"'](?:\s*#.*)?$", text, re.MULTILINE):
         text = re.sub(
-            r'^status\s*=\s*".*?"\s*$',
+            r"^status\s*=\s*[\"'].*?[\"'](?:\s*#.*)?$",
             f'status = "{status}"',
             text,
             count=1,
@@ -339,9 +339,9 @@ def set_status(path: Path, status: str) -> bool:
     else:
         text += f'\nstatus = "{status}"\n'
 
-    if re.search(r"^updated_at\s*=\s*\d+\s*$", text, re.MULTILINE):
+    if re.search(r"^updated_at\s*=\s*\d+(?:\s*#.*)?$", text, re.MULTILINE):
         text = re.sub(
-            r"^updated_at\s*=\s*\d+\s*$",
+            r"^updated_at\s*=\s*\d+(?:\s*#.*)?$",
             f"updated_at = {timestamp_ms()}",
             text,
             count=1,
@@ -872,6 +872,49 @@ def _normalise_day_token(value: object) -> str:
     return match.group(1) if match else ""
 
 
+def _parse_byday_token(value: object) -> tuple[int | None, int | None]:
+    token = str(value).strip().upper()
+    match = re.match(r"^([+-]?\d+)?([A-Z]{2})$", token)
+    if not match:
+        return None, None
+    ord_str, day_code = match.groups()
+    if day_code not in DAY_MAP:
+        return None, None
+    ord_val = int(ord_str) if ord_str else None
+    return ord_val, DAY_MAP[day_code]
+
+
+def _resolve_monthly_byday(
+    parts: dict[str, list[str] | str | int],
+    year: int,
+    month: int,
+) -> set[int]:
+    raw = parts.get("BYDAY")
+    if raw is None:
+        return set()
+    values = raw if isinstance(raw, list) else [raw]
+    days_in_month = calendar.monthrange(year, month)[1]
+    result: set[int] = set()
+
+    for item in values:
+        ord_val, target_wd = _parse_byday_token(item)
+        if target_wd is None:
+            continue
+        matching_days = [
+            d for d in range(1, days_in_month + 1)
+            if calendar.weekday(year, month, d) == target_wd
+        ]
+        if ord_val is None:
+            result.update(matching_days)
+        elif ord_val > 0:
+            if ord_val <= len(matching_days):
+                result.add(matching_days[ord_val - 1])
+        elif ord_val < 0:
+            if abs(ord_val) <= len(matching_days):
+                result.add(matching_days[ord_val])
+    return result
+
+
 def _raw_values(parts: dict[str, list[str] | str | int], key: str) -> list[object]:
     raw = parts.get(key)
     if raw is None:
@@ -948,23 +991,47 @@ def _matches_frequency_day(
         ):
             return False
         days_in_month = calendar.monthrange(current.year, current.month)[1]
-        allowed_days_set: set[int] = set()
-        for d in values_as_ints(parts, "BYMONTHDAY", [start.day]):
-            if d < 0:
-                resolved = days_in_month + 1 + d
-                if 1 <= resolved <= days_in_month:
-                    allowed_days_set.add(resolved)
+        has_byday = "BYDAY" in parts
+        has_bymonthday = "BYMONTHDAY" in parts
+
+        allowed_monthdays: set[int] = set()
+        if has_bymonthday or not has_byday:
+            for d in values_as_ints(parts, "BYMONTHDAY", [start.day]):
+                if d < 0:
+                    resolved = days_in_month + 1 + d
+                    if 1 <= resolved <= days_in_month:
+                        allowed_monthdays.add(resolved)
+                else:
+                    allowed_monthdays.add(d)
+
+        if has_byday:
+            byday_days = _resolve_monthly_byday(parts, current.year, current.month)
+            if has_bymonthday:
+                allowed_days_set = allowed_monthdays & byday_days
             else:
-                allowed_days_set.add(d)
+                allowed_days_set = byday_days
+        else:
+            allowed_days_set = allowed_monthdays
         return current.day in allowed_days_set
     if frequency == "YEARLY":
         years = current.year - start.year
-        return (
+        if not (
             years >= 0
             and years % interval == 0
             and current.month in _allowed_months(parts)
-            and current.day in _allowed_monthdays(parts)
-        )
+        ):
+            return False
+        has_byday = "BYDAY" in parts
+        has_bymonthday = "BYMONTHDAY" in parts
+        if has_byday:
+            byday_days = _resolve_monthly_byday(parts, current.year, current.month)
+            if has_bymonthday:
+                allowed_days_set = _allowed_monthdays(parts) & byday_days
+            else:
+                allowed_days_set = byday_days
+        else:
+            allowed_days_set = _allowed_monthdays(parts)
+        return current.day in allowed_days_set
     return False
 
 
