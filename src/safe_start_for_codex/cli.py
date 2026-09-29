@@ -1761,7 +1761,13 @@ def command_tray(args: argparse.Namespace) -> int:
         pystray.MenuItem("Restore original state", on_restore),
         pystray.MenuItem("Quit and restore", on_quit),
     )
-    icon = pystray.Icon("safe-start-for-codex", draw_fallback_icon(), "Safe Start for Codex", menu)
+    try:
+        from .app_icon_loader import load_app_icon_pil
+
+        tray_image = load_app_icon_pil(size=64)
+    except Exception:
+        tray_image = draw_fallback_icon()
+    icon = pystray.Icon("safe-start-for-codex", tray_image, "Safe Start for Codex", menu)
     icon_ref["icon"] = icon
 
     def worker() -> None:
