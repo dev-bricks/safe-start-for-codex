@@ -4,6 +4,13 @@ All notable changes to this project are documented here.
 
 ## Unreleased
 
+- Lightweight Local Web Dashboard & Real-Time Gating Visualizer (SOFTWARE_ENTWICKLUNG) on 2026-09-30:
+  - Implemented standalone local web dashboard module `src/safe_start_for_codex/dashboard.py` without external dependencies (pure Python standard library `http.server`, `urllib.parse`, `json`).
+  - Added real-time visualization of Safe Start gating state, live phase tracking, KPI summary metrics (total, active, paused, tool-paused, released), staged release queue progress bar, and overdue catch-up candidates.
+  - Implemented secure, localhost-bound REST API endpoints: `/api/status`, `/api/queue`, `/api/automations`, `/api/catchup`, and `/api/config` with strict HTTP security headers (`nosniff`, `DENY`, `Cache-Control`, and `Content-Security-Policy`).
+  - Registered CLI subcommand `safe-start-for-codex dashboard` with `--host`, `--port` (default: 8765), and `--open-browser` flags.
+  - Added comprehensive test suite in `tests/test_dashboard.py` verifying state reading, snapshot corruption tolerance, zero-egress frontend isolation, live HTTP endpoints, HEAD method support, 404 handling, and CLI parser registration (6 tests, 167/167 tests passing 100% green). [G 2026-09-30]
+
 - RRULE Monthly/Yearly BYDAY Positional Ordinals & TOML Parsing/Update Resilience (SOFTWARE_BUGSEARCH Bugsweep) on 2026-09-28:
   - Fixed functional flaw in `_matches_frequency_day`: Monthly recurrence schedules utilizing `BYDAY` (e.g. `BYDAY=1MO`, `BYDAY=-1FR`, `BYDAY=MO`) without explicit `BYMONTHDAY` were erroneously defaulting to `start.day` as the required day-of-month, preventing execution except on rare months where the target weekday coincided with the event's creation day.
   - Implemented `_parse_byday_token` and `_resolve_monthly_byday` supporting RFC 5545 ordinal prefixes (`+1`, `+2`, `-1`, `-2`, etc.) and resolving exact calendar days within any month/year for both `MONTHLY` and `YEARLY` recurrence rules.

@@ -340,6 +340,7 @@ safe-start-for-codex start
 | `safe-start-for-codex config-show` | Displays the active configuration and directory paths. |
 | `safe-start-for-codex catchup-plan` | Lists missed runs for infrequent/rare automations. |
 | `safe-start-for-codex restore-latest` | Emergency command: restores automations paused by the latest snapshot. |
+| `safe-start-for-codex dashboard` | Launches a lightweight local web dashboard for live monitoring. |
 
 ### Common Workflows
 

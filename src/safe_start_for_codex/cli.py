@@ -1981,6 +1981,16 @@ def command_backup(_: argparse.Namespace) -> int:
     return 0
 
 
+def command_dashboard(args: argparse.Namespace) -> int:
+    from .dashboard import run_dashboard
+
+    return run_dashboard(
+        host=args.host,
+        port=args.port,
+        open_browser=args.open_browser,
+    )
+
+
 def add_gate_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
         "--config",
@@ -2047,6 +2057,15 @@ def build_parser() -> argparse.ArgumentParser:
 
     backup = sub.add_parser("backup", help="Create a manual backup of automation TOML files.")
     backup.set_defaults(func=command_backup)
+
+    dashboard = sub.add_parser(
+        "dashboard",
+        help="Launch a lightweight local web dashboard for live monitoring of gating states and release queues.",
+    )
+    dashboard.add_argument("--host", default="127.0.0.1", help="Host interface to bind (default: 127.0.0.1).")
+    dashboard.add_argument("--port", type=int, default=8765, help="Port to listen on (default: 8765).")
+    dashboard.add_argument("--open-browser", action="store_true", help="Automatically open default web browser.")
+    dashboard.set_defaults(func=command_dashboard)
 
     zombie_killer_report = sub.add_parser(
         "zombie-killer-report",

@@ -75,6 +75,7 @@ def test_cli_subcommands_registered() -> None:
         "catchup-plan",
         "restore-latest",
         "backup",
+        "dashboard",
     ]:
         assert expected_cmd in choices, f"Missing CLI subcommand: {expected_cmd}"
 

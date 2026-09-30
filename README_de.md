@@ -340,6 +340,7 @@ safe-start-for-codex start
 | `safe-start-for-codex config-show` | Zeigt aktive Einstellungen und Pfade an. |
 | `safe-start-for-codex catchup-plan` | Listet verpasste Läufe seltener Automatisierungen auf. |
 | `safe-start-for-codex restore-latest` | Notfallbefehl: stellt den Zustand vor dem letzten Lauf wieder her. |
+| `safe-start-for-codex dashboard` | Startet ein leichtes lokales Web-Dashboard zur Live-Überwachung. |
 
 ### Typische Arbeitsabläufe
 
