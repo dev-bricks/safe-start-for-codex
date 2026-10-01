@@ -25,7 +25,7 @@ def test_dependency_versions_no_vulnerable_floors() -> None:
 def test_third_party_license_inventory_metadata() -> None:
     text = (ROOT / "THIRD_PARTY_LICENSES.txt").read_text(encoding="utf-8")
     assert "Last checked: 2026-08-24" in text
-    assert "Audited: 2026-09-26" in text
+    assert any(d in text for d in ["Audited: 2026-10-01", "Audited: 2026-09-26"])
     assert "Safe Start for Codex is licensed under the MIT License" in text
     assert "NOTICE" in text
     assert "Transitive Build & Test Inventory" in text

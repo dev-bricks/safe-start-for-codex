@@ -31,6 +31,7 @@ TODO.txt
 DONE.md
 BEFUNDE.md
 TASKPLAN_STATUS_*.md
+TASKPLAN_*.md
 
 # Local app state
 automation-safe-start/
@@ -69,6 +70,8 @@ token.json
 *-Mac Studio*
 *-MacBook*
 *-IDEAPAD*
+*-IDEAPAD-GEI*
+*-IDEAPAD-GEI.*
 * (kopie)*
 * (Kopie)*
 * (copy)*
@@ -83,6 +86,9 @@ LOCK*.txt
 LOCK.user.*
 LOCK.until.*
 LOCK.condition.*
+LOCK.dev.*
+LOCK.antigravity.*
+LOCK.bugsearch.*
 LOCK.permissions.json
 .automation-lock
 uv.lock
@@ -119,6 +125,7 @@ wheelhouse/
 desktop.ini
 Desktop.ini
 Thumbs.db
+ehthumbs.db
 .DS_Store
 
 # Claude Code plugin artifacts

@@ -103,6 +103,10 @@ Security = "https://github.com/dev-bricks/safe-start-for-codex/security/advisori
 Notice = "https://github.com/dev-bricks/safe-start-for-codex/blob/main/NOTICE"
 "Marketing Log" = "https://github.com/dev-bricks/safe-start-for-codex/blob/main/MARKETING-LOG.txt"
 "LLM Ready" = "https://github.com/dev-bricks/safe-start-for-codex/blob/main/llms.txt"
+Contributing = "https://github.com/dev-bricks/safe-start-for-codex/blob/main/CONTRIBUTING.md"
+"Plain-Text License" = "https://github.com/dev-bricks/safe-start-for-codex/blob/main/LICENSE"
+"Plain-Text Licenses" = "https://github.com/dev-bricks/safe-start-for-codex/blob/main/THIRD_PARTY_LICENSES.txt"
+"Level 1 SBOM" = "https://github.com/dev-bricks/safe-start-for-codex/blob/main/THIRD_PARTY_LICENSES.txt"
 
 
 [tool.hatch.metadata]

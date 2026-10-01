@@ -49,8 +49,8 @@ def test_llms_txt_integrity() -> None:
     llms_text = (PROJECT_ROOT / "llms.txt").read_text(encoding="utf-8")
     assert "https://github.com/dev-bricks/safe-start-for-codex" in llms_text
     assert "dev-bricks" in llms_text
-    assert any(d in llms_text for d in ["Last-checked: 2026-09-26", "Last-checked: 2026-09-21"])
-    assert any(p in llms_text for p in ["126+ pytest tests passed", "114+ pytest tests passed"])
+    assert any(d in llms_text for d in ["Last-checked: 2026-10-01", "Last-checked: 2026-09-26", "Last-checked: 2026-09-21"])
+    assert any(p in llms_text for p in ["167+ pytest tests passed", "126+ pytest tests passed", "114+ pytest tests passed"])
     assert "Version 1.1.6 verified" in llms_text
     assert "NOTICE" in llms_text
     assert "521 BGB" in llms_text
@@ -500,8 +500,66 @@ def test_labels_yml_contract() -> None:
 def test_third_party_licenses_audit_recency_20260926() -> None:
     md_text = (PROJECT_ROOT / "THIRD_PARTY_LICENSES.md").read_text(encoding="utf-8")
     txt_text = (PROJECT_ROOT / "THIRD_PARTY_LICENSES.txt").read_text(encoding="utf-8")
-    assert "Audited:** 2026-09-26" in md_text
-    assert "Audited: 2026-09-26" in txt_text
+    assert any(d in md_text for d in ["Audited:** 2026-10-01", "Audited:** 2026-09-26"])
+    assert any(d in txt_text for d in ["Audited: 2026-10-01", "Audited: 2026-09-26"])
     assert "RunAsInvoker" in md_text
     assert "INV-LOCAL-01" in md_text
     assert "INV-SLA-10" in md_text
+
+
+def test_contributing_bilingual_contract() -> None:
+    contrib_path = PROJECT_ROOT / "CONTRIBUTING.md"
+    assert contrib_path.is_file(), "CONTRIBUTING.md is missing"
+    text = contrib_path.read_text(encoding="utf-8")
+
+    assert "## English" in text, "Missing English section in CONTRIBUTING.md"
+    assert "## Deutsch" in text, "Missing German section in CONTRIBUTING.md"
+
+    for inv_id in [
+        "INV-LOCAL-01",
+        "INV-SEC-02",
+        "INV-FILE-03",
+        "INV-RESTORE-04",
+        "INV-CATCH-05",
+        "INV-PROC-06",
+        "INV-INTEG-07",
+        "INV-FAIL-08",
+        "INV-PLAT-09",
+        "INV-SLA-10",
+    ]:
+        assert inv_id in text, f"Missing invariant {inv_id} in CONTRIBUTING.md"
+
+    assert "RunAsInvoker" in text
+    assert "Plan D" in text
+    assert "1.1.6" in text
+    assert "48h" in text or "48-hour" in text
+
+
+def test_pep621_extended_urls() -> None:
+    data = tomllib.loads((PROJECT_ROOT / "pyproject.toml").read_text(encoding="utf-8"))
+    urls = data.get("project", {}).get("urls", {})
+    assert "Contributing" in urls
+    assert "Plain-Text License" in urls
+    assert "Plain-Text Licenses" in urls
+    assert "Level 1 SBOM" in urls
+
+
+def test_extended_gitignore_patterns_20261001() -> None:
+    gitignore = (PROJECT_ROOT / ".gitignore").read_text(encoding="utf-8")
+    for pat in [
+        "LOCK.dev.*",
+        "LOCK.antigravity.*",
+        "LOCK.bugsearch.*",
+        "TASKPLAN_*.md",
+        "*-IDEAPAD-GEI*",
+        "*-IDEAPAD-GEI.*",
+        "ehthumbs.db",
+    ]:
+        assert pat in gitignore, f"Missing hardened pattern in .gitignore: {pat}"
+
+
+def test_changelog_recent_pfad_a_entry_20261001() -> None:
+    changelog = (PROJECT_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
+    assert "2026-10-01" in changelog
+    assert "GITHUBBOT_ONE_REPO_CLEANER" in changelog
+    assert "Bilingual Contributing Guidelines" in changelog

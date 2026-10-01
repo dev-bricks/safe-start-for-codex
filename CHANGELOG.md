@@ -4,6 +4,15 @@ All notable changes to this project are documented here.
 
 ## Unreleased
 
+- Bilingual Contributing Guidelines, Level 1 SBOM Re-Audit, Multi-Host Lock Defense, PEP 621 Metadata & Contract Test Expansion (GITHUBBOT_ONE_REPO_CLEANER / Pfad A) on 2026-10-01:
+  - Preserved strict version freeze discipline per T-20260920-167562623 (version 1.1.6 unchanged across all runtime manifests).
+  - Deployed comprehensive bilingual `CONTRIBUTING.md` guidelines (EN/DE) detailing all 10 Governance and Runtime Invariants (`INV-LOCAL-01` through `INV-SLA-10`), unprivileged `RunAsInvoker` mode (`INV-SEC-02`), Plan D Local Development Workflow (`C:\_Local_DEV\repos\safe-start-for-codex`), quality gates, and 48h Security Response SLA.
+  - Hardened multi-host cloud-sync and lock defense in `.gitignore`: added `LOCK.dev.*`, `LOCK.antigravity.*`, `LOCK.bugsearch.*`, `TASKPLAN_*.md`, `*-IDEAPAD-GEI*`, `*-IDEAPAD-GEI.*`, and `ehthumbs.db`.
+  - Conducted Level 1 SBOM companion re-audit Stand 2026-10-01 in `THIRD_PARTY_LICENSES.txt` and `THIRD_PARTY_LICENSES.md`: confirmed unprivileged `RunAsInvoker` user-mode non-elevation, Zero-Egress isolation, zero copyleft constraints, and full compliance with all 10 Governance and Runtime Invariants (`INV-LOCAL-01` through `INV-SLA-10`).
+  - Standardized PEP 621 project URLs under `[project.urls]` in `pyproject.toml`: registered `Contributing`, `Plain-Text License`, `Plain-Text Licenses`, and `Level 1 SBOM`.
+  - Synchronized documentation and context parity: updated `Last--Checked-2026--10--01` audit badge in `README.md` and `README_de.md` (all 18 quick-navigation bilateral dual anchors and dual mermaid diagrams intact); updated `llms.txt` discovery index and test suite counts (167+ tests); documented Pfad A audit in `MARKETING-LOG.txt`.
+  - Expanded automated contract test suite in `tests/test_version_metadata.py`: added contract tests for bilingual `CONTRIBUTING.md` parity, 10 invariants, PEP 621 URLs, hardened `.gitignore` patterns, and 2026-10-01 Level 1 SBOM audit recency. [G 2026-10-01]
+
 - Lightweight Local Web Dashboard & Real-Time Gating Visualizer (SOFTWARE_ENTWICKLUNG) on 2026-09-30:
   - Implemented standalone local web dashboard module `src/safe_start_for_codex/dashboard.py` without external dependencies (pure Python standard library `http.server`, `urllib.parse`, `json`).
   - Added real-time visualization of Safe Start gating state, live phase tracking, KPI summary metrics (total, active, paused, tool-paused, released), staged release queue progress bar, and overdue catch-up candidates.

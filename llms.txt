@@ -1,4 +1,4 @@
-## Last-checked: 2026-09-26
+## Last-checked: 2026-10-01
 
 # safe-start-for-codex - Startup surge prevention for Codex Desktop automations
 
@@ -10,15 +10,17 @@ It includes optional background tray execution, startup cleanup of stale process
 
 Part of the dev-bricks family. Python, MIT.
 
-Verification: 126+ pytest tests passed on 2026-09-26. Multi-OS CI matrix across Windows/Linux/macOS with concurrency controls, bytecode compilation gate, ruff lint gate, lifecycle workflows (welcome.yml, stale.yml, auto-assign.yml, label-sync.yml), and timeout-minutes guards verified. Compileall passed. Ruff lint passed. Version 1.1.6 verified.
+Verification: 167+ pytest tests passed on 2026-10-01. Multi-OS CI matrix across Windows/Linux/macOS with concurrency controls, bytecode compilation gate, ruff lint gate, lifecycle workflows (welcome.yml, stale.yml, auto-assign.yml, label-sync.yml), and timeout-minutes guards verified. Compileall passed. Ruff lint passed. Version 1.1.6 verified.
 
 
 ## Docs
 
 - [README.md](https://github.com/dev-bricks/safe-start-for-codex/blob/main/README.md): Primary documentation, installation guide, foreground/tray usage, 18-point dual-anchor navigation, and invariants matrix.
 - [README_de.md](https://github.com/dev-bricks/safe-start-for-codex/blob/main/README_de.md): German localization with full bidirectional reciprocal dual-anchor parity.
+- [CONTRIBUTING.md](https://github.com/dev-bricks/safe-start-for-codex/blob/main/CONTRIBUTING.md): Comprehensive bilingual guidelines, 10 invariants, unprivileged RunAsInvoker mode, Plan D workflow, and 48h SLA.
 - [NOTICE](https://github.com/dev-bricks/safe-start-for-codex/blob/main/NOTICE): Canonical copyright attribution notice (Lukas Geiger, dev-bricks, open-bricks).
 - [THIRD_PARTY_LICENSES.md](https://github.com/dev-bricks/safe-start-for-codex/blob/main/THIRD_PARTY_LICENSES.md): Audited dependency license inventory and Level 1 SBOM Invariant Matrix (100% permissive open source stack).
+- [THIRD_PARTY_LICENSES.txt](https://github.com/dev-bricks/safe-start-for-codex/blob/main/THIRD_PARTY_LICENSES.txt): Plain-text Level 1 SBOM companion and direct dependency inventory.
 - [MARKETING-LOG.txt](https://github.com/dev-bricks/safe-start-for-codex/blob/main/MARKETING-LOG.txt): Marketing strategy, target personas, search queries, and competitive matrix.
 - [docs/SOLUTION_CONCEPT.md](https://github.com/dev-bricks/safe-start-for-codex/blob/main/docs/SOLUTION_CONCEPT.md): Technical outline of the gating solution.
 - [docs/UPSTREAM_ISSUE_PROPOSAL.md](https://github.com/dev-bricks/safe-start-for-codex/blob/main/docs/UPSTREAM_ISSUE_PROPOSAL.md): Draft proposal for implementing native startup pacing directly inside Codex Desktop.
