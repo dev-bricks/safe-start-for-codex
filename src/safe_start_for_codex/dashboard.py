@@ -73,8 +73,11 @@ def get_dashboard_data(state_dir_path: Path | None = None) -> dict[str, Any]:
         live_error = str(exc)
 
     # Merge snapshot items and live items
+    raw_snapshot_items = snapshot_data.get("items")
+    snapshot_items_list = raw_snapshot_items if isinstance(raw_snapshot_items, list) else []
+
     items_by_id: dict[str, dict[str, Any]] = {}
-    for it in snapshot_data.get("items", []):
+    for it in snapshot_items_list:
         if isinstance(it, dict) and "id" in it:
             items_by_id[it["id"]] = dict(it)
     for it in live_items:
@@ -89,10 +92,10 @@ def get_dashboard_data(state_dir_path: Path | None = None) -> dict[str, Any]:
     disabled_count = sum(1 for it in items_to_report if isinstance(it, dict) and str(it.get("status", "")).upper() == "DISABLED")
     total_count = len(items_to_report)
 
-    tool_paused_ids = snapshot_data.get("tool_paused_ids", [])
+    tool_paused_ids = snapshot_data.get("tool_paused_ids")
     if not isinstance(tool_paused_ids, list):
         tool_paused_ids = []
-    released_ids = snapshot_data.get("released_ids", [])
+    released_ids = snapshot_data.get("released_ids")
     if not isinstance(released_ids, list):
         released_ids = []
 
@@ -107,8 +110,25 @@ def get_dashboard_data(state_dir_path: Path | None = None) -> dict[str, Any]:
         except Exception:
             pass
 
-    # Config settings
-    settings, config_path, config_exists = read_gate_config()
+    catchup_candidates = catchup_data.get("candidates")
+    if not isinstance(catchup_candidates, list):
+        catchup_candidates = []
+
+    catchup_eligible = catchup_data.get("eligible_ids")
+    if not isinstance(catchup_eligible, list):
+        catchup_eligible = []
+
+    # Config settings - resilient against malformed/corrupt configs without SystemExit
+    config_error = ""
+    try:
+        settings, config_path, config_exists = read_gate_config()
+    except (SystemExit, Exception) as exc:
+        from .cli import GateSettings, default_config_path
+
+        settings = GateSettings()
+        config_path = default_config_path()
+        config_exists = False
+        config_error = str(exc)
 
     phase = snapshot_data.get("phase", "idle")
     if not snapshot_exists:
@@ -137,16 +157,17 @@ def get_dashboard_data(state_dir_path: Path | None = None) -> dict[str, Any]:
         "released_ids": released_ids,
         "items": items_to_report,
         "catchup": {
-            "eligible_ids": catchup_data.get("eligible_ids", []),
-            "candidates_count": len(catchup_data.get("candidates", [])),
-            "candidates": catchup_data.get("candidates", []),
-            "history_source": catchup_data.get("history_source", ""),
+            "eligible_ids": catchup_eligible,
+            "candidates_count": len(catchup_candidates),
+            "candidates": catchup_candidates,
+            "history_source": str(catchup_data.get("history_source") or ""),
             "created_at": catchup_data.get("created_at"),
         },
         "config": {
             "path": str(config_path),
             "exists": config_exists,
             "settings": settings.to_dict(),
+            **({"error": config_error} if config_error else {}),
         },
         "live_error": live_error,
     }
@@ -794,76 +815,114 @@ class DashboardRequestHandler(http.server.BaseHTTPRequestHandler):
         )
         self.end_headers()
 
-    def do_HEAD(self) -> None:
+    def _normalize_path(self) -> str:
         parsed = urllib.parse.urlparse(self.path)
-        path = parsed.path
-        if path in ("/", "/index.html"):
+        path = parsed.path.strip()
+        if path != "/" and path.endswith("/"):
+            path = path.rstrip("/")
+        return path
+
+    def _state_dir(self) -> Path | None:
+        return getattr(self.server, "state_dir_path", None)
+
+    def do_HEAD(self) -> None:
+        path = self._normalize_path()
+        if path in ("/", "/index.html", "/index.htm"):
             self._send_security_headers("text/html; charset=utf-8")
-        elif path.startswith("/api/"):
+        elif path in ("/api/status", "/api/queue", "/api/automations", "/api/catchup", "/api/config"):
             self._send_security_headers("application/json; charset=utf-8")
         elif path == "/favicon.ico":
             self._send_security_headers("image/svg+xml")
         else:
-            self._send_security_headers("text/plain; charset=utf-8", 404)
+            self._send_security_headers("application/json; charset=utf-8", 404)
 
     def do_GET(self) -> None:
-        parsed = urllib.parse.urlparse(self.path)
-        path = parsed.path
+        path = self._normalize_path()
+        state_dir = self._state_dir()
 
-        if path in ("/", "/index.html"):
+        if path in ("/", "/index.html", "/index.htm"):
             body = get_dashboard_html().encode("utf-8")
             self._send_security_headers("text/html; charset=utf-8")
-            self.wfile.write(body)
+            try:
+                self.wfile.write(body)
+            except (ConnectionError, BrokenPipeError, OSError):
+                pass
             return
 
         if path == "/api/status":
-            data = get_dashboard_data(self.server.state_dir_path)
+            data = get_dashboard_data(state_dir)
             body = json.dumps(data, ensure_ascii=False, indent=2).encode("utf-8")
             self._send_security_headers("application/json; charset=utf-8")
-            self.wfile.write(body)
+            try:
+                self.wfile.write(body)
+            except (ConnectionError, BrokenPipeError, OSError):
+                pass
             return
 
         if path == "/api/queue":
-            data = get_dashboard_data(self.server.state_dir_path)
+            data = get_dashboard_data(state_dir)
+            tool_paused_ids = data.get("tool_paused_ids")
+            tool_paused_list = list(tool_paused_ids) if isinstance(tool_paused_ids, list) else []
+            tool_paused_set = set(tool_paused_list)
+            raw_items = data.get("items")
+            items_list = raw_items if isinstance(raw_items, list) else []
             queue_payload = {
                 "phase": data.get("phase"),
                 "run_id": data.get("run_id"),
-                "counts": data.get("counts"),
-                "tool_paused_ids": data.get("tool_paused_ids"),
-                "released_ids": data.get("released_ids"),
+                "counts": data.get("counts") if isinstance(data.get("counts"), dict) else {},
+                "tool_paused_ids": tool_paused_list,
+                "released_ids": data.get("released_ids") if isinstance(data.get("released_ids"), list) else [],
                 "items": [
-                    it for it in data.get("items", [])
-                    if isinstance(it, dict) and it.get("id") in set(data.get("tool_paused_ids", []))
+                    it for it in items_list
+                    if isinstance(it, dict) and it.get("id") in tool_paused_set
                 ],
             }
             body = json.dumps(queue_payload, ensure_ascii=False, indent=2).encode("utf-8")
             self._send_security_headers("application/json; charset=utf-8")
-            self.wfile.write(body)
+            try:
+                self.wfile.write(body)
+            except (ConnectionError, BrokenPipeError, OSError):
+                pass
             return
 
         if path == "/api/automations":
-            data = get_dashboard_data(self.server.state_dir_path)
+            data = get_dashboard_data(state_dir)
+            counts = data.get("counts")
+            total = counts.get("total", 0) if isinstance(counts, dict) else 0
+            raw_items = data.get("items")
+            items_list = raw_items if isinstance(raw_items, list) else []
             automations_payload = {
-                "total": data.get("counts", {}).get("total", 0),
-                "items": data.get("items", []),
+                "total": total,
+                "items": items_list,
             }
             body = json.dumps(automations_payload, ensure_ascii=False, indent=2).encode("utf-8")
             self._send_security_headers("application/json; charset=utf-8")
-            self.wfile.write(body)
+            try:
+                self.wfile.write(body)
+            except (ConnectionError, BrokenPipeError, OSError):
+                pass
             return
 
         if path == "/api/catchup":
-            data = get_dashboard_data(self.server.state_dir_path)
-            body = json.dumps(data.get("catchup", {}), ensure_ascii=False, indent=2).encode("utf-8")
+            data = get_dashboard_data(state_dir)
+            catchup_payload = data.get("catchup") if isinstance(data.get("catchup"), dict) else {}
+            body = json.dumps(catchup_payload, ensure_ascii=False, indent=2).encode("utf-8")
             self._send_security_headers("application/json; charset=utf-8")
-            self.wfile.write(body)
+            try:
+                self.wfile.write(body)
+            except (ConnectionError, BrokenPipeError, OSError):
+                pass
             return
 
         if path == "/api/config":
-            data = get_dashboard_data(self.server.state_dir_path)
-            body = json.dumps(data.get("config", {}), ensure_ascii=False, indent=2).encode("utf-8")
+            data = get_dashboard_data(state_dir)
+            config_payload = data.get("config") if isinstance(data.get("config"), dict) else {}
+            body = json.dumps(config_payload, ensure_ascii=False, indent=2).encode("utf-8")
             self._send_security_headers("application/json; charset=utf-8")
-            self.wfile.write(body)
+            try:
+                self.wfile.write(body)
+            except (ConnectionError, BrokenPipeError, OSError):
+                pass
             return
 
         if path == "/favicon.ico":
@@ -874,12 +933,18 @@ class DashboardRequestHandler(http.server.BaseHTTPRequestHandler):
                 '</svg>'
             ).encode("utf-8")
             self._send_security_headers("image/svg+xml")
-            self.wfile.write(svg)
+            try:
+                self.wfile.write(svg)
+            except (ConnectionError, BrokenPipeError, OSError):
+                pass
             return
 
         # 404 Fallback
         self._send_security_headers("application/json; charset=utf-8", 404)
-        self.wfile.write(b'{"error": "Not Found", "status": 404}')
+        try:
+            self.wfile.write(b'{"error": "Not Found", "status": 404}')
+        except (ConnectionError, BrokenPipeError, OSError):
+            pass
 
 
 class DashboardServer(http.server.ThreadingHTTPServer):

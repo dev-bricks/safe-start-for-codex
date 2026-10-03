@@ -4,6 +4,15 @@ All notable changes to this project are documented here.
 
 ## Unreleased
 
+- Web-Dashboard HTTP/API Resilience, Malformed Snapshot/Config Protection & Zombie-Killer Process Verification (SOFTWARE_BUGSEARCH Bugsweep) on 2026-10-03:
+  - Hardened `get_dashboard_data` in `src/safe_start_for_codex/dashboard.py` against `None`/malformed snapshot items, catch-up candidate lists, and missing eligible ID arrays, preventing unhandled `TypeError` exceptions.
+  - Wrapped `read_gate_config()` in `get_dashboard_data` with resilient `(SystemExit, Exception)` error handling, preventing corrupted or invalid `safe-start-gate.json` configuration files from triggering fatal `SystemExit` aborts in the long-running web dashboard server.
+  - Fixed RFC 9110 method parity between `do_HEAD` and `do_GET` in `DashboardRequestHandler`: ensured unknown endpoints return HTTP 404 consistently instead of falsely returning HTTP 200 on `HEAD`.
+  - Added URL path normalization and trailing-slash tolerance across dashboard endpoints (`/api/status/`, `/api/queue/`, `/api/automations/`, `/api/catchup/`, `/api/config/`).
+  - Decoupled `DashboardRequestHandler` from rigid server class assumptions: safely accesses `state_dir_path` via `getattr`, preventing `AttributeError` when run within standard `http.server` instances, and protected socket responses against abrupt client disconnection errors.
+  - Hardened `src/safe_start_for_codex/zombie_killer_integration.py`: `_read_watch_pid_file` now enforces dictionary structure on JSON payloads, preventing `AttributeError` on non-dict inputs; `_verify_watch_process` validates positive PIDs (`pid > 0`), guarding against built-in `ValueError` crashes from `psutil.Process`; `build_zombie_killer_status` safely coerces numeric audit log fields (`_safe_float`, `_safe_int`) avoiding `TypeError` and `ValueError` on malformed cycle entries.
+  - Added hermetic regression test suite in `tests/test_bugsweep_dashboard_and_zombie_killer_resilience_20261003.py` (10 tests, 181/181 tests passing 100% green). [G 2026-10-03]
+
 - Bilingual Contributing Guidelines, Level 1 SBOM Re-Audit, Multi-Host Lock Defense, PEP 621 Metadata & Contract Test Expansion (GITHUBBOT_ONE_REPO_CLEANER / Pfad A) on 2026-10-01:
   - Preserved strict version freeze discipline per T-20260920-167562623 (version 1.1.6 unchanged across all runtime manifests).
   - Deployed comprehensive bilingual `CONTRIBUTING.md` guidelines (EN/DE) detailing all 10 Governance and Runtime Invariants (`INV-LOCAL-01` through `INV-SLA-10`), unprivileged `RunAsInvoker` mode (`INV-SEC-02`), Plan D Local Development Workflow (`C:\_Local_DEV\repos\safe-start-for-codex`), quality gates, and 48h Security Response SLA.
