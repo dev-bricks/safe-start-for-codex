@@ -11,14 +11,14 @@ Unofficial Windows startup gate for Codex Desktop automations and catch-up pacin
   <a href="NOTICE"><img src="https://img.shields.io/badge/Attribution-NOTICE-blue.svg" alt="Attribution NOTICE"></a>
   <a href="https://github.com/dev-bricks/safe-start-for-codex/actions/workflows/ci.yml"><img src="https://img.shields.io/badge/CI-GitHub%20Actions-brightgreen.svg" alt="CI Status"></a>
   <a href="https://github.com/dev-bricks/safe-start-for-codex/actions/workflows/source-platform-smoke.yml"><img src="https://img.shields.io/badge/Smoke-macOS%20%7C%20Linux-brightgreen.svg" alt="Platform Smoke"></a>
-  <a href="tests/"><img src="https://img.shields.io/badge/pytest-passed%20%7C%20100%25-brightgreen.svg" alt="Pytest Status"></a>
+  <a href="tests/"><img src="https://img.shields.io/badge/pytest-186%20passed%20%7C%20100%25%20green-brightgreen.svg" alt="Pytest Status"></a>
   <img src="https://img.shields.io/badge/python-3.11%20%7C%203.12%20%7C%203.13-blue.svg" alt="Python Versions">
   <img src="https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey.svg" alt="Platforms">
   <img src="https://img.shields.io/badge/architecture-100%25%20Local--First%20%7C%20Zero--Egress-success.svg" alt="Local-First Architecture">
   <img src="https://img.shields.io/badge/security-Non--Elevation%20%7C%20User--Mode-informational.svg" alt="Security Mode">
   <a href="SECURITY.md"><img src="https://img.shields.io/badge/security%20SLA-48h%20%7C%205d%20triage-success.svg" alt="Security SLA"></a>
-  <a href="THIRD_PARTY_LICENSES.md"><img src="https://img.shields.io/badge/third--party%20licenses-100%25%20audited-success.svg" alt="Third-Party Licenses"></a>
-  <a href="CHANGELOG.md"><img src="https://img.shields.io/badge/Last--Checked-2026--10--01-informational.svg" alt="Audit Recency"></a>
+  <a href="THIRD_PARTY_LICENSES.md"><img src="https://img.shields.io/badge/third--party%20licenses-100%25%20audited%20(2026--10--08)-success.svg" alt="Third-Party Licenses"></a>
+  <a href="CHANGELOG.md"><img src="https://img.shields.io/badge/Last--Checked-2026--10--08-informational.svg" alt="Audit Recency"></a>
   <a href="MARKETING-LOG.txt"><img src="https://img.shields.io/badge/marketing%20log-active-informational.svg" alt="Marketing Log"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License"></a>
   <a href="https://github.com/dev-bricks"><img src="https://img.shields.io/badge/ecosystem-dev--bricks-blue.svg" alt="dev-bricks"></a>
@@ -114,6 +114,50 @@ graph TB
     ProcessGuard --> CodexApp
     GatingScheduler --> AutomationConfigs
     CatchUp --> GatingScheduler
+```
+
+### Visual Four-View Architectural Topology
+
+```text
++==================================================================================================+
+|                        SAFE START FOR CODEX: FOUR-VIEW TOPOLOGY                                  |
++==================================================================================================+
+|                                                                                                  |
+|  [VIEW 1: CLI, TRAY INTERFACES & AUTOMATION SCANNER ANATOMY]                                     |
+|  +--------------------------------------------------------------------------------------------+  |
+|  | • CLI & Subcommands: start, dry-run, backup, status, dashboard, catchup-plan, restore-latest  |  |
+|  | • Windows System Tray: Minimized notification tray worker with live state icon and tooltips |  |
+|  | • Automation Scanner: Parses active automation TOML manifests (~/.codex/automations)      |  |
+|  | • AI Agent Interface: Machine-readable schema introspection via llms.txt context index      |  |
+|  +--------------------------------------------------------------------------------------------+  |
+|                                                |                                                 |
+|                                                v                                                 |
+|  [VIEW 2: SNAPSHOT STAGING & STAGGERED GATING PIPELINE]                                          |
+|  +--------------------------------------------------------------------------------------------+  |
+|  | • Pre-Boot Gating Engine: Atomic pause mutation before Codex Desktop process initialization|  |
+|  | • Snapshot & Backup Manager: Full directory backup staging in ~/.codex/automation-safe-start|  |
+|  | • Selective Restoration: Resets only session-paused items; retains pre-disabled automations |  |
+|  | • Staggered Queue Scheduler: Immediate future lead batch release followed by interval batches|  |
+|  +--------------------------------------------------------------------------------------------+  |
+|                                                |                                                 |
+|                                                v                                                 |
+|  [VIEW 3: PROCESS SUPERVISION, ZOMBIE DEFENSE & CATCH-UP PLANNER]                                |
+|  +--------------------------------------------------------------------------------------------+  |
+|  | • Process Family Guard: Heuristic inspection of ChatGPT.exe / codex.exe process trees      |  |
+|  | • Zombie Leftover Defense: Non-destructive termination of orphaned headless background tasks |  |
+|  | • Conservative Catch-Up Planner: Read-only miss analysis for rare schedules (INV-CATCH-05) |  |
+|  | • Local Dashboard Server: Zero-dependency live monitoring HTTP endpoint (:8765)             |  |
+|  +--------------------------------------------------------------------------------------------+  |
+|                                                |                                                 |
+|                                                v                                                 |
+|  [VIEW 4: RUNASINVOKER NON-ELEVATION, ZERO-EGRESS & AUDIT INTEGRITY]                             |
+|  +--------------------------------------------------------------------------------------------+  |
+|  | • 100% Local-First / Zero-Egress Boundary: Zero telemetry, zero analytics beacons (INV-LOCAL)|  |
+|  | • RunAsInvoker User Mode: Non-elevated execution without UAC or admin privileges (INV-SEC)  |  |
+|  | • Level 1 SBOM Plain-Text Companion: THIRD_PARTY_LICENSES.txt Stand 2026-10-08 re-audited  |  |
+|  | • Multi-Host Cloud-Sync Defense: Hardened .gitignore rules against cloud conflicts & locks  |  |
+|  +--------------------------------------------------------------------------------------------+  |
++==================================================================================================+
 ```
 
 ---

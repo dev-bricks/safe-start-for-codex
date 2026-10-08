@@ -49,8 +49,8 @@ def test_llms_txt_integrity() -> None:
     llms_text = (PROJECT_ROOT / "llms.txt").read_text(encoding="utf-8")
     assert "https://github.com/dev-bricks/safe-start-for-codex" in llms_text
     assert "dev-bricks" in llms_text
-    assert any(d in llms_text for d in ["Last-checked: 2026-10-01", "Last-checked: 2026-09-26", "Last-checked: 2026-09-21"])
-    assert any(p in llms_text for p in ["167+ pytest tests passed", "126+ pytest tests passed", "114+ pytest tests passed"])
+    assert any(d in llms_text for d in ["Last-checked: 2026-10-08", "Last-checked: 2026-10-01", "Last-checked: 2026-09-26", "Last-checked: 2026-09-21"])
+    assert any(p in llms_text for p in ["186+ pytest tests passed", "185+ pytest tests passed", "181+ pytest tests passed", "167+ pytest tests passed", "126+ pytest tests passed", "114+ pytest tests passed"])
     assert "Version 1.1.6 verified" in llms_text
     assert "NOTICE" in llms_text
     assert "521 BGB" in llms_text
@@ -500,8 +500,8 @@ def test_labels_yml_contract() -> None:
 def test_third_party_licenses_audit_recency_20260926() -> None:
     md_text = (PROJECT_ROOT / "THIRD_PARTY_LICENSES.md").read_text(encoding="utf-8")
     txt_text = (PROJECT_ROOT / "THIRD_PARTY_LICENSES.txt").read_text(encoding="utf-8")
-    assert any(d in md_text for d in ["Audited:** 2026-10-01", "Audited:** 2026-09-26"])
-    assert any(d in txt_text for d in ["Audited: 2026-10-01", "Audited: 2026-09-26"])
+    assert any(d in md_text for d in ["Audited:** 2026-10-08", "Audited:** 2026-10-01", "Audited:** 2026-09-26"])
+    assert any(d in txt_text for d in ["Audited: 2026-10-08", "Audited: 2026-10-01", "Audited: 2026-09-26"])
     assert "RunAsInvoker" in md_text
     assert "INV-LOCAL-01" in md_text
     assert "INV-SLA-10" in md_text
@@ -563,3 +563,60 @@ def test_changelog_recent_pfad_a_entry_20261001() -> None:
     assert "2026-10-01" in changelog
     assert "GITHUBBOT_ONE_REPO_CLEANER" in changelog
     assert "Bilingual Contributing Guidelines" in changelog
+
+
+def test_ascii_four_view_topology_bilateral_parity() -> None:
+    readme_en = (PROJECT_ROOT / "README.md").read_text(encoding="utf-8")
+    readme_de = (PROJECT_ROOT / "README_de.md").read_text(encoding="utf-8")
+
+    assert "Visual Four-View Architectural Topology" in readme_en
+    assert "Visuelle Vier-Sichten-Architekturtopologie" in readme_de
+
+    # English Views
+    assert "[VIEW 1: CLI, TRAY INTERFACES & AUTOMATION SCANNER ANATOMY]" in readme_en
+    assert "[VIEW 2: SNAPSHOT STAGING & STAGGERED GATING PIPELINE]" in readme_en
+    assert "[VIEW 3: PROCESS SUPERVISION, ZOMBIE DEFENSE & CATCH-UP PLANNER]" in readme_en
+    assert "[VIEW 4: RUNASINVOKER NON-ELEVATION, ZERO-EGRESS & AUDIT INTEGRITY]" in readme_en
+
+    # German Views
+    assert "[SICHT 1: CLI, TRAY-OBERFLÄCHEN & AUTOMATIONS-SCANNER TOPOLOGIE]" in readme_de
+    assert "[SICHT 2: SNAPSHOT-STAGING & GESTAFFELTE FREIGABE-PIPELINE]" in readme_de
+    assert "[SICHT 3: PROZESS-SUPERVISION, ZOMBIE-ABWEHR & CATCH-UP PLANER]" in readme_de
+    assert "[SICHT 4: RUNASINVOKER RUNTIME-ISOLATION, ZERO-EGRESS & AUDIT-TRAILS]" in readme_de
+
+
+def test_level_1_sbom_currency_20261008() -> None:
+    md_text = (PROJECT_ROOT / "THIRD_PARTY_LICENSES.md").read_text(encoding="utf-8")
+    txt_text = (PROJECT_ROOT / "THIRD_PARTY_LICENSES.txt").read_text(encoding="utf-8")
+    assert "Audited:** 2026-10-08" in md_text
+    assert "Audited: 2026-10-08" in txt_text
+
+
+def test_marketing_log_section_pfad_b_20261008() -> None:
+    marketing_log = (PROJECT_ROOT / "MARKETING-LOG.txt").read_text(encoding="utf-8")
+    assert "2026-10-08" in marketing_log
+    assert "GITHUBBOT_ONE_REPO_MARKETING_AND_DESIGN" in marketing_log
+    assert "PFAD_B_UPGRADE" in marketing_log
+    assert "8. PFAD B MARKETING, DESIGN & DISCOVERABILITY REVIEW (STAND 2026-10-08)" in marketing_log
+    assert "REC-20261008-01" in marketing_log
+    assert "REC-20261008-02" in marketing_log
+    assert "REC-20261008-03" in marketing_log
+
+
+def test_badges_recency_and_test_count_20261008() -> None:
+    readme_en = (PROJECT_ROOT / "README.md").read_text(encoding="utf-8")
+    readme_de = (PROJECT_ROOT / "README_de.md").read_text(encoding="utf-8")
+
+    assert "Last--Checked-2026--10--08" in readme_en
+    assert "Last--Checked-2026--10--08" in readme_de
+    assert "third--party%20licenses-100%25%20audited%20(2026--10--08)" in readme_en
+    assert "drittanbieter--lizenzen-100%25%20gepr%C3%BCft%20(2026--10--08)" in readme_de
+    assert "pytest-186%20passed%20%7C%20100%25%20green" in readme_en
+    assert "pytest-186%20bestanden%20%7C%20100%25%20gr%C3%BCn" in readme_de
+
+
+def test_changelog_recent_pfad_b_entry_20261008() -> None:
+    changelog = (PROJECT_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
+    assert "2026-10-08" in changelog
+    assert "Visual Four-View Architectural Topology" in changelog
+    assert "GITHUBBOT_ONE_REPO_MARKETING_AND_DESIGN" in changelog

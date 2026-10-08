@@ -1,6 +1,6 @@
 # MARKETING-LOG: safe-start-for-codex
-Date: 2026-10-01
-Operator: Antigravity / Gemini (via GITHUBBOT Pfad A)
+Date: 2026-10-08
+Operator: Antigravity / Gemini (via GITHUBBOT Pfad B)
 Target Repo: dev-bricks/safe-start-for-codex
 Canonical Path: C:\_Local_DEV\repos\safe-start-for-codex
 Version: 1.1.6
@@ -13,6 +13,7 @@ Version: 1.1.6
 # [2026-09-21 17:55:00 CEST] [GITHUBBOT_ONE_REPO_MARKETING_AND_DESIGN] ACTION: PFAD_B_UPGRADE | REPO: dev-bricks/safe-start-for-codex | SCOPE: 18-Point Quick Navigation standard with 100% bidirectional reciprocal dual-anchor parity, 20/20 saturated GitHub topics, PEP 621 metadata (license-files, keywords, Notice URL), root NOTICE attribution file (Lukas Geiger, dev-bricks, open-bricks), Level 1 SBOM Invariant Cross-Reference Matrix (INV-LOCAL-01..INV-SLA-10), Section 6 10-dimension 5-way comparative matrix, Section 18 statutory notice (§ 521 BGB Gefälligkeitsrecht) & 48h Security SLA, llms.txt discovery index sync, and contract testsuite extension.
 # [2026-09-26 11:30:00 CEST] [GITHUBBOT_ONE_REPO_CLEANER] ACTION: PFAD_A_HYGIENE | REPO: dev-bricks/safe-start-for-codex | SCOPE: CI lifecycle workflow provisioning (auto-assign.yml, label-sync.yml, labels.yml), lock defense and multi-host sync patterns in .gitignore (*-MacBook*, *-IDEAPAD*, *_WORKSTATION*, *_WORKSTATION-LG*, LOCK.user.*, .automation-lock, .pytest_temp/, .tox/), PEP 621 license-files and norecursedirs hardening, Level 1 SBOM re-audit Stand 2026-09-26 (INV-LOCAL-01..INV-SLA-10), documentation recency sync in README.md, README_de.md, llms.txt, CHANGELOG.md, and automated contract testsuite extension.
 # [2026-10-01 23:20:00 CEST] [GITHUBBOT_ONE_REPO_CLEANER] ACTION: PFAD_A_HYGIENE | REPO: dev-bricks/safe-start-for-codex | SCOPE: Bilingual CONTRIBUTING.md guidelines (EN/DE) with 10 invariants INV-LOCAL-01..INV-SLA-10, unprivileged RunAsInvoker mode, Plan D local workflow, and 48h SLA; hardened .gitignore multi-agent locks (LOCK.dev.*, LOCK.antigravity.*, LOCK.bugsearch.*), TASKPLAN_*.md, *-IDEAPAD-GEI* patterns, ehthumbs.db; PEP 621 URLs in pyproject.toml (Contributing, Plain-Text License, Plain-Text Licenses, Level 1 SBOM); Level 1 SBOM Stand 2026-10-01 re-audit; documentation parity across README.md/README_de.md badges (Last-Checked 2026-10-01) and llms.txt (167+ tests); expanded contract test suite.
+# [2026-10-08 17:15:00 CEST] [GITHUBBOT_ONE_REPO_MARKETING_AND_DESIGN] ACTION: PFAD_B_UPGRADE | REPO: dev-bricks/safe-start-for-codex | SCOPE: ASCII Four-View Architectural Topology in README.md & README_de.md, Level 1 SBOM Stand 2026-10-08 re-audit, discoverability badges & recency synchronization, Section 8 Pfad B discoverability recommendations, and automated contract test suite extension.
 
 ================================================================================
 1. REPOSITORY AUDIT & DISCOVERABILITY BASELINE
@@ -126,7 +127,27 @@ German (DE):
 - [x] Create comprehensive THIRD_PARTY_LICENSES.md audit verifying 100% permissive stack.
 - [x] Configure PEP 621 URLs for Third-Party Licenses, Marketing Log, and LLM Ready in pyproject.toml.
 - [x] Synchronize llms.txt discovery index with updated test baseline and invariant contracts.
-- [ ] Implement optional lightweight web dashboard for real-time gating status observation.
+- [x] Implement optional lightweight web dashboard for real-time gating status observation (implemented in src/safe_start_for_codex/dashboard.py with CLI subcommand dashboard and tests/test_dashboard.py).
 - [ ] Publish pre-compiled standalone Windows EXE binaries in GitHub Releases via automated Actions.
 - [x] Expand integration test coverage with synthetic Codex automation collections (55 multi-schedule jobs, batch splitting, gating lifecycle simulation, SQLite history catch-up, and degraded collection resilience verified in tests/test_synthetic_collections.py).
+- [x] Standardize Section 2 ASCII Four-View Architectural Topology in README.md and README_de.md with 100% bilateral parity and anchor preservation.
+- [x] Re-audit Level 1 SBOM Third-Party License companion Stand 2026-10-08 and reaffirm unprivileged RunAsInvoker and Zero-Copyleft isolation.
+
+================================================================================
+8. PFAD B MARKETING, DESIGN & DISCOVERABILITY REVIEW (STAND 2026-10-08)
+================================================================================
+REC-20261008-01: Windows Terminal Profile & PowerShell Tab Completion Script
+- Category: Developer Ergonomics & Distribution
+- Context: Safe Start for Codex provides multiple rich CLI subcommands (`start`, `tray`, `dry-run`, `status`, `dashboard`, `catchup-plan`, `backup`, `restore-latest`, `config-init`, `config-show`).
+- Recommendation: Provide a pre-built PowerShell `Register-ArgumentCompleter` script and Windows Terminal JSON fragment under `docs/` or `scripts/` to enable tab-completion of arguments, flags, and automation names for Windows terminal users.
+
+REC-20261008-02: Animated SVG / Terminalizer Walkthrough Asset
+- Category: Visual Branding & README Discoverability
+- Context: Users visiting GitHub often evaluate tools within 5 seconds based on visual cues. The SVG banner is excellent, but a terminal animation demonstrates the pre-boot pause and staggered batch release in action.
+- Recommendation: Record a lightweight 15-second terminal session using `terminalizer` or `vhs` and export an optimized SVG/GIF showing `safe-start-for-codex dry-run` followed by `safe-start-for-codex dashboard` to embed in README Section 9.
+
+REC-20261008-03: WinGet Package Manifest Submission
+- Category: Distribution & Organic Discovery
+- Context: Developers on Windows 10/11 increasingly discover and install local CLI developer tools via the Windows Package Manager (`winget`).
+- Recommendation: Generate and submit an official manifest to `microsoft/winget-pkgs` for `dev-bricks.safe-start-for-codex`, enabling one-line installation via `winget install dev-bricks.safe-start-for-codex`.
 
