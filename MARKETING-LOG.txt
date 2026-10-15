@@ -2,7 +2,7 @@
 Date: 2026-10-08
 Operator: Antigravity / Gemini (via GITHUBBOT Pfad B)
 Target Repo: dev-bricks/safe-start-for-codex
-Canonical Path: C:\_Local_DEV\repos\safe-start-for-codex
+Canonical Repository: https://github.com/dev-bricks/safe-start-for-codex
 Version: 1.1.6
 
 # Audit & Action Tracking:
