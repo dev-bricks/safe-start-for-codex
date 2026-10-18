@@ -96,13 +96,14 @@ def _atomic_write_text(path: Path, text: str, *, newline: str | None = None) -> 
 
 
 def quoted_value(text: str, key: str) -> str:
-    match = re.search(rf"^{re.escape(key)}\s*=\s*[\"'](.*?)[\"'](?:\s*#.*)?$", text, re.MULTILINE)
+    match = re.search(rf"^\s*{re.escape(key)}\s*=\s*[\"'](.*?)[\"'](?:\s*#.*)?$", text, re.MULTILINE)
     return match.group(1) if match else ""
 
 
 def int_value(text: str, key: str) -> int | None:
-    match = re.search(rf"^{re.escape(key)}\s*=\s*(\d+)(?:\s*#.*)?$", text, re.MULTILINE)
+    match = re.search(rf"^\s*{re.escape(key)}\s*=\s*(\d+)(?:\s*#.*)?$", text, re.MULTILINE)
     return int(match.group(1)) if match else None
+
 
 
 @dataclass
@@ -328,10 +329,10 @@ def set_status(path: Path, status: str) -> bool:
     if current == status:
         return False
 
-    if re.search(r"^status\s*=\s*[\"'].*?[\"'](?:\s*#.*)?$", text, re.MULTILINE):
+    if re.search(r"^\s*status\s*=\s*[\"'].*?[\"'](?:\s*#.*)?$", text, re.MULTILINE):
         text = re.sub(
-            r"^status\s*=\s*[\"'].*?[\"'](?:\s*#.*)?$",
-            f'status = "{status}"',
+            r"^(\s*)status\s*=\s*[\"'].*?[\"'](?:\s*#.*)?$",
+            rf'\1status = "{status}"',
             text,
             count=1,
             flags=re.MULTILINE,
@@ -339,16 +340,17 @@ def set_status(path: Path, status: str) -> bool:
     else:
         text += f'\nstatus = "{status}"\n'
 
-    if re.search(r"^updated_at\s*=\s*\d+(?:\s*#.*)?$", text, re.MULTILINE):
+    if re.search(r"^\s*updated_at\s*=\s*\d+(?:\s*#.*)?$", text, re.MULTILINE):
         text = re.sub(
-            r"^updated_at\s*=\s*\d+(?:\s*#.*)?$",
-            f"updated_at = {timestamp_ms()}",
+            r"^(\s*)updated_at\s*=\s*\d+(?:\s*#.*)?$",
+            rf"\1updated_at = {timestamp_ms()}",
             text,
             count=1,
             flags=re.MULTILINE,
         )
     _atomic_write_text(path, text, newline="")
     return True
+
 
 
 def write_snapshot(
@@ -1021,16 +1023,29 @@ def _matches_frequency_day(
             and current.month in _allowed_months(parts)
         ):
             return False
+        days_in_month = calendar.monthrange(current.year, current.month)[1]
         has_byday = "BYDAY" in parts
         has_bymonthday = "BYMONTHDAY" in parts
+
+        allowed_monthdays: set[int] = set()
+        if has_bymonthday or not has_byday:
+            default_day = start.day if (has_bymonthday or "BYMONTH" in parts) else 1
+            for d in values_as_ints(parts, "BYMONTHDAY", [default_day]):
+                if d < 0:
+                    resolved = days_in_month + 1 + d
+                    if 1 <= resolved <= days_in_month:
+                        allowed_monthdays.add(resolved)
+                else:
+                    allowed_monthdays.add(d)
+
         if has_byday:
             byday_days = _resolve_monthly_byday(parts, current.year, current.month)
             if has_bymonthday:
-                allowed_days_set = _allowed_monthdays(parts) & byday_days
+                allowed_days_set = allowed_monthdays & byday_days
             else:
                 allowed_days_set = byday_days
         else:
-            allowed_days_set = _allowed_monthdays(parts)
+            allowed_days_set = allowed_monthdays
         return current.day in allowed_days_set
     return False
 
@@ -1869,10 +1884,14 @@ def command_status(_: argparse.Namespace) -> int:
     if not isinstance(data, dict):
         print(f"Snapshot beschaedigt/unlesbar ({latest}): kein JSON-Objekt")
         return 1
+    tool_paused_raw = data.get("tool_paused_ids")
+    tool_paused_count = len(tool_paused_raw) if isinstance(tool_paused_raw, (list, tuple, set)) else 0
+    released_raw = data.get("released_ids")
+    released_count = len(released_raw) if isinstance(released_raw, (list, tuple, set)) else 0
     print(f"Latest snapshot: {latest}")
     print(f"Run: {data.get('run_id')} | Phase: {data.get('phase')} | Time: {data.get('created_at')}")
-    print(f"Tool-paused: {len(data.get('tool_paused_ids') or [])}")
-    print(f"Released: {len(data.get('released_ids') or [])}")
+    print(f"Tool-paused: {tool_paused_count}")
+    print(f"Released: {released_count}")
     try:
         current = load_automations()
     except SystemExit as exc:
@@ -1952,20 +1971,45 @@ def command_restore_latest(args: argparse.Namespace) -> int:
     if not isinstance(items, list):
         print(f"Snapshot enthaelt keine gueltige Automationsliste ({latest})")
         return 1
+
+    run_id = str(data.get("run_id") or local_now().strftime("%Y%m%d-%H%M%S"))
+    raw_released = data.get("released_ids")
+    released_ids = set(raw_released) if isinstance(raw_released, list) else set()
+
     for row in items:
         if not isinstance(row, dict) or not row.get("tool_paused"):
             continue
+        item_id = str(row.get("id") or "")
         original = str(row.get("original_status") or "")
-        path = resolve_automation_path(row.get("path"), str(row.get("id") or ""))
+        path = resolve_automation_path(row.get("path"), item_id)
         if original.upper() == "ACTIVE" and path is not None:
-            print(f"[restore] {row.get('id')} -> {original}")
             if not args.dry_run:
                 try:
-                    set_status(path, original)
+                    changed = set_status(path, original)
                 except OSError as exc:
-                    print(f"[restore] Failed to restore {row.get('id')}: {exc}")
+                    print(f"[restore] Failed to restore {item_id}: {exc}")
                     continue
-            restored += 1
+                if changed:
+                    print(f"[restore] {item_id} -> {original}")
+                    restored += 1
+                row["status"] = original
+                row["tool_paused"] = False
+                row["released"] = True
+                if item_id:
+                    released_ids.add(item_id)
+            else:
+                print(f"[restore] Would restore {item_id} -> {original}")
+                restored += 1
+
+    if not args.dry_run and restored > 0:
+        data["phase"] = "restored"
+        data["released_ids"] = sorted(released_ids)
+        payload = json.dumps(data, ensure_ascii=False, indent=2)
+        _atomic_write_text(latest, payload)
+        snapshot_path = state_dir() / f"{run_id}-restored.json"
+        _atomic_write_text(snapshot_path, payload)
+        append_log(run_id, "restore_latest", restored=restored, dry_run=args.dry_run)
+
     print(f"Restored {restored} tool-paused automations from {latest}")
     return 0
 
@@ -1975,10 +2019,23 @@ def command_backup(_: argparse.Namespace) -> int:
     if not root.exists():
         print(f"Automations directory not found: {root}")
         return 1
-    dest = state_dir() / ("manual-backup-" + local_now().strftime("%Y%m%d-%H%M%S"))
-    shutil.copytree(root, dest, ignore=shutil.ignore_patterns("_archive"))
+    s_dir = state_dir()
+    base_name = "manual-backup-" + local_now().strftime("%Y%m%d-%H%M%S")
+    dest = s_dir / base_name
+    counter = 1
+    while dest.exists():
+        dest = s_dir / f"{base_name}_{counter}"
+        counter += 1
+    try:
+        shutil.copytree(root, dest, ignore=shutil.ignore_patterns("_archive"))
+    except OSError as exc:
+        if dest.exists():
+            shutil.rmtree(dest, ignore_errors=True)
+        print(f"Backup failed: {exc}")
+        return 1
     print(f"Backup created: {dest}")
     return 0
+
 
 
 def command_dashboard(args: argparse.Namespace) -> int:

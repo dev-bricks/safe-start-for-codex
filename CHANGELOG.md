@@ -4,6 +4,16 @@ All notable changes to this project are documented here.
 
 ## Unreleased
 
+- CLI Snapshot Lifecycle, Status Restoration, TOML Parsing & Backup Resilience (SOFTWARE_BUGSEARCH Bugsweep) on 2026-10-18:
+  - Hardened `command_restore_latest` in `src/safe_start_for_codex/cli.py`: after restoring automation TOML files to active state, `latest.json` is updated atomically with `phase: "restored"`, `released_ids` populated, and items marked `status: original`, `tool_paused: False`, and `released: True`, eliminating state desynchronization between disk automations and the snapshot/dashboard; records an audit log to `events.jsonl` and evaluates `set_status()` return value to ensure clean idempotence.
+  - Hardened `quoted_value` and `int_value` in `src/safe_start_for_codex/cli.py`: regex pattern now permits leading whitespace (`^\s*`), properly parsing indented TOML configurations under table headers.
+  - Hardened `set_status` in `src/safe_start_for_codex/cli.py`: preserves existing indentation and updates `status` and `updated_at` in-place on indented TOML files, preventing duplicate key declarations.
+  - Hardened `command_status` in `src/safe_start_for_codex/cli.py`: validates collection types for `tool_paused_ids` and `released_ids` to prevent `TypeError: object of type 'int' has no len()` crashes on corrupted snapshots.
+  - Hardened `command_backup` in `src/safe_start_for_codex/cli.py`: handles consecutive same-second backup invocations by generating collision-resistant numeric suffixes (`_1`, `_2`), and cleans up partial directories on `OSError` failures.
+  - Hardened `_matches_frequency_day` in `src/safe_start_for_codex/cli.py`: resolves negative `BYMONTHDAY` values (e.g. `-1` for the last day of a month) for `frequency == "YEARLY"` based on `days_in_month`, enabling yearly recurrences on negative monthdays.
+  - Hardened `get_dashboard_data` and queue table rendering in `src/safe_start_for_codex/dashboard.py`: accurately computes `still_gated` count via set differences `len(tool_paused_set - released_set)` avoiding underflows from duplicate or foreign released IDs, and renders status badges dynamically in `renderQueueTable`.
+  - Added hermetic regression test suite in `tests/test_bugsweep_cli_restore_and_resilience_20261018.py` (7 tests, full suite 193/193 passed 100% green). [G 2026-10-18]
+
 - Visual Four-View Architectural Topology, Level 1 SBOM Stand 2026-10-08 Re-Audit, Discoverability Badges & Contract Test Suite (GITHUBBOT_ONE_REPO_MARKETING_AND_DESIGN / Pfad B) on 2026-10-08:
   - Preserved strict version freeze discipline per T-20260920-167562623 (version 1.1.6 unchanged across all runtime manifests, zero version bump).
   - Deployed standardized ASCII Four-View Architectural Topology in Section 2 of `README.md` and `README_de.md` (`[VIEW 1: CLI, TRAY INTERFACES & AUTOMATION SCANNER ANATOMY]`, `[VIEW 2: SNAPSHOT STAGING & STAGGERED GATING PIPELINE]`, `[VIEW 3: PROCESS SUPERVISION, ZOMBIE DEFENSE & CATCH-UP PLANNER]`, `[VIEW 4: RUNASINVOKER NON-ELEVATION, ZERO-EGRESS & AUDIT INTEGRITY]`; German: `[SICHT 1]`..`[SICHT 4]`) maintaining 100% bilateral parity and anchor preservation for all 18 quick-navigation points (`sec-01` to `sec-18`).

@@ -92,12 +92,13 @@ def get_dashboard_data(state_dir_path: Path | None = None) -> dict[str, Any]:
     disabled_count = sum(1 for it in items_to_report if isinstance(it, dict) and str(it.get("status", "")).upper() == "DISABLED")
     total_count = len(items_to_report)
 
-    tool_paused_ids = snapshot_data.get("tool_paused_ids")
-    if not isinstance(tool_paused_ids, list):
-        tool_paused_ids = []
-    released_ids = snapshot_data.get("released_ids")
-    if not isinstance(released_ids, list):
-        released_ids = []
+    raw_tool_paused_ids = snapshot_data.get("tool_paused_ids")
+    tool_paused_ids = [str(x) for x in raw_tool_paused_ids] if isinstance(raw_tool_paused_ids, list) else []
+    raw_released_ids = snapshot_data.get("released_ids")
+    released_ids = [str(x) for x in raw_released_ids] if isinstance(raw_released_ids, list) else []
+    tool_paused_set = set(tool_paused_ids)
+    released_set = set(released_ids)
+    still_gated_count = len(tool_paused_set - released_set)
 
     # Catch-up report inspection
     catchup_data: dict[str, Any] = {}
@@ -151,7 +152,7 @@ def get_dashboard_data(state_dir_path: Path | None = None) -> dict[str, Any]:
             "disabled": disabled_count,
             "tool_paused": len(tool_paused_ids),
             "released": len(released_ids),
-            "still_gated": max(len(tool_paused_ids) - len(released_ids), 0),
+            "still_gated": still_gated_count,
         },
         "tool_paused_ids": tool_paused_ids,
         "released_ids": released_ids,
@@ -680,8 +681,11 @@ def get_dashboard_html() -> str:
         const badge = isRel
           ? '<span class="badge badge-active">FREIGEGEBEN</span>'
           : '<span class="badge badge-tool">GESTAGED</span>';
+        const statusBadgeClass = (it.status && it.status.toUpperCase() === 'ACTIVE')
+          ? 'badge-active'
+          : 'badge-paused';
         return `<tr>
-          <td><span class="badge badge-paused">${it.status || 'PAUSED'}</span></td>
+          <td><span class="badge ${statusBadgeClass}">${it.status || 'PAUSED'}</span></td>
           <td><code>${escapeHtml(it.id)}</code></td>
           <td><strong>${escapeHtml(it.name || it.id)}</strong></td>
           <td>${it.next_at ? escapeHtml(it.next_at) : '<em style="color:var(--text-muted)">Unbekannt</em>'}</td>
