@@ -21,6 +21,7 @@ dist/
 *.lnk
 
 # Interne Planungsdateien -- die leben im OneDrive-Projektordner, nicht im Repo
+/PLAN_D_POINTER.md
 # (Plan D: Planung/Steuerung in OneDrive, gebaut und committet wird im Klon).
 # PORTIERUNGSPLAN.md steht bewusst NICHT hier: die Datei ist seit Release 1.1.3
 # veroeffentlichte Dokumentation der Windows-first-Plattformgrenze.
