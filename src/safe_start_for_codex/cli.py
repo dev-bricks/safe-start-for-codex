@@ -1290,7 +1290,16 @@ def build_catchup_report(
             continue
 
         created_at = _align_datetime(_datetime_from_ms(item.created_at), current)
-        since = max(lookback_start, created_at) if created_at is not None else lookback_start
+        item_lookback_start = lookback_start
+        if period and period >= 720:
+            # For monthly or longer schedules, a 30-day window can miss the previous
+            # occurrence on 31-day months (Jan, Mar, May, Jul, Aug, Oct, Dec).
+            # Extend evaluation window to at least item period + 3 days buffer.
+            margin_days = max(int(period / 24) + 3, max(lookback_days, 0))
+            candidate_start = current - timedelta(days=margin_days)
+            if candidate_start < item_lookback_start:
+                item_lookback_start = candidate_start
+        since = max(item_lookback_start, created_at) if created_at is not None else item_lookback_start
         due_times = rrule_occurrences_between(
             item.rrule,
             since,

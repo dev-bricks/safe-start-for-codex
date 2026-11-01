@@ -4,6 +4,11 @@ All notable changes to this project are documented here.
 
 ## Unreleased
 
+- Calendar Month-Boundary Catch-up Window Resilience & Contract Test Expansion (GITHUBBOT_ONE_REPO_CLEANER / Pfad A) on 2026-11-01:
+  - Preserved strict version freeze discipline per T-20260920-167562623 (version 1.1.6 unchanged across all runtime manifests, zero version bump).
+  - Hardened uild_catchup_report in src/safe_start_for_codex/cli.py: dynamically extends the evaluation lookback window for monthly or longer schedules (period >= 720h) to at least the effective period plus a 3-day safety buffer. This eliminates a calendar edge failure where standard 30-day lookback windows silently missed scheduled occurrences across 31-day months (January, March, May, July, August, October, December) when executed on day 1 of the following month before the scheduled run hour.
+  - Added hermetic regression contract test suite in 	ests/test_bugsweep_calendar_month_boundary_lookback_resilience_20261101.py covering multi-month 31-day lookback transitions and observed-run satisfaction (full test suite expanded to 195 tests, 100% passing green). [G 2026-11-01]
+
 - CLI Snapshot Lifecycle, Status Restoration, TOML Parsing & Backup Resilience (SOFTWARE_BUGSEARCH Bugsweep) on 2026-10-18:
   - Hardened `command_restore_latest` in `src/safe_start_for_codex/cli.py`: after restoring automation TOML files to active state, `latest.json` is updated atomically with `phase: "restored"`, `released_ids` populated, and items marked `status: original`, `tool_paused: False`, and `released: True`, eliminating state desynchronization between disk automations and the snapshot/dashboard; records an audit log to `events.jsonl` and evaluates `set_status()` return value to ensure clean idempotence.
   - Hardened `quoted_value` and `int_value` in `src/safe_start_for_codex/cli.py`: regex pattern now permits leading whitespace (`^\s*`), properly parsing indented TOML configurations under table headers.
