@@ -11,14 +11,14 @@ Inoffizielles Windows-Startup-Gate für Codex Desktop-Automatisierungen und gest
   <a href="NOTICE"><img src="https://img.shields.io/badge/Attribution-NOTICE-blue.svg" alt="Attribution NOTICE"></a>
   <a href="https://github.com/dev-bricks/safe-start-for-codex/actions/workflows/ci.yml"><img src="https://img.shields.io/badge/CI-GitHub%20Actions-brightgreen.svg" alt="CI Status"></a>
   <a href="https://github.com/dev-bricks/safe-start-for-codex/actions/workflows/source-platform-smoke.yml"><img src="https://img.shields.io/badge/Smoke-macOS%20%7C%20Linux-brightgreen.svg" alt="Plattform Smoke"></a>
-  <a href="tests/"><img src="https://img.shields.io/badge/pytest-186%20bestanden%20%7C%20100%25%20gr%C3%BCn-brightgreen.svg" alt="Pytest Status"></a>
+  <a href="tests/"><img src="https://img.shields.io/badge/pytest-198%20bestanden%20%7C%20100%25%20gr%C3%BCn-brightgreen.svg" alt="Pytest Status"></a>
   <img src="https://img.shields.io/badge/python-3.11%20%7C%203.12%20%7C%203.13-blue.svg" alt="Python Versionen">
   <img src="https://img.shields.io/badge/plattform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey.svg" alt="Plattformen">
   <img src="https://img.shields.io/badge/architektur-100%25%20Local--First%20%7C%20Zero--Egress-success.svg" alt="Local-First Architektur">
   <img src="https://img.shields.io/badge/sicherheit-Non--Elevation%20%7C%20User--Mode-informational.svg" alt="Sicherheitsmodus">
   <a href="SECURITY.md"><img src="https://img.shields.io/badge/sicherheits--SLA-48h%20%7C%205d%20triage-success.svg" alt="Sicherheits SLA"></a>
-  <a href="THIRD_PARTY_LICENSES.md"><img src="https://img.shields.io/badge/drittanbieter--lizenzen-100%25%20gepr%C3%BCft%20(2026--10--08)-success.svg" alt="Drittanbieter-Lizenzen"></a>
-  <a href="CHANGELOG.md"><img src="https://img.shields.io/badge/Last--Checked-2026--10--08-informational.svg" alt="Audit-Aktualit%C3%A4t"></a>
+  <a href="THIRD_PARTY_LICENSES.md"><img src="https://img.shields.io/badge/drittanbieter--lizenzen-100%25%20gepr%C3%BCft%20(2026--11--02)-success.svg" alt="Drittanbieter-Lizenzen"></a>
+  <a href="CHANGELOG.md"><img src="https://img.shields.io/badge/Last--Checked-2026--11--02-informational.svg" alt="Audit-Aktualit%C3%A4t"></a>
   <a href="MARKETING-LOG.txt"><img src="https://img.shields.io/badge/marketing%20log-aktiv-informational.svg" alt="Marketing Log"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/Lizenz-MIT-yellow.svg" alt="Lizenz"></a>
   <a href="https://github.com/dev-bricks"><img src="https://img.shields.io/badge/ecosystem-dev--bricks-blue.svg" alt="dev-bricks"></a>
@@ -454,6 +454,8 @@ safe-start-for-codex catchup-plan
 - **Reine Lese-Prüfung:** Untersucht Thread-Historie, Zeitplan-Regeln (DAILY, WEEKLY, MONTHLY) und Ausführungszeitstempel.
 - **Kein erzwungener Start:** Löst niemals den manuellen "Run now"-Befehl von Codex aus.
 - **Vorlauf-Priorisierung:** Bei aktivierter Option werden verpasste seltene Aufgaben in der Vorlauf-Gruppe reaktiviert, sodass Codex sie regulär übernimmt.
+- **Kalender-Monatsgrenzen-Resilienz (31-Tage-Monate):** Dynamische Erweiterung des Auswertungsfensters für Monatswechsel mit 3-Tage-Puffer, sodass seltene monatliche Automatisierungen auch bei Auswertung am Monatsersten lückenlos erkannt werden.
+- **Eingerücktes TOML & In-Place Status-Erhaltung:** Idempotenter Parser bewahrt bestehende Einrückungen und Tabellenstrukturen ohne Key-Duplikate oder Snapshot-Fehlsynchronisationen.
 
 Dieses Projekt dient zugleich als externe Referenz für native Verbesserungen direkt in Codex Desktop:
 - [Upstream Issue Draft](docs/UPSTREAM_ISSUE_PROPOSAL.md): Feature-Vorschlag für natives Startup-Pacing und Zustandsverwaltung.

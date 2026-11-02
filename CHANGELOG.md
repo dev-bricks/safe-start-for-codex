@@ -4,6 +4,14 @@ All notable changes to this project are documented here.
 
 ## Unreleased
 
+- Discoverability, Real-Measurement Test Badges (198 passed | 100% green), Level 1 SBOM Stand 2026-11-02 Re-Audit & Contract Test Expansion (GITHUBBOT_ONE_REPO_MARKETING_AND_DESIGN / Pfad B) on 2026-11-02:
+  - Preserved strict version freeze discipline per T-20260920-167562623 (version 1.1.6 unchanged across all runtime manifests, zero version bump).
+  - Synchronized real-measurement test badges across README.md and README_de.md: updated pytest badge to 198 passed | 100% green (198 bestanden | 100% grün), audit recency to 2026--11--02, and third-party license audit to (2026--11--02).
+  - Enriched bilingual documentation (Sections 8, 12, and 14) with newly verified capabilities: calendar month-boundary lookback resilience across 31-day months (avoiding dropped monthly automations on the 1st of a new month) and indented TOML status recovery.
+  - Re-audited Level 1 SBOM companion in THIRD_PARTY_LICENSES.md and THIRD_PARTY_LICENSES.txt (Stand 2026-11-02): reaffirmed unprivileged RunAsInvoker mode, Zero-Egress isolation, and all 10 Governance & Runtime Invariants (INV-LOCAL-01 to INV-SLA-10).
+  - Synchronized machine-readable context in llms.txt (Last-checked: 2026-11-02, 198+ pytest tests passed baseline).
+  - Expanded automated contract test suite in 	ests/test_version_metadata.py and 	ests/test_security_license_contract.py with 	est_badges_recency_and_test_count_20261102, 	est_level_1_sbom_currency_20261102, and 	est_changelog_recent_pfad_b_entry_20261102. [G 2026-11-02]
+
 - Calendar Month-Boundary Catch-up Window Resilience & Contract Test Expansion (GITHUBBOT_ONE_REPO_CLEANER / Pfad A) on 2026-11-01:
   - Preserved strict version freeze discipline per T-20260920-167562623 (version 1.1.6 unchanged across all runtime manifests, zero version bump).
   - Hardened uild_catchup_report in src/safe_start_for_codex/cli.py: dynamically extends the evaluation lookback window for monthly or longer schedules (period >= 720h) to at least the effective period plus a 3-day safety buffer. This eliminates a calendar edge failure where standard 30-day lookback windows silently missed scheduled occurrences across 31-day months (January, March, May, July, August, October, December) when executed on day 1 of the following month before the scheduled run hour.
