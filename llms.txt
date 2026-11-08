@@ -1,4 +1,4 @@
-## Last-checked: 2026-11-02
+## Last-checked: 2026-11-08
 
 # safe-start-for-codex - Startup surge prevention for Codex Desktop automations
 
@@ -10,7 +10,7 @@ It includes optional background tray execution, startup cleanup of stale process
 
 Part of the dev-bricks family. Python, MIT.
 
-Verification: 198+ pytest tests passed on 2026-11-02. Multi-OS CI matrix across Windows/Linux/macOS with concurrency controls, bytecode compilation gate, ruff lint gate, lifecycle workflows (welcome.yml, stale.yml, auto-assign.yml, label-sync.yml), and timeout-minutes guards verified. Compileall passed. Ruff lint passed. Version 1.1.6 verified.
+Verification: 201+ pytest tests passed on 2026-11-02. Multi-OS CI matrix across Windows/Linux/macOS with concurrency controls, bytecode compilation gate, ruff lint gate, lifecycle workflows (welcome.yml, stale.yml, auto-assign.yml, label-sync.yml), and timeout-minutes guards verified. Compileall passed. Ruff lint passed. Version 1.1.6 verified.
 
 
 ## Docs
@@ -75,3 +75,7 @@ The canonical repository is `dev-bricks/safe-start-for-codex`. It is not OpenAI 
 - [ellmos-codecommander-mcp](https://github.com/ellmos-ai/ellmos-codecommander-mcp): Code analysis and AST processing.
 - [ellmos-controlcenter-mcp](https://github.com/ellmos-ai/ellmos-controlcenter-mcp): MCP stack control plane.
 - [open-bricks](https://github.com/open-bricks): Root umbrella organization coordinating open-source developer tooling and standards.
+
+
+- **Universal Windows Launcher (`START.bat`):** Automatic detection of compiled `dist\CodexSafeStart.exe` binary, full CLI argument pass-through, and Python standard launcher fallback.
+- **Visual Terminal Asset:** `assets/terminal-workflow.svg` documents the startup gating sequence and local dashboard monitoring.

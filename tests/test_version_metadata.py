@@ -49,8 +49,8 @@ def test_llms_txt_integrity() -> None:
     llms_text = (PROJECT_ROOT / "llms.txt").read_text(encoding="utf-8")
     assert "https://github.com/dev-bricks/safe-start-for-codex" in llms_text
     assert "dev-bricks" in llms_text
-    assert any(d in llms_text for d in ["Last-checked: 2026-11-02", "Last-checked: 2026-10-08", "Last-checked: 2026-10-01", "Last-checked: 2026-09-26", "Last-checked: 2026-09-21"])
-    assert any(p in llms_text for p in ["198+ pytest tests passed", "186+ pytest tests passed", "185+ pytest tests passed", "181+ pytest tests passed", "167+ pytest tests passed", "126+ pytest tests passed", "114+ pytest tests passed"])
+    assert any(d in llms_text for d in ["Last-checked: 2026-11-08", "Last-checked: 2026-11-02", "Last-checked: 2026-10-08", "Last-checked: 2026-10-01", "Last-checked: 2026-09-26", "Last-checked: 2026-09-21"])
+    assert any(p in llms_text for p in ["201+ pytest tests passed", "198+ pytest tests passed", "186+ pytest tests passed", "185+ pytest tests passed", "181+ pytest tests passed", "167+ pytest tests passed", "126+ pytest tests passed", "114+ pytest tests passed"])
     assert "Version 1.1.6 verified" in llms_text
     assert "NOTICE" in llms_text
     assert "521 BGB" in llms_text
@@ -607,12 +607,12 @@ def test_badges_recency_and_test_count_20261008() -> None:
     readme_en = (PROJECT_ROOT / "README.md").read_text(encoding="utf-8")
     readme_de = (PROJECT_ROOT / "README_de.md").read_text(encoding="utf-8")
 
-    assert any(d in readme_en for d in ["Last--Checked-2026--11--02", "Last--Checked-2026--10--08"])
-    assert any(d in readme_de for d in ["Last--Checked-2026--11--02", "Last--Checked-2026--10--08"])
+    assert any(d in readme_en for d in ["Last--Checked-2026--11--08", "Last--Checked-2026--11--02", "Last--Checked-2026--10--08"])
+    assert any(d in readme_de for d in ["Last--Checked-2026--11--08", "Last--Checked-2026--11--02", "Last--Checked-2026--10--08"])
     assert any(d in readme_en for d in ["third--party%20licenses-100%25%20audited%20(2026--11--02)", "third--party%20licenses-100%25%20audited%20(2026--10--08)"])
     assert any(d in readme_de for d in ["drittanbieter--lizenzen-100%25%20gepr%C3%BCft%20(2026--11--02)", "drittanbieter--lizenzen-100%25%20gepr%C3%BCft%20(2026--10--08)"])
-    assert any(p in readme_en for p in ["pytest-198%20passed%20%7C%20100%25%20green", "pytest-186%20passed%20%7C%20100%25%20green"])
-    assert any(p in readme_de for p in ["pytest-198%20bestanden%20%7C%20100%25%20gr%C3%BCn", "pytest-186%20bestanden%20%7C%20100%25%20gr%C3%BCn"])
+    assert any(p in readme_en for p in ["pytest-201%20passed%20%7C%20100%25%20green", "pytest-198%20passed%20%7C%20100%25%20green", "pytest-186%20passed%20%7C%20100%25%20green"])
+    assert any(p in readme_de for p in ["pytest-201%20bestanden%20%7C%20100%25%20gr%C3%BCn", "pytest-198%20bestanden%20%7C%20100%25%20gr%C3%BCn", "pytest-186%20bestanden%20%7C%20100%25%20gr%C3%BCn"])
 
 
 def test_changelog_recent_pfad_b_entry_20261008() -> None:
@@ -625,12 +625,13 @@ def test_changelog_recent_pfad_b_entry_20261008() -> None:
 def test_badges_recency_and_test_count_20261102() -> None:
     readme_en = (PROJECT_ROOT / "README.md").read_text(encoding="utf-8")
     readme_de = (PROJECT_ROOT / "README_de.md").read_text(encoding="utf-8")
-    assert "Last--Checked-2026--11--02" in readme_en
-    assert "Last--Checked-2026--11--02" in readme_de
+    assert any(d in readme_en for d in ["Last--Checked-2026--11--08", "Last--Checked-2026--11--02"])
+    assert any(d in readme_de for d in ["Last--Checked-2026--11--08", "Last--Checked-2026--11--02"])
     assert "third--party%20licenses-100%25%20audited%20(2026--11--02)" in readme_en
     assert "drittanbieter--lizenzen-100%25%20gepr%C3%BCft%20(2026--11--02)" in readme_de
-    assert "pytest-198%20passed%20%7C%20100%25%20green" in readme_en
-    assert "pytest-198%20bestanden%20%7C%20100%25%20gr%C3%BCn" in readme_de
+    assert any(p in readme_en for p in ["pytest-201%20passed%20%7C%20100%25%20green", "pytest-198%20passed%20%7C%20100%25%20green"])
+    assert any(p in readme_de for p in ["pytest-201%20bestanden%20%7C%20100%25%20gr%C3%BCn", "pytest-198%20bestanden%20%7C%20100%25%20gr%C3%BCn"])
+
 
 def test_level_1_sbom_currency_20261102() -> None:
     md_text = (PROJECT_ROOT / "THIRD_PARTY_LICENSES.md").read_text(encoding="utf-8")
@@ -638,7 +639,36 @@ def test_level_1_sbom_currency_20261102() -> None:
     assert "Audited:** 2026-11-02" in md_text
     assert "Audited: 2026-11-02" in txt_text
 
+
 def test_changelog_recent_pfad_b_entry_20261102() -> None:
     changelog = (PROJECT_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
     assert "2026-11-02" in changelog
     assert "GITHUBBOT_ONE_REPO_MARKETING_AND_DESIGN" in changelog
+
+
+def test_start_bat_launcher() -> None:
+    """Ensure START.bat exists and contains EXE detection, %* forwarding, and Python fallback."""
+    start_bat = PROJECT_ROOT / "START.bat"
+    assert start_bat.is_file(), "START.bat must exist"
+    content = start_bat.read_text(encoding="utf-8", errors="replace")
+    assert "CodexSafeStart.exe" in content
+    assert "%*" in content
+    assert "safe_start_for_codex" in content
+
+
+def test_dependabot_configuration() -> None:
+    """Ensure .github/dependabot.yml exists and configures pip security updates."""
+    dependabot_path = PROJECT_ROOT / ".github" / "dependabot.yml"
+    assert dependabot_path.is_file(), ".github/dependabot.yml must exist"
+    text = dependabot_path.read_text(encoding="utf-8")
+    assert "version: 2" in text
+    assert 'package-ecosystem: "pip"' in text
+
+
+def test_terminal_workflow_asset_exists() -> None:
+    """Verify that assets/terminal-workflow.svg exists and is valid SVG."""
+    asset_path = PROJECT_ROOT / "assets" / "terminal-workflow.svg"
+    assert asset_path.is_file(), "assets/terminal-workflow.svg must exist"
+    content = asset_path.read_text(encoding="utf-8")
+    assert "<svg" in content and "</svg>" in content
+    assert "safe-start-for-codex" in content
