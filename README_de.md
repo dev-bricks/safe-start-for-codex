@@ -7,18 +7,22 @@ Inoffizielles Windows-Startup-Gate für Codex Desktop-Automatisierungen und gest
 </p>
 
 <p align="center">
+  <img src="assets/terminal-workflow.svg" width="100%" alt="Safe Start for Codex Terminal Workflow - Gating-Ablauf und Dashboard" />
+</p>
+
+<p align="center">
   <a href="pyproject.toml"><img src="https://img.shields.io/badge/Version-1.1.6-blue.svg" alt="Version"></a>
   <a href="NOTICE"><img src="https://img.shields.io/badge/Attribution-NOTICE-blue.svg" alt="Attribution NOTICE"></a>
   <a href="https://github.com/dev-bricks/safe-start-for-codex/actions/workflows/ci.yml"><img src="https://img.shields.io/badge/CI-GitHub%20Actions-brightgreen.svg" alt="CI Status"></a>
   <a href="https://github.com/dev-bricks/safe-start-for-codex/actions/workflows/source-platform-smoke.yml"><img src="https://img.shields.io/badge/Smoke-macOS%20%7C%20Linux-brightgreen.svg" alt="Plattform Smoke"></a>
-  <a href="tests/"><img src="https://img.shields.io/badge/pytest-198%20bestanden%20%7C%20100%25%20gr%C3%BCn-brightgreen.svg" alt="Pytest Status"></a>
+  <a href="tests/"><img src="https://img.shields.io/badge/pytest-201%20bestanden%20%7C%20100%25%20gr%C3%BCn-brightgreen.svg" alt="Pytest Status"></a>
   <img src="https://img.shields.io/badge/python-3.11%20%7C%203.12%20%7C%203.13-blue.svg" alt="Python Versionen">
   <img src="https://img.shields.io/badge/plattform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey.svg" alt="Plattformen">
   <img src="https://img.shields.io/badge/architektur-100%25%20Local--First%20%7C%20Zero--Egress-success.svg" alt="Local-First Architektur">
   <img src="https://img.shields.io/badge/sicherheit-Non--Elevation%20%7C%20User--Mode-informational.svg" alt="Sicherheitsmodus">
   <a href="SECURITY.md"><img src="https://img.shields.io/badge/sicherheits--SLA-48h%20%7C%205d%20triage-success.svg" alt="Sicherheits SLA"></a>
   <a href="THIRD_PARTY_LICENSES.md"><img src="https://img.shields.io/badge/drittanbieter--lizenzen-100%25%20gepr%C3%BCft%20(2026--11--02)-success.svg" alt="Drittanbieter-Lizenzen"></a>
-  <a href="CHANGELOG.md"><img src="https://img.shields.io/badge/Last--Checked-2026--11--02-informational.svg" alt="Audit-Aktualit%C3%A4t"></a>
+  <a href="CHANGELOG.md"><img src="https://img.shields.io/badge/Last--Checked-2026--11--08-informational.svg" alt="Audit-Aktualit%C3%A4t"></a>
   <a href="MARKETING-LOG.txt"><img src="https://img.shields.io/badge/marketing%20log-aktiv-informational.svg" alt="Marketing Log"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/Lizenz-MIT-yellow.svg" alt="Lizenz"></a>
   <a href="https://github.com/dev-bricks"><img src="https://img.shields.io/badge/ecosystem-dev--bricks-blue.svg" alt="dev-bricks"></a>
@@ -316,6 +320,10 @@ Safe Start for Codex verfügt über ein prägnantes visuelles Design für profes
 
 <p align="center">
   <img src="assets/safe_start_banner.svg" width="100%" alt="Safe Start for Codex Banner - Schutzhülle über dem Schriftzug" />
+</p>
+
+<p align="center">
+  <img src="assets/terminal-workflow.svg" width="100%" alt="Safe Start for Codex Terminal Workflow - Gating-Ablauf und Dashboard" />
 </p>
 
 - **Schutzhüllen-Motiv:** Die visuelle Markenidentität zeigt eine leuchtende, kristallklare Schutzhülle über dem Codex-Schriftzug, die für nicht-invasive Vorab-Sicherung, transparente Isolation und zerstörungsfreie Prozessüberwachung steht.

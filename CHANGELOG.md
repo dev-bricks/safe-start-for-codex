@@ -4,6 +4,16 @@ All notable changes to this project are documented here.
 
 ## Unreleased
 
+- Software Pipeline Wartung, Universal Launcher, Standalone Executable, Terminal Workflow Asset, Dependabot & Contract Test Expansion (SOFTWARE_ICONS_WARTUNG_EXE_DOCU_GITHUB) on 2026-11-08:
+  - Preserved strict version freeze discipline per T-20260920-167562623 (version 1.1.6 unchanged across all runtime manifests, zero version bump).
+  - Deployed universal Windows batch launcher `START.bat` supporting compiled standalone executable priority (`dist\CodexSafeStart.exe`, fallback to system path `C:\_Local_DEV\codex-safe-start\bin\CodexSafeStart.exe`), full CLI argument pass-through (`%*`), and unprivileged fallback to Python standard launchers (`pythonw`, `py -3`, `python`).
+  - Compiled and verified fresh standalone Windows binary `dist\CodexSafeStart.exe` (63.5 MB) via `build_exe.py` (PyInstaller 6.21.0) with embedded application icon (`assets/codex_safe_start.ico`), pystray integration, and user-mode desktop execution.
+  - Authored dark-mode vector asset `assets/terminal-workflow.svg` (880x520) visualizing the 5-phase startup gating lifecycle, atomic snapshot staging, rate-limited batch release queue, and local web dashboard.
+  - Added GitHub Governance specification `.github/dependabot.yml` configured for weekly pip security updates and grouped automated vulnerability patches.
+  - Synchronized real-measurement test badges across `README.md` and `README_de.md`: updated pytest badge to 201 passed | 100% green (201 bestanden | 100% grün) and audit recency badge to `Last--Checked-2026--11--08`.
+  - Updated machine-readable discovery in `llms.txt` (Last checked: 2026-11-08, 201+ pytest tests passed baseline, `START.bat` and `CodexSafeStart.exe` documented).
+  - Expanded automated contract test suite in `tests/test_version_metadata.py`: added `test_start_bat_launcher`, `test_dependabot_configuration`, `test_terminal_workflow_asset_exists`, and updated `test_badges_recency_and_test_count_20261102` (full test suite expanded to 201 passed, 1 skipped, 100% green). [G 2026-11-08]
+
 - Discoverability, Real-Measurement Test Badges (198 passed | 100% green), Level 1 SBOM Stand 2026-11-02 Re-Audit & Contract Test Expansion (GITHUBBOT_ONE_REPO_MARKETING_AND_DESIGN / Pfad B) on 2026-11-02:
   - Preserved strict version freeze discipline per T-20260920-167562623 (version 1.1.6 unchanged across all runtime manifests, zero version bump).
   - Synchronized real-measurement test badges across README.md and README_de.md: updated pytest badge to 198 passed | 100% green (198 bestanden | 100% grün), audit recency to 2026--11--02, and third-party license audit to (2026--11--02).
