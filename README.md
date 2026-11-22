@@ -7,18 +7,22 @@ Unofficial Windows startup gate for Codex Desktop automations and catch-up pacin
 </p>
 
 <p align="center">
+  <img src="assets/terminal-workflow.svg" width="100%" alt="Safe Start for Codex Terminal Workflow - Gating Sequence & Dashboard" />
+</p>
+
+<p align="center">
   <a href="pyproject.toml"><img src="https://img.shields.io/badge/version-1.1.6-blue.svg" alt="Version"></a>
   <a href="NOTICE"><img src="https://img.shields.io/badge/Attribution-NOTICE-blue.svg" alt="Attribution NOTICE"></a>
   <a href="https://github.com/dev-bricks/safe-start-for-codex/actions/workflows/ci.yml"><img src="https://img.shields.io/badge/CI-GitHub%20Actions-brightgreen.svg" alt="CI Status"></a>
   <a href="https://github.com/dev-bricks/safe-start-for-codex/actions/workflows/source-platform-smoke.yml"><img src="https://img.shields.io/badge/Smoke-macOS%20%7C%20Linux-brightgreen.svg" alt="Platform Smoke"></a>
-  <a href="tests/"><img src="https://img.shields.io/badge/pytest-198%20passed%20%7C%20100%25%20green-brightgreen.svg" alt="Pytest Status"></a>
+  <a href="tests/"><img src="https://img.shields.io/badge/pytest-201%20passed%20%7C%20100%25%20green-brightgreen.svg" alt="Pytest Status"></a>
   <img src="https://img.shields.io/badge/python-3.11%20%7C%203.12%20%7C%203.13-blue.svg" alt="Python Versions">
   <img src="https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey.svg" alt="Platforms">
   <img src="https://img.shields.io/badge/architecture-100%25%20Local--First%20%7C%20Zero--Egress-success.svg" alt="Local-First Architecture">
   <img src="https://img.shields.io/badge/security-Non--Elevation%20%7C%20User--Mode-informational.svg" alt="Security Mode">
   <a href="SECURITY.md"><img src="https://img.shields.io/badge/security%20SLA-48h%20%7C%205d%20triage-success.svg" alt="Security SLA"></a>
   <a href="THIRD_PARTY_LICENSES.md"><img src="https://img.shields.io/badge/third--party%20licenses-100%25%20audited%20(2026--11--02)-success.svg" alt="Third-Party Licenses"></a>
-  <a href="CHANGELOG.md"><img src="https://img.shields.io/badge/Last--Checked-2026--11--02-informational.svg" alt="Audit Recency"></a>
+  <a href="CHANGELOG.md"><img src="https://img.shields.io/badge/Last--Checked-2026--11--08-informational.svg" alt="Audit Recency"></a>
   <a href="MARKETING-LOG.txt"><img src="https://img.shields.io/badge/marketing%20log-active-informational.svg" alt="Marketing Log"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License"></a>
   <a href="https://github.com/dev-bricks"><img src="https://img.shields.io/badge/ecosystem-dev--bricks-blue.svg" alt="dev-bricks"></a>
@@ -318,6 +322,10 @@ Safe Start for Codex features a cohesive visual design tailored for developer de
   <img src="assets/safe_start_banner.svg" width="100%" alt="Safe Start for Codex Banner - Schutzhülle über dem Schriftzug" />
 </p>
 
+<p align="center">
+  <img src="assets/terminal-workflow.svg" width="100%" alt="Safe Start for Codex Terminal Workflow - Gating Sequence & Dashboard" />
+</p>
+
 - **Protective Sleeve Motif:** The brand identity illustrates a glowing, crystal-clear protective sleeve enveloping the Codex typography, symbolizing non-invasive pre-boot gating, transparent isolation, and non-destructive process supervision.
 - **Unprivileged Windows Tray Identity:** The companion tray application sits discreetly in the Windows taskbar notifications area, providing immediate visual feedback on automation gating, snapshot backups, and staggered release pacing.
 
@@ -364,6 +372,24 @@ safe-start-for-codex status
 
 # 3. Launch Codex Desktop with pre-boot gating and staggered unpausing
 safe-start-for-codex start
+```
+
+### One-Click Universal Launcher (`START.bat`)
+
+Windows workstations can utilize `START.bat` for automated binary detection (`dist\CodexSafeStart.exe`), argument forwarding, and Python fallback:
+
+```powershell
+# One-click start (launches compiled CodexSafeStart.exe in System Tray mode)
+.\START.bat
+
+# Launch Codex Desktop with pre-boot gating in foreground
+.\START.bat start
+
+# View live gating and queue status in console
+.\START.bat status
+
+# Launch lightweight local web dashboard
+.\START.bat dashboard
 ```
 
 ---
